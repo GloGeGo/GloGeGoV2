@@ -358,7 +358,7 @@
 
     .live-grid{
       display:grid;
-      grid-template-columns:1fr 320px;
+      grid-template-columns:1fr;
       gap:12px;
     }
 
@@ -1134,12 +1134,9 @@
             <div class="live-grid">
               <div class="video-card">
                 <div class="video-label">Kullanıcının kamerası</div>
-                <video id="remoteVideo" autoplay playsinline></video>
-              </div>
-              <div class="video-card">
-                <div class="video-label">Kullanıcının kendi kamerası</div>
                 <video id="localVideo" autoplay playsinline muted></video>
               </div>
+              <video id="remoteVideo" class="hidden" autoplay playsinline></video>
             </div>
           </section>
 
@@ -1395,6 +1392,8 @@
     let voiceReady = false;
     let voiceWarmupTimer = null;
     let voiceEnabled = true;
+    let speechQueue = [];
+    let speechBusy = false;
     const voiceSettingKey = "glogego_voice_enabled";
     let videoObjectUrls = new Map();
     
@@ -1876,28 +1875,76 @@
       }, 30000);
     }
 
-    function speakRobot(text) {
-      if (isAdmin || !voiceEnabled) return;
+    function splitSpeechText(text, maxLen = 180) {
       const value = String(text || "").trim();
-      if (!value || value.length > 500) return;
+      if (!value) return [];
+      const parts = [];
+      let current = "";
+      const tokens = value.split(/(\s+)/);
+      for (const token of tokens) {
+        if (!token) continue;
+        if ((current + token).length <= maxLen) {
+          current += token;
+          continue;
+        }
+        if (current.trim()) parts.push(current.trim());
+        if (token.trim().length > maxLen) {
+          for (let i = 0; i < token.length; i += maxLen) {
+            parts.push(token.slice(i, i + maxLen).trim());
+          }
+          current = "";
+        } else {
+          current = token;
+        }
+      }
+      if (current.trim()) parts.push(current.trim());
+      return parts.filter(Boolean);
+    }
+
+    function speakNextQueuedChunk() {
+      if (speechBusy) return;
+      const chunk = speechQueue.shift();
+      if (!chunk) return;
+
+      speechBusy = true;
       try {
         initVoice();
-        speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(value);
+        const utter = new SpeechSynthesisUtterance(chunk);
         utter.lang = "tr-TR";
         utter.voice = utteranceVoice || getVoice();
         utter.rate = 0.95;
         utter.pitch = 0.65;
         utter.volume = 1;
+        utter.onend = () => {
+          speechBusy = false;
+          speakNextQueuedChunk();
+        };
+        utter.onerror = () => {
+          speechBusy = false;
+          speakNextQueuedChunk();
+        };
         speechSynthesis.speak(utter);
       } catch (err) {
+        speechBusy = false;
         console.warn("Seslendirme çalışmadı:", err);
+        speakNextQueuedChunk();
       }
     }
 
+    function speakRobot(text) {
+      if (isAdmin || !voiceEnabled || liveState !== "active") return;
+      const value = String(text || "").trim();
+      if (!value) return;
+      speechQueue.push(...splitSpeechText(value));
+      speakNextQueuedChunk();
+    }
+
     function stopSpeech() {
+      speechQueue = [];
+      speechBusy = false;
       try { speechSynthesis.cancel(); } catch {}
     }
+
 
     function uint8ToBase64(uint8) {
       let binary = "";
@@ -2557,6 +2604,7 @@
             });
           } catch {}
         }
+        stopSpeech();
       } finally {
         liveSessionId = "";
         pendingRemoteCandidates = [];
@@ -2818,6 +2866,7 @@
           if (data.status === "requesting" && liveState !== "requesting") {
             setLiveState("requesting");
             liveInfo.textContent = "Bekleniyor...";
+            stopSpeech();
           }
           if (data.answer && pc && !pc.currentRemoteDescription) {
             try {
@@ -3037,7 +3086,12 @@
             const isNew = !seenMessageIds.has(item.id);
             if (isNew) {
               seenMessageIds.add(item.id);
-              if (item.sender === ADMIN_USER && item.kind !== "mode_request" && item.text && String(item.text).trim().length <= 500) {
+              if (
+                item.sender === ADMIN_USER &&
+                item.kind !== "mode_request" &&
+                item.text &&
+                liveState === "active"
+              ) {
                 speakRobot(item.text);
               }
             }
