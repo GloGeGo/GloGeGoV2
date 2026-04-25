@@ -842,176 +842,6 @@
       color:#d7ffe0;
     }
 
-    .pro-pill{
-      background:#2b2412;
-      border-color:#8f6b1a;
-      color:#fff2c7;
-    }
-    .pro-active-tag{
-      background:linear-gradient(135deg,#7b5b12,#d2a63d);
-      border-color:#f0c24e;
-      color:#fff8db;
-    }
-    .pro-btn{
-      background:linear-gradient(135deg,#8f6b1a,#d2a63d);
-      border-color:rgba(255,255,255,.12);
-      color:#fff8db;
-    }
-    .pro-card{
-      margin-top:16px;
-      border:1px solid rgba(240,194,78,.18);
-      background:linear-gradient(180deg, rgba(255,255,255,.03), transparent), #101826;
-      border-radius:24px;
-      padding:18px;
-      display:grid;
-      gap:14px;
-    }
-    .pro-head{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-    .pro-title{
-      font-size:22px;
-      font-weight:900;
-      margin-bottom:4px;
-    }
-    .pro-status{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.4;
-    }
-    .pro-grid{
-      display:grid;
-      grid-template-columns:minmax(320px, 0.95fr) minmax(320px, 1.05fr);
-      gap:14px;
-      align-items:start;
-      min-height:0;
-      min-width:0;
-      overflow:auto;
-      padding-right:4px;
-      overscroll-behavior:contain;
-    }
-    .pro-box{
-      border:1px solid rgba(240,194,78,.12);
-      background:#121826;
-      border-radius:18px;
-      padding:14px;
-      display:grid;
-      gap:10px;
-      height:fit-content;
-      min-width:0;
-      min-height:0;
-      overflow:auto;
-    }
-    .pro-box-title{
-      font-size:16px;
-      font-weight:900;
-      margin-bottom:2px;
-      line-height:1.25;
-      overflow-wrap:anywhere;
-    }
-    .pro-feature{
-      padding:10px 12px;
-      border-radius:14px;
-      background:#1a1e2d;
-      border:1px solid rgba(240,194,78,.16);
-      color:#fff3cc;
-      font-weight:700;
-      font-size:13px;
-      line-height:1.35;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      word-break:break-word;
-    }
-    .pro-admin{
-      border-top:1px solid rgba(240,194,78,.12);
-      padding-top:12px;
-      display:grid;
-      gap:10px;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      align-content:start;
-      min-height:0;
-      overflow:auto;
-      padding-right:4px;
-      grid-auto-rows:min-content;
-    }
-    .pro-admin-title{
-      font-size:18px;
-      font-weight:900;
-      grid-column:1 / -1;
-    }
-    .pro-admin-note{
-      color:var(--muted);
-      font-size:13px;
-      grid-column:1 / -1;
-    }
-    .pro-admin-create{
-      display:grid;
-      gap:10px;
-      padding:12px;
-      border-radius:16px;
-      background:#101726;
-      border:1px solid rgba(240,194,78,.08);
-      grid-column:1 / -1;
-      min-width:0;
-    }
-    .pro-admin-create-grid{
-      display:grid;
-      grid-template-columns:minmax(0,1.2fr) minmax(130px,.7fr) minmax(130px,.6fr);
-      gap:10px;
-      align-items:stretch;
-      min-width:0;
-    }
-    .pro-admin-create-grid .btn{
-      min-height:52px;
-      white-space:nowrap;
-    }
-    .pro-admin-list{
-      display:grid;
-      gap:10px;
-      min-width:0;
-      max-height:420px;
-      overflow:auto;
-      padding-right:4px;
-      align-content:start;
-    }
-    .pro-row{
-      display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:12px;
-      align-items:start;
-      padding:12px 14px;
-      border-radius:14px;
-      background:#191f2d;
-      border:1px solid rgba(240,194,78,.14);
-      font-size:14px;
-      min-width:0;
-    }
-    .pro-row strong{
-      font-size:15px;
-      overflow-wrap:anywhere;
-    }
-    .pro-row .muted{
-      color:var(--muted);
-      font-size:13px;
-      overflow-wrap:anywhere;
-    }
-    .pro-delete-btn{
-      border:none;
-      cursor:pointer;
-      border-radius:10px;
-      padding:8px 10px;
-      background:#3a1a1a;
-      color:#ffd7d7;
-      border:1px solid #7b3434;
-      font-size:12px;
-      font-weight:800;
-      white-space:nowrap;
-    }
-
     @media (max-width: 900px){
       .app{grid-template-columns:1fr}
       .sidebar{
@@ -1237,12 +1067,10 @@
             <div class="top-actions">
               <span id="userPill" class="pill"></span>
               <span id="plusPill" class="pill hidden"></span>
-              <span id="proPill" class="pill hidden"></span>
               <span id="threadStatusPill" class="pill hidden"></span>
               <button id="voiceToggleBtn" class="voice-toggle-btn hidden" type="button">Ses: Açık</button>
               <span id="livePill" class="pill hidden"></span>
               <button id="plusBtn" class="live-btn">GloGeGo Plus</button>
-              <button id="proBtn" class="live-btn pro-btn">GloGeGo PRO</button>
               <button id="liveBtn" class="live-btn hidden">Live</button>
               <button id="liveAcceptBtn" class="live-btn hidden">Kabul</button>
               <button id="liveEndBtn" class="live-btn hidden">Bitir</button>
@@ -1320,57 +1148,6 @@
 
                 <div class="plus-admin-subtitle">Oluşturulan kodlar</div>
                 <div id="plusCodeAdminList" class="plus-admin-list"></div>
-              </div>
-
-              <div id="proCard" class="pro-card hidden">
-                <div class="pro-head">
-                  <div>
-                    <div class="pro-title">GloGeGo PRO</div>
-                    <div id="proStatusText" class="pro-status">PRO durumunu burada görürsün.</div>
-                  </div>
-                  <button id="proCloseBtn" class="plus-close" type="button">Kapat</button>
-                </div>
-
-                <div class="pro-grid">
-                  <div class="pro-box">
-                    <div class="pro-box-title">PRO Kodunu Girin:</div>
-                    <input id="proCodeInput" class="plus-input" type="password" placeholder="PRO kodu" autocomplete="one-time-code" />
-                    <button id="proActivateBtn" class="btn pro-btn" type="button">PRO Aktifleştir</button>
-                    <div id="proMsg" class="msg"></div>
-                    <div class="plus-note" style="color:var(--muted);font-size:13px;line-height:1.45;">Kod girince PRO açılır.</div>
-                  </div>
-
-                  <div class="pro-box">
-                    <div class="pro-box-title">PRO özellikleri</div>
-                    <div class="pro-feature">En üst düzey Pro model</div>
-                    <div class="pro-feature">GloGex’e maksimum erişim</div>
-                    <div class="pro-feature">Maksimum derin araştırma</div>
-                    <div class="pro-feature">Sınırsız ve daha hızlı görsel oluşturma</div>
-                    <div class="pro-feature">Maksimum bellek ve bağlam</div>
-                    <div class="pro-feature">Çok oyunculu oyunlarda beraber oyun oynama</div>
-                  </div>
-                </div>
-
-                <div id="adminProSection" class="pro-admin hidden">
-                  <div class="pro-admin-title">Admin PRO Takibi</div>
-                  <div class="pro-admin-note">Kimde PRO var ve ne kadar süre kaldığı burada görünür.</div>
-
-                  <div class="pro-admin-create">
-                    <div class="plus-admin-subtitle">Kod ekleme</div>
-                    <div class="pro-admin-create-grid">
-                      <input id="proCreateCodeInput" class="plus-input" type="text" placeholder="Yeni PRO kodu" autocomplete="off" />
-                      <input id="proCreateDaysInput" class="plus-input" type="number" min="1" step="1" value="1" placeholder="Gün sayısı" />
-                      <button id="proCreateBtn" class="btn pro-btn" type="button">Kod Oluştur</button>
-                    </div>
-                    <div id="proCreateMsg" class="msg"></div>
-                  </div>
-
-                  <div class="plus-admin-subtitle">Aktif kullanıcılar</div>
-                  <div id="proAdminList" class="pro-admin-list"></div>
-
-                  <div class="plus-admin-subtitle">Oluşturulan kodlar</div>
-                  <div id="proCodeAdminList" class="pro-admin-list"></div>
-                </div>
               </div>
             </div>
           </section>
@@ -1490,7 +1267,6 @@
     const statusLine = document.getElementById("statusLine");
     const plusBtn = document.getElementById("plusBtn");
     const plusPanel = document.getElementById("plusPanel");
-    const plusGrid = plusPanel?.querySelector(".plus-grid");
     const plusCloseBtn = document.getElementById("plusCloseBtn");
     const plusCodeInput = document.getElementById("plusCodeInput");
     const plusActivateBtn = document.getElementById("plusActivateBtn");
@@ -1503,23 +1279,7 @@
     const plusCreateMsg = document.getElementById("plusCreateMsg");
     const plusAdminList = document.getElementById("plusAdminList");
     const plusCodeAdminList = document.getElementById("plusCodeAdminList");
-
-    const proBtn = document.getElementById("proBtn");
-    const proCard = document.getElementById("proCard");
-    const proCloseBtn = document.getElementById("proCloseBtn");
-    const proCodeInput = document.getElementById("proCodeInput");
-    const proActivateBtn = document.getElementById("proActivateBtn");
-    const proMsg = document.getElementById("proMsg");
-    const proStatusText = document.getElementById("proStatusText");
-    const adminProSection = document.getElementById("adminProSection");
-    const proCreateCodeInput = document.getElementById("proCreateCodeInput");
-    const proCreateDaysInput = document.getElementById("proCreateDaysInput");
-    const proCreateBtn = document.getElementById("proCreateBtn");
-    const proCreateMsg = document.getElementById("proCreateMsg");
-    const proAdminList = document.getElementById("proAdminList");
-    const proCodeAdminList = document.getElementById("proCodeAdminList");
     const plusPill = document.getElementById("plusPill");
-    const proPill = document.getElementById("proPill");
 
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -1549,11 +1309,8 @@
     const sessionKey = "glogego_session";
     const statusDocRef = doc(db, "settings", "chatStatus");
     const PLUS_SECRET_CODE = "9119";
-    const PRO_SECRET_CODE = "2026";
     const plusCollectionRef = collection(db, "plusMembers");
     const plusCodeCollectionRef = collection(db, "plusCodes");
-    const proCollectionRef = collection(db, "proMembers");
-    const proCodeCollectionRef = collection(db, "proCodes");
 
     let currentUser = null;
     let isAdmin = false;
@@ -1568,9 +1325,6 @@
     let unsubscribePlusSelf = null;
     let unsubscribePlusAdmin = null;
     let unsubscribePlusCodesAdmin = null;
-    let unsubscribeProSelf = null;
-    let unsubscribeProAdmin = null;
-    let unsubscribeProCodesAdmin = null;
     let unsubscribeCallerCandidates = null;
     let unsubscribeCalleeCandidates = null;
 
@@ -1582,10 +1336,7 @@
     let presenceMap = new Map();
     let plusMap = new Map();
     let plusCodeMap = new Map();
-    let proMap = new Map();
-    let proCodeMap = new Map();
     let currentPlus = null;
-    let currentPro = null;
     let plusPanelOpen = false;
     let livePanelBaseHidden = true;
 
@@ -1688,10 +1439,6 @@
       return safeDocId(username);
     }
 
-    function proDocId(username = "") {
-      return safeDocId(username);
-    }
-
     function getPlusRemainingMs(data) {
       const raw = data?.plusUntil;
       const d = raw?.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
@@ -1729,31 +1476,7 @@
       plusCreateMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
     }
 
-    function clearProMsg() {
-      if (proMsg) proMsg.textContent = "";
-    }
-
-    function setProMsg(text, ok = false) {
-      if (!proMsg) return;
-      proMsg.textContent = text || "";
-      proMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
-    }
-
-    function clearProCreateMsg() {
-      if (proCreateMsg) proCreateMsg.textContent = "";
-    }
-
-    function setProCreateMsg(text, ok = false) {
-      if (!proCreateMsg) return;
-      proCreateMsg.textContent = text || "";
-      proCreateMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
-    }
-
     function normalizePlusCode(value = "") {
-      return String(value || "").trim();
-    }
-
-    function normalizeProCode(value = "") {
       return String(value || "").trim();
     }
 
@@ -1796,9 +1519,7 @@
       statusToggleBtn.classList.toggle("hidden", !isAdmin);
       updateVoiceToggleUI();
       updatePlusPill();
-      updateProPill();
       updatePlusStatusText();
-      updateProStatusText();
 
       if (isAdmin) {
         statusToggleBtn.classList.remove("open", "closed");
@@ -2474,7 +2195,6 @@
       sidebar.classList.toggle("hidden", !isAdmin);
       userPill.textContent = isAdmin ? "Admin" : currentUser;
       adminPlusSection.classList.toggle("hidden", !isAdmin);
-      adminProSection.classList.toggle("hidden", !isAdmin);
 
       if (!isAdmin) {
         selectedThread = currentUser;
@@ -2485,12 +2205,9 @@
       listenMessages();
       listenPresence();
       listenPlusStatus();
-      listenProStatus();
       if (isAdmin) listenThreads();
       if (isAdmin) listenPlusAdmin();
       if (isAdmin) listenPlusCodesAdmin();
-      if (isAdmin) listenProAdmin();
-      if (isAdmin) listenProCodesAdmin();
 
       startPresenceTracking();
       cleanupExpiredMessages();
@@ -2537,9 +2254,6 @@
       if (unsubscribePlusSelf) unsubscribePlusSelf();
       if (unsubscribePlusAdmin) unsubscribePlusAdmin();
       if (unsubscribePlusCodesAdmin) unsubscribePlusCodesAdmin();
-      if (unsubscribeProSelf) unsubscribeProSelf();
-      if (unsubscribeProAdmin) unsubscribeProAdmin();
-      if (unsubscribeProCodesAdmin) unsubscribeProCodesAdmin();
 
       currentUser = null;
       isAdmin = false;
@@ -2581,49 +2295,19 @@
       }
     }
 
-    function setSubscriptionView(view) {
-      const showPlus = view === "plus";
-      const showPro = view === "pro";
-      if (plusGrid) plusGrid.classList.toggle("hidden", !showPlus);
-      if (adminPlusSection) adminPlusSection.classList.toggle("hidden", !(showPlus && isAdmin));
-      if (proCard) proCard.classList.toggle("hidden", !showPro);
-    }
-
     function updatePlusPill() {
       if (!plusPill) return;
-      if (currentUser && !isAdmin) {
-        const plusMs = getPlusRemainingMs(currentPlus);
-        const proMs = getProRemainingMs(currentPro);
-
-        if (plusMs > 0) {
-          plusPill.textContent = `Plus ${formatDaysLeft(plusMs)}`;
-          plusPill.className = "pill plus-active-tag";
-          plusPill.classList.remove("hidden");
-        } else if (proMs > 0) {
-          plusPill.textContent = `PRO ${formatDaysLeft(proMs)}`;
-          plusPill.className = "pill pro-active-tag";
-          plusPill.classList.remove("hidden");
-        } else {
-          plusPill.textContent = "Plus Yok";
-          plusPill.className = "pill";
-          plusPill.classList.remove("hidden");
-        }
+      if (currentUser && !isAdmin && isPlusActive(currentPlus)) {
+        plusPill.textContent = "Plus Aktif";
+        plusPill.className = "pill plus-active-tag";
+        plusPill.classList.remove("hidden");
+      } else if (currentUser && !isAdmin) {
+        plusPill.textContent = "Plus Yok";
+        plusPill.className = "pill";
+        plusPill.classList.remove("hidden");
       } else {
         plusPill.classList.add("hidden");
         plusPill.textContent = "";
-      }
-    }
-
-    function updateProPill() {
-      if (!proPill) return;
-      if (currentUser && !isAdmin && isProActive(currentPro) && isPlusActive(currentPlus)) {
-        const proMs = getProRemainingMs(currentPro);
-        proPill.textContent = `PRO ${formatDaysLeft(proMs)}`;
-        proPill.className = "pill pro-active-tag";
-        proPill.classList.remove("hidden");
-      } else {
-        proPill.classList.add("hidden");
-        proPill.textContent = "";
       }
     }
 
@@ -2638,20 +2322,6 @@
         plusStatusText.textContent = `Plus aktif. Kalan süre: ${formatDaysLeft(ms)}.`;
       } else {
         plusStatusText.textContent = "Sadece kod girmen yeterli.";
-      }
-    }
-
-    function updateProStatusText() {
-      if (!proStatusText) return;
-      if (isAdmin) {
-        proStatusText.textContent = "Admin olarak PRO kodları oluşturabilir ve PRO listesini görebilirsin.";
-        return;
-      }
-      const ms = getProRemainingMs(currentPro);
-      if (ms > 0) {
-        proStatusText.textContent = `PRO aktif. Kalan süre: ${formatDaysLeft(ms)}.`;
-      } else {
-        proStatusText.textContent = "PRO kodunu girerek açabilirsin.";
       }
     }
 
@@ -2670,24 +2340,6 @@
         }
       } catch (err) {
         console.warn("Plus kodu hazırlanamadı:", err);
-      }
-    }
-
-    async function ensureDefaultProCode() {
-      try {
-        const ref = doc(db, "proCodes", PRO_SECRET_CODE);
-        const snap = await getDoc(ref);
-        if (!snap.exists()) {
-          await setDoc(ref, {
-            code: PRO_SECRET_CODE,
-            daysGranted: DEFAULT_PLUS_DAYS,
-            used: false,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          }, { merge: true });
-        }
-      } catch (err) {
-        console.warn("PRO kodu hazırlanamadı:", err);
       }
     }
 
@@ -2714,34 +2366,6 @@
           `;
         });
       plusAdminList.innerHTML = rows.length ? rows.join("") : '<div class="empty" style="padding:18px;">Henüz Plus kaydı yok.</div>';
-    }
-
-    function renderProAdminList() {
-      if (!proAdminList || !isAdmin) return;
-      const rows = Array.from(proMap.values())
-        .sort((a, b) => getProRemainingMs(b) - getProRemainingMs(a))
-        .map((data) => {
-          const ms = getProRemainingMs(data);
-          const name = data.username || data.usernameKey || "Bilinmeyen";
-          const active = ms > 0;
-          const until = data.proUntil?.toDate ? data.proUntil.toDate().toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : (data.proUntil ? new Date(data.proUntil).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : "");
-          const code = data.lastCode || "";
-          return `
-            <div class="pro-row">
-              <div>
-                <strong>${escapeHtml(name)}</strong>
-                <div class="muted">${active ? `${formatDaysLeft(ms)} kaldı` : "Süresi bitti"}</div>
-                <div class="muted">${code ? `Son kod: ${escapeHtml(code)}` : "Son kod: -"}</div>
-              </div>
-              <div style="text-align:right;display:grid;gap:8px;justify-items:end;">
-                <div><strong class="${active ? "pro-active-tag" : ""}" style="padding:6px 10px;border-radius:999px;">${active ? "Aktif" : "Pasif"}</strong></div>
-                <div class="muted">${until ? `Bitiş: ${escapeHtml(until)}` : "Bitiş: -"}</div>
-              </div>
-            </div>
-          `;
-        });
-
-      proAdminList.innerHTML = rows.length ? rows.join("") : '<div class="empty" style="padding:18px;">Henüz PRO kullanıcı yok.</div>';
     }
 
     function renderPlusCodeAdminList() {
@@ -2788,60 +2412,6 @@
       }, () => {
         plusCodeMap = new Map();
         renderPlusCodeAdminList();
-      });
-    }
-
-    function listenProStatus() {
-      if (unsubscribeProSelf) unsubscribeProSelf();
-      if (!currentUser || isAdmin) {
-        currentPro = null;
-        updateProStatusText();
-        updateProPill();
-        return;
-      }
-
-      unsubscribeProSelf = onSnapshot(doc(db, "proMembers", proDocId(currentUser)), (snap) => {
-        currentPro = snap.exists() ? { id: snap.id, ...snap.data() } : null;
-        updateProStatusText();
-        updateProPill();
-      }, () => {
-        currentPro = null;
-        updateProStatusText();
-        updateProPill();
-      });
-    }
-
-    function listenProAdmin() {
-      if (unsubscribeProAdmin) unsubscribeProAdmin();
-      if (!isAdmin) return;
-
-      unsubscribeProAdmin = onSnapshot(proCollectionRef, (snap) => {
-        const map = new Map();
-        snap.forEach((d) => map.set(d.id, { id: d.id, ...d.data() }));
-        proMap = map;
-        renderProAdminList();
-      }, () => {
-        proMap = new Map();
-        renderProAdminList();
-      });
-    }
-
-    function listenProCodesAdmin() {
-      if (unsubscribeProCodesAdmin) unsubscribeProCodesAdmin();
-      if (!isAdmin) {
-        proCodeMap = new Map();
-        renderProCodeAdminList();
-        return;
-      }
-
-      unsubscribeProCodesAdmin = onSnapshot(proCodeCollectionRef, (snap) => {
-        const map = new Map();
-        snap.forEach((d) => map.set(d.id, { id: d.id, ...d.data() }));
-        proCodeMap = map;
-        renderProCodeAdminList();
-      }, () => {
-        proCodeMap = new Map();
-        renderProCodeAdminList();
       });
     }
 
@@ -2894,58 +2464,6 @@
         plusCreateBtn.disabled = false;
         plusCreateBtn.textContent = "Kod Oluştur";
         renderPlusCodeAdminList();
-      }
-    }
-
-    async function createProCode() {
-      if (!isAdmin) return;
-
-      const code = normalizeProCode(proCreateCodeInput?.value);
-      const daysRaw = String(proCreateDaysInput?.value || "").trim();
-      const days = Number.parseInt(daysRaw, 10);
-
-      if (!code) {
-        setProCreateMsg("Kod yaz.");
-        return;
-      }
-      if (!Number.isFinite(days) || days < 1) {
-        setProCreateMsg("Gün sayısı en az 1 olmalı.");
-        return;
-      }
-
-      proCreateBtn.disabled = true;
-      proCreateBtn.textContent = "Oluşturuluyor...";
-
-      try {
-        await runTransaction(db, async (tx) => {
-          const codeRef = doc(db, "proCodes", code);
-          const snap = await tx.get(codeRef);
-          if (snap.exists()) {
-            throw new Error("Bu kod zaten var.");
-          }
-
-          tx.set(codeRef, {
-            code,
-            daysGranted: days,
-            used: false,
-            createdBy: currentUser,
-            createdAt: serverTimestamp(),
-            createdAtClient: Date.now(),
-            updatedAt: serverTimestamp(),
-            updatedAtClient: Date.now()
-          });
-        });
-
-        setProCreateMsg(`Kod oluşturuldu: ${code}`, true);
-        if (proCreateCodeInput) proCreateCodeInput.value = "";
-        if (proCreateDaysInput) proCreateDaysInput.value = "1";
-      } catch (err) {
-        console.error(err);
-        setProCreateMsg(err?.message || "Kod oluşturulamadı.");
-      } finally {
-        proCreateBtn.disabled = false;
-        proCreateBtn.textContent = "Kod Oluştur";
-        renderProCodeAdminList();
       }
     }
 
@@ -3024,99 +2542,8 @@
       }
     }
 
-
-    async function activatePro() {
-      if (!currentUser) return;
-      const code = normalizeProCode(proCodeInput.value || "");
-
-      if (!code) {
-        setProMsg("Kod gir.");
-        return;
-      }
-
-      proActivateBtn.disabled = true;
-      proActivateBtn.textContent = "Kontrol ediliyor...";
-
-      try {
-        const result = await runTransaction(db, async (tx) => {
-          const codeRef = doc(db, "proCodes", code);
-          const codeSnap = await tx.get(codeRef);
-          const codeData = codeSnap.exists() ? codeSnap.data() : null;
-
-          if (!codeData) {
-            throw new Error("Kod bulunamadı.");
-          }
-          if (codeData?.used) {
-            throw new Error("Bu kod daha önce kullanılmış.");
-          }
-
-          const daysFromCode = Number.parseInt(String(codeData?.daysGranted ?? DEFAULT_PLUS_DAYS), 10);
-          const days = Number.isFinite(daysFromCode) && daysFromCode > 0 ? daysFromCode : DEFAULT_PLUS_DAYS;
-
-          const memberRef = doc(db, "proMembers", proDocId(currentUser));
-          const memberSnap = await tx.get(memberRef);
-          const currentUntil = memberSnap.exists()
-            ? (memberSnap.data()?.proUntil?.toDate ? memberSnap.data().proUntil.toDate() : (memberSnap.data()?.proUntil ? new Date(memberSnap.data().proUntil) : null))
-            : (currentPro?.proUntil?.toDate ? currentPro.proUntil.toDate() : (currentPro?.proUntil ? new Date(currentPro.proUntil) : null));
-          const base = currentUntil && !isNaN(currentUntil.getTime()) ? Math.max(Date.now(), currentUntil.getTime()) : Date.now();
-          const proUntil = new Date(base + days * DAY_MS);
-
-          tx.set(codeRef, {
-            ...codeData,
-            used: true,
-            usedBy: currentUser,
-            usedAt: serverTimestamp(),
-            usedAtClient: Date.now(),
-            updatedAt: serverTimestamp(),
-            updatedAtClient: Date.now()
-          }, { merge: true });
-
-          tx.set(memberRef, {
-            username: currentUser,
-            usernameKey: normalizeKey(currentUser),
-            proUntil: Timestamp.fromDate(proUntil),
-            isActive: true,
-            activatedAt: serverTimestamp(),
-            activatedAtClient: Date.now(),
-            activatedBy: currentUser,
-            updatedAt: serverTimestamp(),
-            updatedAtClient: Date.now(),
-            daysGranted: days,
-            lastCode: code
-          }, { merge: true });
-
-          return { days, proUntil };
-        });
-
-        setProMsg(`PRO aktif edildi. (${result.days} gün)`, true);
-        if (proCodeInput) proCodeInput.value = "";
-      } catch (err) {
-        console.error(err);
-        setProMsg(err?.message || "PRO etkinleştirilemedi.");
-      } finally {
-        proActivateBtn.disabled = false;
-        proActivateBtn.textContent = "PRO Aktifleştir";
-        updateProStatusText();
-      }
-    }
-
-    async function deleteProCode(code) {
-      if (!isAdmin) return;
-      const safe = normalizeProCode(code);
-      if (!safe) return;
-      if (!confirm(`"${safe}" kodu silinsin mi?`)) return;
-
-      try {
-        await deleteDoc(doc(db, "proCodes", safe));
-      } catch (err) {
-        console.error(err);
-        alert(err?.message || "Kod silinemedi.");
-      }
-    }
-
     async function openPlusPanel() {
       setPlusPanelOpen(true);
-      setSubscriptionView("plus");
       clearPlusMsg();
       clearPlusCreateMsg();
       updatePlusStatusText();
@@ -3129,26 +2556,7 @@
       }
     }
 
-    async function openProPanel() {
-      setPlusPanelOpen(true);
-      setSubscriptionView("pro");
-      clearProMsg();
-      clearProCreateMsg();
-      updateProStatusText();
-      plusPanel.scrollTop = 0;
-      const card = plusPanel.querySelector('.plus-card');
-      if (card) card.scrollTop = 0;
-      if (proCard) {
-        proCard.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-      if (isAdmin) {
-        renderProAdminList();
-        renderProCodeAdminList();
-      }
-    }
-
     function closePlusPanel() {
-      setSubscriptionView("plus");
       setPlusPanelOpen(false);
     }
 
@@ -3909,11 +3317,8 @@
     logoutBtn.addEventListener("click", logout);
 
     plusBtn.addEventListener("click", openPlusPanel);
-    proBtn.addEventListener("click", openProPanel);
     plusCloseBtn.addEventListener("click", closePlusPanel);
-    proCloseBtn.addEventListener("click", closePlusPanel);
     plusActivateBtn.addEventListener("click", activatePlus);
-    proActivateBtn.addEventListener("click", activatePro);
     if (plusCreateBtn) plusCreateBtn.addEventListener("click", createPlusCode);
     if (plusCreateCodeInput) {
       plusCreateCodeInput.addEventListener("keydown", (e) => {
@@ -3923,17 +3328,6 @@
     if (plusCreateDaysInput) {
       plusCreateDaysInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") createPlusCode();
-      });
-    }
-    if (proCreateBtn) proCreateBtn.addEventListener("click", createProCode);
-    if (proCreateCodeInput) {
-      proCreateCodeInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") createProCode();
-      });
-    }
-    if (proCreateDaysInput) {
-      proCreateDaysInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") createProCode();
       });
     }
 
@@ -4020,7 +3414,6 @@
 
     loadVoiceSetting();
     void ensureDefaultPlusCode();
-    void ensureDefaultProCode();
 
     if (loadSession()) {
       showApp();
