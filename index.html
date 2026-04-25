@@ -288,6 +288,17 @@
       border-color:#7b3434;
       color:#ffd7d7;
     }
+    
+    .glow-btn {
+      background: linear-gradient(135deg, #1e3a8a, #4c1d95) !important;
+      border-color: #6d28d9 !important;
+      box-shadow: 0 0 12px rgba(109, 40, 217, 0.5);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+    .glow-btn:hover {
+      box-shadow: 0 0 18px rgba(109, 40, 217, 0.8);
+      transform: translateY(-1px);
+    }
 
     .voice-toggle-btn{
       border:none;
@@ -405,6 +416,24 @@
     .bubble.me{
       background:var(--bubble2);
       border-color:rgba(110,168,254,.22);
+    }
+    
+    /* Plus Bubble Styling */
+    .bubble.plus-bubble {
+      background: linear-gradient(135deg, #1e253c, #2b1d42) !important;
+      border-color: rgba(139, 92, 246, 0.4) !important;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.1);
+    }
+    .bubble.plus-bubble.me {
+      background: linear-gradient(135deg, #2b1d42, #1e253c) !important;
+    }
+    .bubble.plus-bubble .meta span:first-child::after {
+      content: ' ✦ Plus';
+      color: #b191ff;
+      font-weight: 800;
+      font-size: 11px;
+      margin-left: 6px;
+      text-shadow: 0 0 8px rgba(177, 145, 255, 0.4);
     }
 
     .meta{
@@ -841,6 +870,20 @@
       border-color:#2b6a3e;
       color:#d7ffe0;
     }
+    
+    .del-code-btn {
+      background: #3a1a1a;
+      border: 1px solid #7b3434;
+      color: #ffd7d7;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.2s;
+    }
+    .del-code-btn:hover { background: #5a2020; }
 
     @media (max-width: 900px){
       .app{grid-template-columns:1fr}
@@ -1071,7 +1114,7 @@
               <button id="voiceToggleBtn" class="voice-toggle-btn hidden" type="button">Ses: Açık</button>
               <span id="livePill" class="pill hidden"></span>
               <button id="plusBtn" class="live-btn">GloGeGo Plus</button>
-              <button id="liveBtn" class="live-btn hidden">Live</button>
+              <button id="liveBtn" class="live-btn hidden glow-btn">GloGeGo Live</button>
               <button id="liveAcceptBtn" class="live-btn hidden">Kabul</button>
               <button id="liveEndBtn" class="live-btn hidden">Bitir</button>
               <button id="statusToggleBtn" class="status-btn hidden">Durum</button>
@@ -1126,6 +1169,7 @@
                   <div class="plus-feature">Gelişmiş zeka</div>
                   <div class="plus-feature">Gelişmiş Kodlama becerileri</div>
                   <div class="plus-feature">Gelişmiş fotoğraf oluşturma</div>
+                  <div class="plus-feature">Çok oyunculu Oyunlarda beraber oynama</div>
                 </div>
               </div>
 
@@ -1251,9 +1295,6 @@
     const messagesEl = document.getElementById("messages");
     const userPill = document.getElementById("userPill");
     const threadStatusPill = document.getElementById("threadStatusPill");
-    const modePill = null;
-    const menuBtn = null;
-    const modeMenu = null;
     const voiceToggleBtn = document.getElementById("voiceToggleBtn");
     const livePill = document.getElementById("livePill");
     const livePanel = document.getElementById("livePanel");
@@ -1355,10 +1396,15 @@
     let voiceWarmupTimer = null;
     let voiceEnabled = true;
     const voiceSettingKey = "glogego_voice_enabled";
-    let composeMode = "normal"; // normal | search | thinking
-    let pendingModeRequest = null;
-    let modeMenuOpen = false;
     let videoObjectUrls = new Map();
+    
+    // YENİ: URL'leri Linklere dönüştürme fonksiyonu
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, function(url) {
+        return `<a href="${url}" target="_blank" style="color:var(--accent);text-decoration:underline;word-break:break-all;">${url}</a>`;
+      });
+    }
 
     function escapeHtml(str = "") {
       return String(str)
@@ -1505,6 +1551,29 @@
       livePanel.classList.add("hidden");
       liveInfo.textContent = "";
       liveControlHint.textContent = "";
+      
+      if (selectedThread && chatOpen) {
+          if (!isAdmin) {
+              if (liveState === "idle") {
+                  liveBtn.classList.remove("hidden");
+              } else if (liveState === "requesting") {
+                  liveBtn.classList.remove("hidden");
+                  liveBtn.textContent = "Bağlanıyor...";
+                  livePanel.classList.remove("hidden");
+              } else if (liveState === "active") {
+                  liveEndBtn.classList.remove("hidden");
+                  livePanel.classList.remove("hidden");
+              }
+          } else {
+              if (liveState === "requesting") {
+                  liveAcceptBtn.classList.remove("hidden");
+                  liveEndBtn.classList.remove("hidden");
+              } else if (liveState === "active") {
+                  liveEndBtn.classList.remove("hidden");
+                  livePanel.classList.remove("hidden");
+              }
+          }
+      }
     }
 
     function updateVoiceToggleUI() {
@@ -1575,7 +1644,8 @@
       const data = getPresenceData(selectedThread);
       const online = isUserOnline(data);
       threadStatusPill.textContent = online ? "Aktif" : formatRelativeSeen(data);
-      threadStatusPill.className = `pill ${online ? "online" : "offline"}`;
+      threadStatusPill.className = `pill ${online ? "offline" : "offline"}`;
+      if (online) threadStatusPill.classList.add("online");
       threadStatusPill.classList.remove("hidden");
     }
 
@@ -1706,6 +1776,7 @@
 
     function renderMessage(docData) {
       const mine = docData.sender === currentUser;
+      const isPlusUser = !!docData.isPlus; // Şık baloncuklar için plus kontrolü
       const kind = docData.kind || (docData.videoStatus ? "video" : ((docData.imageDataUrl || docData.imageName) ? "image" : "text"));
       const textValue = docData.text || "";
       const imageDataUrl = docData.imageDataUrl || "";
@@ -1714,29 +1785,11 @@
       const safeUrl = escapeHtml(imageDataUrl);
       const messageId = escapeHtml(docData.id || "");
       const created = formatTime(docData.createdAt);
-      const modeText = docData.mode === "search" ? "Arıyor..." : docData.mode === "thinking" ? "Düşünüyor..." : "";
-      const cancelled = !!docData.cancelled;
-
-      if (kind === "mode_request") {
-        return `
-          <div class="bubble ${mine ? "me" : ""} request-bubble" data-message-id="${messageId}">
-            <div class="meta">
-              <span>${escapeHtml(docData.sender || "")}</span>
-              <span>${created}</span>
-            </div>
-            <div class="request-title">${escapeHtml(getModeLabel(docData.mode || "normal"))}</div>
-            <div class="text">${escapeHtml(textValue)}</div>
-            <div class="request-status ${cancelled ? "cancelled" : "pending"}">
-              ${cancelled ? "İptal edildi" : modeText || "Bekleniyor..."}
-            </div>
-          </div>
-        `;
-      }
 
       if (kind === "video") {
         const status = docData.videoStatus || "uploading";
         return `
-          <div class="bubble ${mine ? "me" : ""}" data-video-message-id="${messageId}" data-video-name="${escapeHtml(docData.videoName || "video.mp4")}" data-video-mime="${escapeHtml(docData.videoMime || "video/mp4")}" data-video-status="${escapeHtml(status)}">
+          <div class="bubble ${mine ? "me" : ""} ${isPlusUser ? "plus-bubble" : ""}" data-video-message-id="${messageId}" data-video-name="${escapeHtml(docData.videoName || "video.mp4")}" data-video-mime="${escapeHtml(docData.videoMime || "video/mp4")}" data-video-status="${escapeHtml(status)}">
             <div class="meta">
               <span>${escapeHtml(docData.sender || "")}</span>
               <span>${created}</span>
@@ -1755,14 +1808,17 @@
         `;
       }
 
+      // Linkify the escaped text for clickable links
+      const finalTextHtml = textValue ? linkify(escapeHtml(textValue)) : "";
+
       return `
-        <div class="bubble ${mine ? "me" : ""}" data-message-id="${messageId}">
+        <div class="bubble ${mine ? "me" : ""} ${isPlusUser ? "plus-bubble" : ""}" data-message-id="${messageId}">
           <div class="meta">
             <span>${escapeHtml(docData.sender || "")}</span>
             <span>${created}</span>
           </div>
 
-          ${textValue ? `<div class="text">${escapeHtml(textValue)}</div>` : ""}
+          ${textValue ? `<div class="text">${finalTextHtml}</div>` : ""}
 
           ${imageDataUrl ? `
             <div class="media-wrap">
@@ -1839,103 +1895,6 @@
 
     function stopSpeech() {
       try { speechSynthesis.cancel(); } catch {}
-    }
-
-    function getModeLabel(mode) {
-      if (mode === "search") return "Web'de arama";
-      if (mode === "thinking") return "Düşünme modu";
-      return "Normal";
-    }
-
-    function getModeStatus(mode) {
-      if (mode === "search") return "Arıyor...";
-      if (mode === "thinking") return "Düşünüyor...";
-      return "";
-    }
-
-    function closeModeMenu() {
-      if (modeMenu) modeMenu.classList.add("hidden");
-      modeMenuOpen = false;
-      if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
-    }
-
-    function toggleModeMenu(force) {
-      if (!modeMenu) return;
-      const next = typeof force === "boolean" ? force : modeMenu.classList.contains("hidden");
-      modeMenu.classList.toggle("hidden", !next);
-      modeMenuOpen = next;
-      if (menuBtn) menuBtn.setAttribute("aria-expanded", next ? "true" : "false");
-    }
-
-    function setComposeMode(nextMode) {
-      composeMode = nextMode;
-      if (modePill) {
-        if (composeMode === "normal") {
-          modePill.classList.add("hidden");
-          modePill.textContent = "";
-        } else {
-          modePill.textContent = getModeLabel(composeMode);
-          modePill.classList.remove("hidden");
-        }
-      }
-      closeModeMenu();
-      updateComposerState();
-    }
-
-    function clearPendingModeRequest() {
-      pendingModeRequest = null;
-      if (modePill && composeMode !== "normal") {
-        modePill.textContent = getModeLabel(composeMode);
-        modePill.classList.remove("hidden");
-      }
-      updateComposerState();
-    }
-
-    function setPendingModeRequest(data) {
-      pendingModeRequest = data || null;
-      if (modePill) {
-        if (pendingModeRequest) {
-          modePill.textContent = getModeStatus(pendingModeRequest.mode) || getModeLabel(pendingModeRequest.mode);
-          modePill.classList.remove("hidden");
-        } else if (composeMode === "normal") {
-          modePill.classList.add("hidden");
-          modePill.textContent = "";
-        }
-      }
-      updateComposerState();
-    }
-
-    function normalizeModeFromMessage(item) {
-      if (!item) return null;
-      if (item.kind === "mode_request") return item.mode || null;
-      return null;
-    }
-
-    function syncModeRequestState(items = []) {
-      if (isAdmin) return;
-
-      const requests = items
-        .filter((item) => item.sender === currentUser && item.kind === "mode_request" && !item.cancelled)
-        .sort((a, b) => (a.createdAtClient || 0) - (b.createdAtClient || 0));
-
-      const latest = requests[requests.length - 1];
-      if (!latest) {
-        if (pendingModeRequest) clearPendingModeRequest();
-        return;
-      }
-
-      const replied = items.some((item) =>
-        item.sender === ADMIN_USER &&
-        (item.createdAtClient || 0) > (latest.createdAtClient || 0) &&
-        item.kind !== "mode_request"
-      );
-
-      if (replied) {
-        clearPendingModeRequest();
-        return;
-      }
-
-      setPendingModeRequest({ id: latest.id, mode: latest.mode, text: latest.text || "" });
     }
 
     function uint8ToBase64(uint8) {
@@ -2045,77 +2004,6 @@
       videoObjectUrls = new Map();
     }
 
-    async function sendModeRequest(mode, text) {
-      const threadId = isAdmin ? selectedThread : currentUser;
-      if (!threadId) {
-        alert("Önce bir sohbet seç.");
-        return;
-      }
-      if (!isAdmin && !chatOpen) {
-        alert("GloGeGo müsait değil.");
-        return;
-      }
-      const normalizedText = String(text || "").trim();
-      if (!normalizedText) {
-        alert("Bir şey yaz.");
-        return;
-      }
-
-      sendBtn.disabled = true;
-      sendBtn.textContent = "Gönderiliyor...";
-
-      try {
-        const ref = await addDoc(collection(db, "messages"), {
-          threadId,
-          sender: currentUser,
-          recipient: isAdmin ? threadId : ADMIN_USER,
-          kind: "mode_request",
-          mode,
-          text: normalizedText,
-          cancelled: false,
-          createdAt: serverTimestamp(),
-          createdAtClient: Date.now(),
-          expiresAt: Timestamp.fromDate(new Date(Date.now() + 6 * 60 * 60 * 1000))
-        });
-        pendingModeRequest = { id: ref.id, mode, text: normalizedText };
-        modePill.textContent = getModeStatus(mode) || getModeLabel(mode);
-        modePill.classList.remove("hidden");
-        messageInput.value = "";
-        charCount.textContent = "0";
-      } catch (err) {
-        console.error(err);
-        alert("İstek gönderilemedi.");
-      } finally {
-        updateComposerState();
-      }
-    }
-
-    async function cancelPendingModeRequest() {
-      if (!pendingModeRequest?.id) {
-        alert("İptal edilecek bekleyen istek yok.");
-        return;
-      }
-      try {
-        await updateDoc(doc(db, "messages", pendingModeRequest.id), {
-          cancelled: true,
-          cancelledAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        pendingModeRequest = null;
-        if (composeMode === "normal") {
-          modePill.classList.add("hidden");
-          modePill.textContent = "";
-        } else {
-          modePill.textContent = getModeLabel(composeMode);
-          modePill.classList.remove("hidden");
-        }
-        updateComposerState();
-      } catch (err) {
-        console.error(err);
-        alert("İstek iptal edilemedi.");
-      }
-    }
-
     async function sendVideo(file) {
       const threadId = isAdmin ? selectedThread : currentUser;
       if (!threadId) {
@@ -2154,6 +2042,7 @@
           videoSize: file.size,
           videoChunkCount: totalChunks,
           videoStatus: "uploading",
+          isPlus: isAdmin ? true : isPlusActive(currentPlus),
           createdAt: serverTimestamp(),
           createdAtClient: Date.now(),
           expiresAt: Timestamp.fromDate(new Date(Date.now() + 6 * 60 * 60 * 1000))
@@ -2198,7 +2087,6 @@
 
       if (!isAdmin) {
         selectedThread = currentUser;
-        setComposeMode("normal");
       }
 
       listenStatus();
@@ -2263,11 +2151,6 @@
       stopPresenceTracking();
       stopSpeech();
       cleanupVideoUrls();
-      closeModeMenu();
-      composeMode = "normal";
-      pendingModeRequest = null;
-      modePill.classList.add("hidden");
-      modePill.textContent = "";
 
       messageInput.value = "";
       charCount.textContent = "0";
@@ -2388,12 +2271,27 @@
                 <div><strong>${used ? "Tek kullanımlık" : "Hazır"}</strong></div>
                 <div class="muted">${used ? `Kullanan: ${escapeHtml(data.usedBy || "Bilinmiyor")}` : "Bekliyor"}</div>
                 <div class="muted">${usedAt ? `Kullanım: ${escapeHtml(usedAt)}` : `Oluşum: ${escapeHtml(created || "Bilinmiyor")}`}</div>
+                <button class="del-code-btn" data-code="${escapeHtml(code)}">Sil</button>
               </div>
             </div>
           `;
         });
 
       plusCodeAdminList.innerHTML = rows.length ? rows.join("") : '<div class="empty" style="padding:18px;">Henüz kod yok.</div>';
+      
+      // Admin Code Silme Dinleyicileri
+      plusCodeAdminList.querySelectorAll('.del-code-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const codeToDelete = e.target.dataset.code;
+          if(confirm("Bu kodu silmek istediğine emin misin?")) {
+            try {
+              await deleteDoc(doc(db, "plusCodes", codeToDelete));
+            } catch(err) {
+              alert("Kod silinemedi.");
+            }
+          }
+        });
+      });
     }
 
     function listenPlusCodesAdmin() {
@@ -2704,7 +2602,7 @@
       await endLiveSession(true);
       liveSessionId = safeDocId(`live_${selectedThread}`);
       setLiveState("requesting");
-      updateLiveUI();
+      liveBtn.textContent = "Bağlanıyor...";
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -3001,6 +2899,7 @@
           imageType: "",
           imageWidth: 0,
           imageHeight: 0,
+          isPlus: isAdmin ? true : isPlusActive(currentPlus), // Plus yetkisi mesajda tutulur
           createdAt: serverTimestamp(),
           createdAtClient: Date.now(),
           expiresAt: Timestamp.fromDate(new Date(Date.now() + DAY_MS))
@@ -3058,6 +2957,7 @@
           imageType: compressed.mime,
           imageWidth: compressed.width,
           imageHeight: compressed.height,
+          isPlus: isAdmin ? true : isPlusActive(currentPlus),
           createdAt: serverTimestamp(),
           createdAtClient: Date.now(),
           expiresAt: Timestamp.fromDate(new Date(Date.now() + IMAGE_EXPIRE_MS))
@@ -3110,7 +3010,6 @@
 
         if (!items.length) {
           renderEmpty("Henüz mesaj yok.");
-          clearPendingModeRequest();
           return;
         }
 
@@ -3127,10 +3026,6 @@
               }
             }
           }
-        }
-
-        if (!isAdmin) {
-          syncModeRequestState(items);
         }
 
         messagesEl.innerHTML = items.map(renderMessage).join("");
@@ -3421,7 +3316,6 @@
       showLogin();
     }
 
-    // Make sure UI reflects selected role immediately.
     updateComposerState();
   </script>
 </body>
