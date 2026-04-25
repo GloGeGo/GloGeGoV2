@@ -1134,7 +1134,7 @@
             <div class="live-grid">
               <div class="video-card">
                 <div class="video-label">Kullanıcının kamerası</div>
-                <video id="remoteVideo" autoplay playsinline muted></video>
+                <video id="callVideo" autoplay playsinline muted></video>
               </div>
             </div>
           </section>
@@ -1332,8 +1332,7 @@
     const videoInput = document.getElementById("videoInput");
     const charCount = document.getElementById("charCount");
 
-    const remoteVideo = document.getElementById("remoteVideo");
-    const localVideo = document.getElementById("localVideo");
+    const callVideo = document.getElementById("callVideo");
 
     const imageModal = document.getElementById("imageModal");
     const imageModalBackdrop = document.getElementById("imageModalBackdrop");
@@ -1547,10 +1546,15 @@
       videoEl.srcObject = stream || null;
       try {
         if (stream) {
+          videoEl.autoplay = true;
+          videoEl.playsInline = true;
           videoEl.muted = true;
+          videoEl.controls = false;
           await videoEl.play();
         }
-      } catch {}
+      } catch (err) {
+        console.warn("Video oynatılamadı:", err);
+      }
     }
 
     function updateLiveUI() {
@@ -1886,30 +1890,31 @@
       }, 30000);
     }
 
-    function splitSpeechText(text, maxLen = 180) {
+    function splitSpeechText(text, maxLen = 160) {
       const value = String(text || "").trim();
       if (!value) return [];
-      const parts = [];
-      let current = "";
-      const tokens = value.split(/(\s+)/);
-      for (const token of tokens) {
-        if (!token) continue;
-        if ((current + token).length <= maxLen) {
-          current += token;
-          continue;
+      const chunks = [];
+      const paragraphs = value
+        .replace(/\r/g, "")
+        .split(/(?<=[.!?…])\s+|\n+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const pushChunk = (str) => {
+        let s = String(str || "").trim();
+        while (s.length > maxLen) {
+          let cut = s.lastIndexOf(" ", maxLen);
+          if (cut < maxLen * 0.4) cut = maxLen;
+          chunks.push(s.slice(0, cut).trim());
+          s = s.slice(cut).trim();
         }
-        if (current.trim()) parts.push(current.trim());
-        if (token.trim().length > maxLen) {
-          for (let i = 0; i < token.length; i += maxLen) {
-            parts.push(token.slice(i, i + maxLen).trim());
-          }
-          current = "";
-        } else {
-          current = token;
-        }
+        if (s) chunks.push(s);
+      };
+
+      for (const paragraph of paragraphs.length ? paragraphs : [value]) {
+        pushChunk(paragraph);
       }
-      if (current.trim()) parts.push(current.trim());
-      return parts.filter(Boolean);
+      return chunks.filter(Boolean);
     }
 
     function speakNextQueuedChunk() {
@@ -1946,6 +1951,9 @@
       if (isAdmin || !voiceEnabled || liveState !== "active") return;
       const value = String(text || "").trim();
       if (!value) return;
+      if (!speechQueue.length && !speechBusy) {
+        try { speechSynthesis.cancel(); } catch {}
+      }
       speechQueue.push(...splitSpeechText(value));
       speakNextQueuedChunk();
     }
@@ -2594,7 +2602,7 @@
         }
         localStream = null;
 
-        try { if (remoteVideo) remoteVideo.srcObject = null; } catch {}
+        try { if (callVideo) callVideo.srcObject = null; } catch {}
         pendingRemoteCandidates = [];
         pendingLocalCandidates = [];
       }
@@ -2637,7 +2645,7 @@
           const displayStream = new MediaStream();
           if (videoTrack) displayStream.addTrack(videoTrack);
           if (displayStream.getTracks().length) {
-            attachStreamToVideo(remoteVideo, displayStream);
+            attachStreamToVideo(callVideo, displayStream);
           }
         }
       };
@@ -2684,7 +2692,7 @@
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        await attachStreamToVideo(remoteVideo, localStream);
+        await attachStreamToVideo(callVideo, localStream);
 
         await preparePeer(true);
         localStream.getVideoTracks().forEach((track) => pc.addTrack(track, localStream));
