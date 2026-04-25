@@ -1,0 +1,3428 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GloGeGo</title>
+  <style>
+    :root{
+      --bg:#0f1115;
+      --panel:#171a21;
+      --panel2:#1d2230;
+      --line:#2a3141;
+      --text:#e8ecf5;
+      --muted:#9aa6bd;
+      --accent:#6ea8fe;
+      --accent2:#8b5cf6;
+      --bubble:#202636;
+      --bubble2:#26304a;
+      --shadow:0 16px 50px rgba(0,0,0,.35);
+      --good:#4ade80;
+      --bad:#f87171;
+    }
+
+    *{box-sizing:border-box}
+    html, body{
+      height:100%;
+      overflow:hidden;
+    }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:radial-gradient(circle at top, #1b2140 0, var(--bg) 45%);
+      color:var(--text);
+    }
+
+    .wrap{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:20px;
+    }
+
+    .card{
+      width:min(1400px,100%);
+      height:100vh;
+      background:rgba(17,20,29,.92);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter:blur(12px);
+      position:relative;
+    }
+
+    .login{
+      max-width:520px;
+      padding:28px;
+      margin:auto;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .title{
+      font-size:34px;
+      margin:0 0 8px;
+      text-align:center;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      margin:0 0 24px;
+      line-height:1.5;
+      text-align:center;
+    }
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin-bottom:16px;
+    }
+
+    .field label{
+      color:#cfd7e8;
+      font-size:14px;
+    }
+
+    .field input, .field textarea, .field button{
+      width:100%;
+      border:1px solid var(--line);
+      background:#101521;
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      outline:none;
+    }
+
+    .field input:focus, .field textarea:focus, textarea:focus{
+      border-color:#5165a7;
+      box-shadow:0 0 0 3px rgba(110,168,254,.12);
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:white;
+      font-weight:700;
+      transition:transform .15s ease, filter .15s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      filter:brightness(1.04);
+    }
+
+    .btn.secondary{
+      background:#121725;
+      border:1px solid var(--line);
+      font-weight:600;
+    }
+
+    .msg{
+      margin-top:12px;
+      min-height:22px;
+      color:#ffb4b4;
+      font-size:14px;
+      text-align:center;
+    }
+
+    .app{
+      display:none;
+      height:100vh;
+      grid-template-columns:360px 1fr;
+    }
+
+    .sidebar{
+      background:#121620;
+      border-right:1px solid var(--line);
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .sidebar h2{
+      margin:0;
+      padding:18px 18px 10px;
+      font-size:18px;
+    }
+
+    .sidebar .small{
+      color:var(--muted);
+      padding:0 18px 14px;
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .thread-list{
+      overflow-y:auto;
+      padding:10px;
+      flex:1;
+      min-height:0;
+    }
+
+    .thread{
+      padding:16px;
+      margin-bottom:10px;
+      border-radius:16px;
+      background:#151a26;
+      border:1px solid transparent;
+      cursor:pointer;
+      transition:.15s ease;
+    }
+
+    .thread:hover{border-color:#2f3750}
+    .thread.active{
+      border-color:#5472d6;
+      background:#182038;
+    }
+
+    .thread .name{
+      font-weight:700;
+      font-size:15px;
+    }
+
+    .thread .last{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      overflow:hidden;
+      white-space:nowrap;
+    }
+
+    .thread-preview{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .status-dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      flex-shrink:0;
+      display:inline-block;
+      background:#94a3b8;
+    }
+    .status-dot.online{background:var(--good)}
+    .status-dot.offline{background:var(--bad)}
+
+    .chat{
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+      background:linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+    }
+
+    .chat-head{
+      padding:18px 20px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      background:rgba(18,22,32,.75);
+      backdrop-filter:blur(8px);
+      flex-shrink:0;
+    }
+
+    .chat-head .who{
+      font-size:22px;
+      font-weight:900;
+      letter-spacing:.3px;
+    }
+
+    .top-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      font-size:12px;
+      color:#dbe5ff;
+      background:#18223b;
+      border:1px solid #2c3560;
+      padding:6px 10px;
+      border-radius:999px;
+    }
+    .pill.online{
+      background:#16341f;
+      border-color:#2b6a3e;
+      color:#d7ffe0;
+    }
+    .pill.offline{
+      background:#3a1a1a;
+      border-color:#7b3434;
+      color:#ffd7d7;
+    }
+
+    .status-btn, .scroll-bottom-btn, .img-action-btn, .live-btn{
+      border:none;
+      cursor:pointer;
+      border:1px solid #2c3560;
+      border-radius:12px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:800;
+      color:#dbe5ff;
+      background:#18223b;
+    }
+
+    .status-btn.open, .live-btn.open{
+      background:#16341f;
+      border-color:#2b6a3e;
+      color:#d7ffe0;
+    }
+    .status-btn.closed, .live-btn.closed{
+      background:#3a1a1a;
+      border-color:#7b3434;
+      color:#ffd7d7;
+    }
+
+    .voice-toggle-btn{
+      border:none;
+      cursor:pointer;
+      border:1px solid #2c3560;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:800;
+      color:#dbe5ff;
+      background:#18223b;
+      white-space:nowrap;
+    }
+    .voice-toggle-btn.on{
+      background:#16341f;
+      border-color:#2b6a3e;
+      color:#d7ffe0;
+    }
+    .voice-toggle-btn.off{
+      background:#3a1a1a;
+      border-color:#7b3434;
+      color:#ffd7d7;
+    }
+
+    .scroll-bottom-btn:hover, .status-btn:hover, .img-action-btn:hover, .live-btn:hover{
+      filter:brightness(1.08);
+    }
+
+    .live-panel{
+      border-bottom:1px solid var(--line);
+      background:#101521;
+      padding:14px 18px;
+      display:grid;
+      gap:12px;
+      flex-shrink:0;
+    }
+
+    .live-panel.hidden{display:none}
+    .live-top{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .live-title{
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+
+    .live-info{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .live-grid{
+      display:grid;
+      grid-template-columns:1fr 320px;
+      gap:12px;
+    }
+
+    .video-card{
+      background:#0c1018;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      overflow:hidden;
+      min-height:220px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .video-label{
+      padding:10px 12px;
+      font-size:13px;
+      color:#cfd7e8;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:#111727;
+    }
+
+    video{
+      width:100%;
+      height:100%;
+      max-height:48vh;
+      object-fit:contain;
+      background:#05070c;
+    }
+
+    .messages{
+      flex:1;
+      overflow-y:auto;
+      padding:24px 24px 18px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      min-height:0;
+      width:100%;
+      max-width:100%;
+    }
+
+    .bubble{
+      width:min(1260px,100%);
+      background:var(--bubble);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:18px;
+      padding:14px 16px;
+      line-height:1.45;
+      word-break:break-word;
+      align-self:center;
+      position:relative;
+    }
+
+    .bubble.me{
+      background:var(--bubble2);
+      border-color:rgba(110,168,254,.22);
+    }
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:6px;
+      font-size:12px;
+      color:var(--muted);
+      align-items:center;
+    }
+
+    .text{
+      white-space:pre-wrap;
+      font-size:15px;
+      padding-right:84px;
+    }
+
+    .media-wrap{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+
+    .message-image{
+      display:block;
+      width:100%;
+      max-height:640px;
+      object-fit:contain;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f1420;
+      cursor:pointer;
+    }
+
+    .image-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .copy-btn{
+      position:absolute;
+      top:12px;
+      right:12px;
+      border:none;
+      cursor:pointer;
+      border-radius:10px;
+      padding:8px 10px;
+      background:#151b29;
+      color:#dbe5ff;
+      font-size:12px;
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .copy-btn.done{
+      background:#18311f;
+      color:#d7ffe0;
+      border-color:#2e6b40;
+    }
+
+    .composer{
+      border-top:1px solid var(--line);
+      padding:16px;
+      background:#121620;
+      flex-shrink:0;
+    }
+
+    .composer-box{
+      max-width:1260px;
+      width:100%;
+      margin:0 auto;
+      background:#101521;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:14px;
+      display:grid;
+      gap:12px;
+    }
+
+    .composer-top{
+      display:grid;
+      grid-template-columns:1fr 180px;
+      gap:12px;
+      align-items:stretch;
+    }
+
+    .button-stack{
+      display:grid;
+      gap:12px;
+    }
+
+    textarea{
+      resize:none;
+      min-height:110px;
+      max-height:240px;
+      width:100%;
+      border:1px solid transparent;
+      background:#0f1420;
+      color:var(--text);
+      border-radius:16px;
+      padding:14px 16px;
+      font-size:15px;
+      outline:none;
+      line-height:1.45;
+    }
+
+    .send-btn{
+      min-width:150px;
+      min-height:110px;
+      border:none;
+      border-radius:16px;
+      cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff;
+      font-size:16px;
+      font-weight:800;
+    }
+
+    .send-btn.small{
+      min-height:56px;
+      font-size:15px;
+    }
+
+    .send-btn:disabled, .img-action-btn:disabled, .live-btn:disabled{
+      cursor:not-allowed;
+      filter:grayscale(.2) brightness(.85);
+      opacity:.8;
+    }
+
+    .composer-bottom{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .counter{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .status-line{
+      color:#ffb4b4;
+      font-size:13px;
+      font-weight:700;
+      min-height:18px;
+    }
+
+    .hidden{display:none !important}
+    .empty{
+      color:var(--muted);
+      margin:auto;
+      text-align:center;
+      padding:30px;
+    }
+
+    .image-modal{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:grid;
+      place-items:center;
+      padding:18px;
+    }
+    .image-modal.hidden{display:none !important}
+    .image-modal-backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(6px);
+    }
+    .image-modal-panel{
+      position:relative;
+      z-index:1;
+      width:min(96vw, 1480px);
+      max-height:92vh;
+      background:#101521;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:22px;
+      box-shadow:0 24px 80px rgba(0,0,0,.5);
+      padding:14px;
+      display:grid;
+      gap:12px;
+    }
+    .image-modal-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      padding-bottom:12px;
+    }
+    .image-modal-title{
+      font-size:16px;
+      font-weight:800;
+      color:var(--text);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width:70vw;
+    }
+    .image-modal-close{
+      border:none;
+      cursor:pointer;
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      background:#18223b;
+      color:#dbe5ff;
+      border:1px solid #2c3560;
+      font-size:22px;
+      line-height:1;
+      flex-shrink:0;
+    }
+    .image-modal-image{
+      width:100%;
+      max-height:calc(92vh - 120px);
+      object-fit:contain;
+      border-radius:18px;
+      background:#0b0f18;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .image-modal-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+
+    .plus-panel{
+      position:fixed;
+      inset:0;
+      z-index:1200;
+      padding:18px;
+      background:rgba(16,21,33,.98);
+      backdrop-filter:blur(10px);
+      overflow-y:auto;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      scrollbar-gutter:stable;
+    }
+    .plus-card{
+      width:min(1500px, calc(100vw - 36px));
+      height:calc(100vh - 36px);
+      max-height:calc(100vh - 36px);
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f1420;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 18px 54px rgba(0,0,0,.28);
+      display:grid;
+      grid-template-rows:auto minmax(0,1fr) auto;
+      gap:14px;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      scrollbar-gutter:stable;
+      min-width:0;
+    }
+    .plus-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .plus-title{
+      font-size:22px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+    .plus-status{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.4;
+    }
+    .plus-close{
+      border:none;
+      cursor:pointer;
+      border-radius:12px;
+      padding:10px 14px;
+      background:#18223b;
+      color:#dbe5ff;
+      border:1px solid #2c3560;
+      font-weight:800;
+    }
+    .plus-grid{
+      display:grid;
+      grid-template-columns:minmax(320px, 0.95fr) minmax(320px, 1.05fr);
+      gap:14px;
+      align-items:start;
+      min-height:0;
+      min-width:0;
+      overflow:auto;
+      padding-right:4px;
+      overscroll-behavior:contain;
+    }
+    .plus-box{
+      border:1px solid rgba(255,255,255,.06);
+      background:#121826;
+      border-radius:18px;
+      padding:14px;
+      display:grid;
+      gap:10px;
+      height:fit-content;
+      min-width:0;
+      min-height:0;
+      overflow:auto;
+    }
+    .plus-box-title{
+      font-size:16px;
+      font-weight:900;
+      margin-bottom:2px;
+      line-height:1.25;
+      overflow-wrap:anywhere;
+    }
+    .plus-input{
+      width:100%;
+      border:1px solid var(--line);
+      background:#0c111c;
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      outline:none;
+    }
+    .plus-input:focus{
+      border-color:#5165a7;
+      box-shadow:0 0 0 3px rgba(110,168,254,.12);
+    }
+    .plus-feature{
+      padding:10px 12px;
+      border-radius:14px;
+      background:#182038;
+      border:1px solid rgba(110,168,254,.18);
+      color:#dbe5ff;
+      font-weight:700;
+      font-size:13px;
+      line-height:1.35;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+    }
+    .plus-admin{
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:12px;
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      align-content:start;
+      min-height:0;
+      overflow:auto;
+      padding-right:4px;
+      grid-auto-rows:min-content;
+    }
+    .plus-admin-title{
+      font-size:18px;
+      font-weight:900;
+      grid-column:1 / -1;
+    }
+    .plus-admin-note{
+      color:var(--muted);
+      font-size:13px;
+      grid-column:1 / -1;
+    }
+    .plus-admin-create{
+      display:grid;
+      gap:10px;
+      padding:12px;
+      border-radius:16px;
+      background:#101726;
+      border:1px solid rgba(255,255,255,.06);
+      grid-column:1 / -1;
+      min-width:0;
+    }
+    .plus-admin-subtitle{
+      font-size:14px;
+      font-weight:900;
+      color:#dbe5ff;
+      margin-top:2px;
+    }
+    .plus-admin-create-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(130px,.7fr) minmax(130px,.6fr);
+      gap:10px;
+      align-items:stretch;
+      min-width:0;
+    }
+    .plus-admin-create-grid .btn{
+      min-height:52px;
+      white-space:nowrap;
+    }
+    .plus-admin-list{
+      display:grid;
+      gap:10px;
+      min-width:0;
+      max-height:420px;
+      overflow:auto;
+      padding-right:4px;
+      align-content:start;
+    }
+    .plus-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:12px;
+      align-items:start;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#182038;
+      border:1px solid rgba(110,168,254,.14);
+      font-size:14px;
+      min-width:0;
+    }
+    .plus-row strong{
+      font-size:15px;
+      overflow-wrap:anywhere;
+    }
+    .plus-row .muted{
+      color:var(--muted);
+      font-size:13px;
+      overflow-wrap:anywhere;
+    }
+    .plus-pill{
+      background:#2b2147;
+      border-color:#5f44a4;
+      color:#efe3ff;
+    }
+    .plus-active-tag{
+      background:#16341f;
+      border-color:#2b6a3e;
+      color:#d7ffe0;
+    }
+
+    @media (max-width: 900px){
+      .app{grid-template-columns:1fr}
+      .sidebar{
+        border-right:none;
+        border-bottom:1px solid var(--line);
+        height:auto;
+      }
+      .composer-top{grid-template-columns:1fr}
+      .send-btn{min-height:56px; width:100%}
+      .messages{padding:14px}
+      .text{padding-right:0}
+      .copy-btn{
+        position:static;
+        margin-top:10px;
+      }
+      .chat-head{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+      .top-actions{
+        width:100%;
+        justify-content:flex-start;
+      }
+      .live-grid{
+        grid-template-columns:1fr;
+      }
+      .image-modal-panel{
+        width:100%;
+        max-height:94vh;
+      }
+      .image-modal-image{
+        max-height:calc(94vh - 130px);
+      }
+      .plus-panel{
+        padding:12px;
+      }
+      .plus-card{
+        width:100%;
+        height:calc(100vh - 24px);
+        max-height:calc(100vh - 24px);
+        padding:14px;
+      }
+      .plus-grid{
+        grid-template-columns:1fr;
+      }
+      .plus-admin{
+        grid-template-columns:1fr;
+      }
+      .plus-admin-create-grid{
+        grid-template-columns:1fr;
+      }
+      .plus-admin-list{
+        max-height:260px;
+      }
+    }
+  
+    .top-actions{position:relative;}
+    .menu-btn{
+      border:none;
+      cursor:pointer;
+      border:1px solid #2c3560;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:18px;
+      font-weight:900;
+      color:#dbe5ff;
+      background:#18223b;
+      line-height:1;
+      min-width:42px;
+      min-height:42px;
+    }
+
+    .mode-pill{
+      font-size:12px;
+      color:#dbe5ff;
+      background:#18223b;
+      border:1px solid #2c3560;
+      padding:6px 10px;
+      border-radius:999px;
+    }
+
+    .mode-menu{
+      position:absolute;
+      right:0;
+      top:54px;
+      z-index:40;
+      width:min(260px, calc(100vw - 32px));
+      background:#101521;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      box-shadow:0 18px 50px rgba(0,0,0,.4);
+      padding:8px;
+      display:grid;
+      gap:8px;
+    }
+    .mode-menu.hidden{display:none !important}
+    .mode-menu button{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      text-align:left;
+      padding:12px 12px;
+      border-radius:12px;
+      background:#18223b;
+      color:#dbe5ff;
+      font-weight:800;
+      border:1px solid #2c3560;
+    }
+    .mode-menu button.danger{
+      background:#3a1a1a;
+      border-color:#7b3434;
+      color:#ffd7d7;
+    }
+    .mode-menu button:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .video-upload-card{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+    .video-upload-loading{
+      font-size:13px;
+      color:var(--muted);
+    }
+    .video-wrap{
+      width:100%;
+      aspect-ratio:16 / 9;
+      background:#05070c;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      overflow:hidden;
+      display:grid;
+      place-items:center;
+    }
+    .video-wrap video{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:#05070c;
+    }
+    .video-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .video-actions .img-action-btn:disabled{
+      opacity:.6;
+    }
+
+    .request-bubble{
+      border-color:rgba(110,168,254,.22);
+      background:#182038;
+    }
+    .request-title{
+      font-size:16px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .request-status{
+      margin-top:8px;
+      font-size:13px;
+      color:#dbe5ff;
+      opacity:.9;
+    }
+    .request-status.pending{
+      color:#f3d37b;
+    }
+    .request-status.cancelled{
+      color:#ffb4b4;
+    }
+
+    .pending-banner{
+      margin:0 0 10px;
+      padding:10px 14px;
+      border-radius:14px;
+      background:#18223b;
+      border:1px solid #2c3560;
+      color:#dbe5ff;
+      font-size:13px;
+      font-weight:700;
+      width:100%;
+      max-width:1260px;
+    }
+
+    .hidden-menu-space{display:none !important;}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div id="loginScreen" class="login">
+        <h1 class="title">GloGeGo</h1>
+        <p class="subtitle">Giriş yap ve mesajlaşmaya başla.</p>
+
+        <div class="field">
+          <label for="username">Kullanıcı adı</label>
+          <input id="username" autocomplete="username" placeholder="Kullanıcı adın" />
+        </div>
+
+        <div class="field">
+          <label for="password">Şifre</label>
+          <input id="password" type="password" autocomplete="current-password" placeholder="Şifren" />
+        </div>
+
+        <button class="btn" id="loginBtn">Giriş Yap</button>
+        <div class="msg" id="loginMsg"></div>
+      </div>
+
+      <div id="appScreen" class="app">
+        <aside id="sidebar" class="sidebar hidden">
+          <h2>Mesaj atanlar</h2>
+          <div class="small">Solda son mesaj atan kullanıcılar görünür.</div>
+          <div id="threadList" class="thread-list"></div>
+        </aside>
+
+        <main class="chat">
+          <div class="chat-head">
+            <div class="who">GloGeGo</div>
+            <div class="top-actions">
+              <span id="userPill" class="pill"></span>
+              <span id="plusPill" class="pill hidden"></span>
+              <span id="threadStatusPill" class="pill hidden"></span>
+              <button id="voiceToggleBtn" class="voice-toggle-btn hidden" type="button">Ses: Açık</button>
+              <span id="livePill" class="pill hidden"></span>
+              <button id="plusBtn" class="live-btn">GloGeGo Plus</button>
+              <button id="liveBtn" class="live-btn hidden">Live</button>
+              <button id="liveAcceptBtn" class="live-btn hidden">Kabul</button>
+              <button id="liveEndBtn" class="live-btn hidden">Bitir</button>
+              <button id="statusToggleBtn" class="status-btn hidden">Durum</button>
+              <button id="scrollBottomBtn" class="scroll-bottom-btn">En Alta İn</button>
+              <button id="logoutBtn" class="btn secondary" style="width:auto;padding:10px 14px;">Çıkış</button>
+            </div>
+          </div>
+
+          <section id="livePanel" class="live-panel hidden">
+            <div class="live-top">
+              <div>
+                <div class="live-title">Canlı bağlantı</div>
+                <div id="liveInfo" class="live-info">Hazır.</div>
+              </div>
+              <div id="liveControlHint" class="live-info"></div>
+            </div>
+            <div class="live-grid">
+              <div class="video-card">
+                <div class="video-label">Karşı taraf</div>
+                <video id="remoteVideo" autoplay playsinline></video>
+              </div>
+              <div class="video-card">
+                <div class="video-label">Benim kameram</div>
+                <video id="localVideo" autoplay playsinline muted></video>
+              </div>
+            </div>
+          </section>
+
+          <section id="plusPanel" class="plus-panel hidden">
+            <div class="plus-card">
+              <div class="plus-head">
+                <div>
+                  <div class="plus-title">GloGeGo Plus</div>
+                  <div id="plusStatusText" class="plus-status">Plus durumunu burada görürsün.</div>
+                </div>
+                <button id="plusCloseBtn" class="plus-close" type="button">Kapat</button>
+              </div>
+
+              <div class="plus-grid">
+                <div class="plus-box">
+                  <div class="plus-box-title">Plus Kodunu Girin:</div>
+                  <input id="plusCodeInput" class="plus-input" type="password" placeholder="Plus kodu" autocomplete="one-time-code" />
+                  <button id="plusActivateBtn" class="btn" type="button">Plus Aktifleştir</button>
+                  <div id="plusMsg" class="msg"></div>
+                  <div class="plus-note" style="color:var(--muted);font-size:13px;line-height:1.45;">Kod girince Plus açılır.</div>
+                </div>
+
+                <div class="plus-box">
+                  <div class="plus-box-title">Plus özellikleri</div>
+                  <div class="plus-feature">Daha hızlı yazma</div>
+                  <div class="plus-feature">Gelişmiş Video oluşturma</div>
+                  <div class="plus-feature">Gelişmiş zeka</div>
+                  <div class="plus-feature">Gelişmiş Kodlama becerileri</div>
+                  <div class="plus-feature">Gelişmiş fotoğraf oluşturma</div>
+                </div>
+              </div>
+
+              <div id="adminPlusSection" class="plus-admin hidden">
+                <div class="plus-admin-title">Admin Plus Takibi</div>
+                <div class="plus-admin-note">Kimde Plus var ve ne kadar süre kaldığı burada görünür.</div>
+
+                <div class="plus-admin-create">
+                  <div class="plus-admin-subtitle">Kod ekleme</div>
+                  <div class="plus-admin-create-grid">
+                    <input id="plusCreateCodeInput" class="plus-input" type="text" placeholder="Yeni kod" autocomplete="off" />
+                    <input id="plusCreateDaysInput" class="plus-input" type="number" min="1" step="1" value="1" placeholder="Gün sayısı" />
+                    <button id="plusCreateBtn" class="btn" type="button">Kod Oluştur</button>
+                  </div>
+                  <div id="plusCreateMsg" class="msg"></div>
+                </div>
+
+                <div class="plus-admin-subtitle">Aktif kullanıcılar</div>
+                <div id="plusAdminList" class="plus-admin-list"></div>
+
+                <div class="plus-admin-subtitle">Oluşturulan kodlar</div>
+                <div id="plusCodeAdminList" class="plus-admin-list"></div>
+              </div>
+            </div>
+          </section>
+
+
+          <div id="messages" class="messages">
+            <div class="empty">Bir mesaj seç ya da yaz.</div>
+          </div>
+
+          <div class="composer">
+            <div class="composer-box">
+              <div class="composer-top">
+                <textarea id="messageInput" maxlength="500000" placeholder="Mesaj yaz..."></textarea>
+                <div class="button-stack">
+                  <button id="sendBtn" class="send-btn">Gönder</button>
+                  <button id="imageBtn" class="send-btn small">Resim</button>
+                  <button id="videoBtn" class="send-btn small">Video</button>
+                </div>
+              </div>
+
+              <input id="imageInput" type="file" accept="image/*" hidden />
+              <input id="videoInput" type="file" accept="video/*" hidden />
+
+              <div class="composer-bottom">
+                <span class="counter"><span id="charCount">0</span> / 500000</span>
+                <span id="statusLine" class="status-line"></span>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <div id="imageModal" class="image-modal hidden" aria-hidden="true">
+    <div id="imageModalBackdrop" class="image-modal-backdrop"></div>
+    <div class="image-modal-panel" role="dialog" aria-modal="true" aria-label="Resim görüntüleyici">
+      <div class="image-modal-top">
+        <div id="imageModalTitle" class="image-modal-title">Resim</div>
+        <button id="imageModalClose" class="image-modal-close" type="button">×</button>
+      </div>
+      <img id="imageModalImg" class="image-modal-image" alt="Büyütülmüş resim" />
+      <div class="image-modal-actions">
+        <button id="imageModalOpenNewTab" class="img-action-btn" type="button">Yeni Sekmede Aç</button>
+        <button id="imageModalDownload" class="img-action-btn" type="button">İndir</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      orderBy,
+      onSnapshot,
+      doc,
+      getDocs,
+      getDoc,
+      setDoc,
+      updateDoc,
+      runTransaction,
+      serverTimestamp,
+      Timestamp,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjRWkAyRNGDvTgvd5ovfhIR_nZJn5dxVg",
+      authDomain: "glogego.firebaseapp.com",
+      projectId: "glogego",
+      storageBucket: "glogego.firebasestorage.app",
+      messagingSenderId: "461333037491",
+      appId: "1:461333037491:web:60a57736a91812200dcbc6",
+      measurementId: "G-1NQ1BQLX0V"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const ADMIN_USER = "GloGeGo";
+    const ADMIN_PASS = "9119";
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    const DEFAULT_PLUS_DAYS = 1;
+    const IMAGE_EXPIRE_MS = 12 * 60 * 60 * 1000;
+    const MAX_TEXT = 500000;
+    const MAX_IMAGE_SIDE = 1400;
+    const START_JPEG_QUALITY = 0.82;
+    const MAX_DATAURL_LENGTH = 850000;
+    const PRESENCE_ONLINE_MS = 20 * 1000;
+    const PRESENCE_HEARTBEAT_MS = 10 * 1000;
+    const STUN_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
+
+    const loginScreen = document.getElementById("loginScreen");
+    const appScreen = document.getElementById("appScreen");
+    const sidebar = document.getElementById("sidebar");
+    const threadList = document.getElementById("threadList");
+    const messagesEl = document.getElementById("messages");
+    const userPill = document.getElementById("userPill");
+    const threadStatusPill = document.getElementById("threadStatusPill");
+    const modePill = null;
+    const menuBtn = null;
+    const modeMenu = null;
+    const voiceToggleBtn = document.getElementById("voiceToggleBtn");
+    const livePill = document.getElementById("livePill");
+    const livePanel = document.getElementById("livePanel");
+    const liveInfo = document.getElementById("liveInfo");
+    const liveControlHint = document.getElementById("liveControlHint");
+    const liveBtn = document.getElementById("liveBtn");
+    const liveAcceptBtn = document.getElementById("liveAcceptBtn");
+    const liveEndBtn = document.getElementById("liveEndBtn");
+    const scrollBottomBtn = document.getElementById("scrollBottomBtn");
+    const statusToggleBtn = document.getElementById("statusToggleBtn");
+    const statusLine = document.getElementById("statusLine");
+    const plusBtn = document.getElementById("plusBtn");
+    const plusPanel = document.getElementById("plusPanel");
+    const plusCloseBtn = document.getElementById("plusCloseBtn");
+    const plusCodeInput = document.getElementById("plusCodeInput");
+    const plusActivateBtn = document.getElementById("plusActivateBtn");
+    const plusMsg = document.getElementById("plusMsg");
+    const plusStatusText = document.getElementById("plusStatusText");
+    const adminPlusSection = document.getElementById("adminPlusSection");
+    const plusCreateCodeInput = document.getElementById("plusCreateCodeInput");
+    const plusCreateDaysInput = document.getElementById("plusCreateDaysInput");
+    const plusCreateBtn = document.getElementById("plusCreateBtn");
+    const plusCreateMsg = document.getElementById("plusCreateMsg");
+    const plusAdminList = document.getElementById("plusAdminList");
+    const plusCodeAdminList = document.getElementById("plusCodeAdminList");
+    const plusPill = document.getElementById("plusPill");
+
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("loginBtn");
+    const loginMsg = document.getElementById("loginMsg");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const messageInput = document.getElementById("messageInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const imageBtn = document.getElementById("imageBtn");
+    const videoBtn = document.getElementById("videoBtn");
+    const imageInput = document.getElementById("imageInput");
+    const videoInput = document.getElementById("videoInput");
+    const charCount = document.getElementById("charCount");
+
+    const remoteVideo = document.getElementById("remoteVideo");
+    const localVideo = document.getElementById("localVideo");
+
+    const imageModal = document.getElementById("imageModal");
+    const imageModalBackdrop = document.getElementById("imageModalBackdrop");
+    const imageModalClose = document.getElementById("imageModalClose");
+    const imageModalImg = document.getElementById("imageModalImg");
+    const imageModalTitle = document.getElementById("imageModalTitle");
+    const imageModalOpenNewTab = document.getElementById("imageModalOpenNewTab");
+    const imageModalDownload = document.getElementById("imageModalDownload");
+
+    const sessionKey = "glogego_session";
+    const statusDocRef = doc(db, "settings", "chatStatus");
+    const PLUS_SECRET_CODE = "9119";
+    const plusCollectionRef = collection(db, "plusMembers");
+    const plusCodeCollectionRef = collection(db, "plusCodes");
+
+    let currentUser = null;
+    let isAdmin = false;
+    let selectedThread = null;
+    let chatOpen = true;
+
+    let unsubscribeMessages = null;
+    let unsubscribeThreads = null;
+    let unsubscribeStatus = null;
+    let unsubscribePresence = null;
+    let unsubscribeLiveDoc = null;
+    let unsubscribePlusSelf = null;
+    let unsubscribePlusAdmin = null;
+    let unsubscribePlusCodesAdmin = null;
+    let unsubscribeCallerCandidates = null;
+    let unsubscribeCalleeCandidates = null;
+
+    let cleanupTimer = null;
+    let presenceTimer = null;
+    let currentModalImageUrl = "";
+    let currentModalImageName = "";
+    let lastThreadsCache = [];
+    let presenceMap = new Map();
+    let plusMap = new Map();
+    let plusCodeMap = new Map();
+    let currentPlus = null;
+    let plusPanelOpen = false;
+    let livePanelBaseHidden = true;
+
+    let messagesHydrated = false;
+    let seenMessageIds = new Set();
+
+    let liveState = "idle"; // idle | requesting | active
+    let liveSessionId = "";
+    let pc = null;
+    let localStream = null;
+    let pendingRemoteCandidates = [];
+    let pendingLocalCandidates = [];
+
+    let utteranceVoice = null;
+    let voiceReady = false;
+    let voiceWarmupTimer = null;
+    let voiceEnabled = true;
+    const voiceSettingKey = "glogego_voice_enabled";
+    let composeMode = "normal"; // normal | search | thinking
+    let pendingModeRequest = null;
+    let modeMenuOpen = false;
+    let videoObjectUrls = new Map();
+
+    function escapeHtml(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeKey(value = "") {
+      return String(value).trim().toLowerCase();
+    }
+
+    function safeDocId(value = "") {
+      const raw = String(value ?? "").trim();
+      return encodeURIComponent(raw || "user").slice(0, 150);
+    }
+
+    function formatTime(value) {
+      try {
+        const d = value?.toDate ? value.toDate() : (value ? new Date(value) : null);
+        if (!d || isNaN(d.getTime())) return "";
+        return d.toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" });
+      } catch {
+        return "";
+      }
+    }
+
+    function isUserOnline(data) {
+      const last = Number(data?.lastSeenClient || 0);
+      const age = Date.now() - last;
+      return data?.isOnline !== false && last > 0 && age < PRESENCE_ONLINE_MS;
+    }
+
+    function formatRelativeSeen(data) {
+      const last = Number(data?.lastSeenClient || 0);
+      if (!last) return "çevrimdışı";
+      const diff = Date.now() - last;
+      if (isUserOnline(data)) return "çevrimiçi";
+      if (diff < 60 * 1000) return "son görülme az önce";
+      if (diff < 60 * 60 * 1000) return `son görülme ${Math.max(1, Math.floor(diff / 60000))} dk önce`;
+      if (diff < 24 * 60 * 60 * 1000) return `son görülme ${Math.max(1, Math.floor(diff / 3600000))} saat önce`;
+      return `son görülme ${new Date(last).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" })}`;
+    }
+
+    function getPresenceData(username = "") {
+      return presenceMap.get(normalizeKey(username));
+    }
+
+    function setLoginError(text) {
+      loginMsg.textContent = text;
+    }
+
+    function saveSession() {
+      sessionStorage.setItem(sessionKey, JSON.stringify({ currentUser, isAdmin }));
+    }
+
+    function loadSession() {
+      try {
+        const raw = sessionStorage.getItem(sessionKey);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data?.currentUser) return false;
+        currentUser = data.currentUser;
+        isAdmin = !!data.isAdmin;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function clearSession() {
+      sessionStorage.removeItem(sessionKey);
+    }
+
+    function plusDocId(username = "") {
+      return safeDocId(username);
+    }
+
+    function getPlusRemainingMs(data) {
+      const raw = data?.plusUntil;
+      const d = raw?.toDate ? raw.toDate() : (raw ? new Date(raw) : null);
+      if (!d || isNaN(d.getTime())) return 0;
+      return d.getTime() - Date.now();
+    }
+
+    function isPlusActive(data) {
+      return getPlusRemainingMs(data) > 0;
+    }
+
+    function formatDaysLeft(ms) {
+      if (ms <= 0) return "Bitti";
+      const days = Math.ceil(ms / DAY_MS);
+      return `${days} gün`;
+    }
+
+    function clearPlusMsg() {
+      if (plusMsg) plusMsg.textContent = "";
+    }
+
+    function setPlusMsg(text, ok = false) {
+      if (!plusMsg) return;
+      plusMsg.textContent = text || "";
+      plusMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
+
+    function clearPlusCreateMsg() {
+      if (plusCreateMsg) plusCreateMsg.textContent = "";
+    }
+
+    function setPlusCreateMsg(text, ok = false) {
+      if (!plusCreateMsg) return;
+      plusCreateMsg.textContent = text || "";
+      plusCreateMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
+
+    function normalizePlusCode(value = "") {
+      return String(value || "").trim();
+    }
+
+    function loadVoiceSetting() {
+      try {
+        const raw = sessionStorage.getItem(voiceSettingKey);
+        if (raw !== null) voiceEnabled = raw !== "0";
+      } catch {}
+    }
+
+    function saveVoiceSetting() {
+      try {
+        sessionStorage.setItem(voiceSettingKey, voiceEnabled ? "1" : "0");
+      } catch {}
+    }
+
+    function scrollToBottomFast() {
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function updateLiveUI() {
+      liveBtn.classList.add("hidden");
+      liveAcceptBtn.classList.add("hidden");
+      liveEndBtn.classList.add("hidden");
+      livePill.classList.add("hidden");
+      livePanel.classList.add("hidden");
+      liveInfo.textContent = "";
+      liveControlHint.textContent = "";
+    }
+
+    function updateVoiceToggleUI() {
+      if (!voiceToggleBtn) return;
+      voiceToggleBtn.classList.toggle("hidden", isAdmin);
+      voiceToggleBtn.textContent = voiceEnabled ? "Ses: Açık" : "Ses: Kapalı";
+      voiceToggleBtn.classList.toggle("on", voiceEnabled);
+      voiceToggleBtn.classList.toggle("off", !voiceEnabled);
+    }
+
+    function updateComposerState() {
+      statusToggleBtn.classList.toggle("hidden", !isAdmin);
+      updateVoiceToggleUI();
+      updatePlusPill();
+      updatePlusStatusText();
+
+      if (isAdmin) {
+        statusToggleBtn.classList.remove("open", "closed");
+        statusToggleBtn.textContent = chatOpen ? "Sohbet Açık" : "Sohbet Kapalı";
+        statusToggleBtn.classList.add(chatOpen ? "open" : "closed");
+        messageInput.placeholder = "Mesaj yaz...";
+        sendBtn.disabled = false;
+        imageBtn.disabled = false;
+        videoBtn.disabled = false;
+        sendBtn.textContent = "Gönder";
+        imageBtn.textContent = "Resim";
+        videoBtn.textContent = "Video";
+        statusLine.textContent = chatOpen ? "Sohbet açık." : "Sohbet kapalı.";
+      } else {
+        if (chatOpen) {
+          messageInput.placeholder = "Mesaj yaz...";
+          sendBtn.disabled = false;
+          imageBtn.disabled = false;
+          videoBtn.disabled = false;
+          sendBtn.textContent = "Gönder";
+          imageBtn.textContent = "Resim";
+          videoBtn.textContent = "Video";
+          statusLine.textContent = "";
+        } else {
+          messageInput.placeholder = "GloGeGo müsait değil";
+          sendBtn.disabled = true;
+          imageBtn.disabled = true;
+          videoBtn.disabled = true;
+          sendBtn.textContent = "Kapalı";
+          imageBtn.textContent = "Kapalı";
+          videoBtn.textContent = "Kapalı";
+          statusLine.textContent = "GloGeGo müsait değil";
+        }
+      }
+
+      updateLiveUI();
+    }
+
+    function updateThreadStatusPill() {
+      if (!isAdmin) {
+        threadStatusPill.classList.add("hidden");
+        threadStatusPill.textContent = "";
+        return;
+      }
+
+      if (!selectedThread) {
+        threadStatusPill.textContent = "Sohbet seç";
+        threadStatusPill.className = "pill";
+        threadStatusPill.classList.remove("hidden");
+        return;
+      }
+
+      const data = getPresenceData(selectedThread);
+      const online = isUserOnline(data);
+      threadStatusPill.textContent = online ? "Aktif" : formatRelativeSeen(data);
+      threadStatusPill.className = `pill ${online ? "online" : "offline"}`;
+      threadStatusPill.classList.remove("hidden");
+    }
+
+    function renderThreadList() {
+      if (!isAdmin) return;
+
+      const list = lastThreadsCache;
+      if (!list.length) {
+        threadList.innerHTML = `<div class="empty" style="padding:18px;">Henüz mesaj yok.</div>`;
+        updateThreadStatusPill();
+        return;
+      }
+
+      threadList.innerHTML = list.map(({ thread, data }) => {
+        const p = getPresenceData(thread);
+        const online = isUserOnline(p);
+        const statusText = online ? "Aktif" : formatRelativeSeen(p);
+        const lastMsg = data.text || (data.imageDataUrl ? "Resim" : "");
+        return `
+          <div class="thread ${selectedThread === thread ? "active" : ""}" data-thread="${escapeHtml(thread)}">
+            <div class="name">${escapeHtml(thread)}</div>
+            <div class="last">
+              <span class="status-dot ${online ? "online" : "offline"}"></span>
+              <span>${escapeHtml(statusText)}</span>
+              ${lastMsg ? `<span class="thread-preview">· ${escapeHtml(lastMsg)}</span>` : ""}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      threadList.querySelectorAll(".thread").forEach((el) => {
+        el.addEventListener("click", () => {
+          selectedThread = el.dataset.thread;
+          stopLiveListenersOnly();
+          listenMessages();
+          listenLiveSession();
+          renderThreadList();
+          updateThreadStatusPill();
+        });
+      });
+
+      updateThreadStatusPill();
+    }
+
+    function openImageModal(url, name = "resim") {
+      if (!url) return;
+      currentModalImageUrl = url;
+      currentModalImageName = name || "resim";
+      imageModalImg.src = url;
+      imageModalTitle.textContent = currentModalImageName;
+      imageModal.classList.remove("hidden");
+      imageModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeImageModal() {
+      imageModal.classList.add("hidden");
+      imageModal.setAttribute("aria-hidden", "true");
+      imageModalImg.src = "";
+      currentModalImageUrl = "";
+      currentModalImageName = "";
+      document.body.style.overflow = "";
+    }
+
+    async function downloadDataUrl(dataUrl, filename) {
+      try {
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = filename || `resim_${Date.now()}.jpg`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch {
+        alert("Resim indirilemedi.");
+      }
+    }
+
+    function dataUrlSizeOk(dataUrl) {
+      return typeof dataUrl === "string" && dataUrl.length <= MAX_DATAURL_LENGTH;
+    }
+
+    async function fileToImageElement(file) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Resim yüklenemedi."));
+        };
+        img.src = url;
+      });
+    }
+
+    async function compressImageToDataUrl(file) {
+      const img = await fileToImageElement(file);
+      let width = img.naturalWidth || img.width;
+      let height = img.naturalHeight || img.height;
+      if (!width || !height) throw new Error("Resim boyutu okunamadı.");
+
+      const scale = Math.min(1, MAX_IMAGE_SIDE / Math.max(width, height));
+      width = Math.max(1, Math.round(width * scale));
+      height = Math.max(1, Math.round(height * scale));
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Canvas açılamadı.");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      let quality = START_JPEG_QUALITY;
+      let dataUrl = "";
+      for (let i = 0; i < 4; i++) {
+        dataUrl = canvas.toDataURL("image/jpeg", quality);
+        if (dataUrl.length <= MAX_DATAURL_LENGTH) break;
+        quality -= 0.09;
+      }
+      if (dataUrl.length > MAX_DATAURL_LENGTH) {
+        throw new Error("Resim hâlâ çok büyük. Daha küçük bir resim yükle.");
+      }
+
+      return { dataUrl, width, height, mime: "image/jpeg" };
+    }
+
+    function renderMessage(docData) {
+      const mine = docData.sender === currentUser;
+      const kind = docData.kind || (docData.videoStatus ? "video" : ((docData.imageDataUrl || docData.imageName) ? "image" : "text"));
+      const textValue = docData.text || "";
+      const imageDataUrl = docData.imageDataUrl || "";
+      const imageName = docData.imageName || "resim";
+      const safeName = escapeHtml(imageName);
+      const safeUrl = escapeHtml(imageDataUrl);
+      const messageId = escapeHtml(docData.id || "");
+      const created = formatTime(docData.createdAt);
+      const modeText = docData.mode === "search" ? "Arıyor..." : docData.mode === "thinking" ? "Düşünüyor..." : "";
+      const cancelled = !!docData.cancelled;
+
+      if (kind === "mode_request") {
+        return `
+          <div class="bubble ${mine ? "me" : ""} request-bubble" data-message-id="${messageId}">
+            <div class="meta">
+              <span>${escapeHtml(docData.sender || "")}</span>
+              <span>${created}</span>
+            </div>
+            <div class="request-title">${escapeHtml(getModeLabel(docData.mode || "normal"))}</div>
+            <div class="text">${escapeHtml(textValue)}</div>
+            <div class="request-status ${cancelled ? "cancelled" : "pending"}">
+              ${cancelled ? "İptal edildi" : modeText || "Bekleniyor..."}
+            </div>
+          </div>
+        `;
+      }
+
+      if (kind === "video") {
+        const status = docData.videoStatus || "uploading";
+        return `
+          <div class="bubble ${mine ? "me" : ""}" data-video-message-id="${messageId}" data-video-name="${escapeHtml(docData.videoName || "video.mp4")}" data-video-mime="${escapeHtml(docData.videoMime || "video/mp4")}" data-video-status="${escapeHtml(status)}">
+            <div class="meta">
+              <span>${escapeHtml(docData.sender || "")}</span>
+              <span>${created}</span>
+            </div>
+            <div class="video-upload-card">
+              <div class="video-upload-loading" data-video-loading>Video ${status === "ready" ? "hazırlanıyor..." : "yükleniyor..."}</div>
+              <div class="video-wrap">
+                <video class="video-player" controls playsinline preload="metadata" data-video-player></video>
+              </div>
+              <div class="video-actions">
+                <button class="img-action-btn" type="button" data-fullscreen-video="${messageId}" disabled>Tam ekran</button>
+                <button class="img-action-btn" type="button" data-download-video="${messageId}" data-video-name="${safeName}" disabled>İndir</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="bubble ${mine ? "me" : ""}" data-message-id="${messageId}">
+          <div class="meta">
+            <span>${escapeHtml(docData.sender || "")}</span>
+            <span>${created}</span>
+          </div>
+
+          ${textValue ? `<div class="text">${escapeHtml(textValue)}</div>` : ""}
+
+          ${imageDataUrl ? `
+            <div class="media-wrap">
+              <img
+                src="${safeUrl}"
+                class="message-image"
+                alt="${safeName}"
+                title="Resmi açmak için tıkla"
+                data-image-url="${safeUrl}"
+                data-image-name="${safeName}"
+              />
+              <div class="image-actions">
+                <button class="img-action-btn" type="button" data-open-image="${safeUrl}" data-image-name="${safeName}">Aç</button>
+                <button class="img-action-btn" type="button" data-download-image="${safeUrl}" data-image-name="${safeName}">İndir</button>
+              </div>
+            </div>
+          ` : ""}
+
+          ${textValue ? `<button class="copy-btn" data-copy="${encodeURIComponent(textValue)}">Kopyala</button>` : ""}
+        </div>
+      `;
+    }
+
+    function copyText(text, button) {
+      return navigator.clipboard.writeText(text || "").then(() => {
+        if (!button) return;
+        const old = button.textContent;
+        button.textContent = "Kopyalandı";
+        button.classList.add("done");
+        setTimeout(() => {
+          button.textContent = old;
+          button.classList.remove("done");
+        }, 1200);
+      }).catch(() => alert("Kopyalanamadı."));
+    }
+
+    function getVoice() {
+      const voices = speechSynthesis.getVoices?.() || [];
+      const tr = voices.find(v => (v.lang || "").toLowerCase().startsWith("tr"));
+      return tr || voices[0] || null;
+    }
+
+    function initVoice() {
+      if (voiceReady) return;
+      voiceReady = true;
+      const warm = () => { utteranceVoice = getVoice(); };
+      warm();
+      window.speechSynthesis?.addEventListener?.("voiceschanged", warm);
+      voiceWarmupTimer = setInterval(() => { utteranceVoice = getVoice(); }, 5000);
+      setTimeout(() => {
+        if (voiceWarmupTimer) clearInterval(voiceWarmupTimer);
+        voiceWarmupTimer = null;
+      }, 30000);
+    }
+
+    function speakRobot(text) {
+      if (isAdmin || !voiceEnabled) return;
+      const value = String(text || "").trim();
+      if (!value || value.length > 500) return;
+      try {
+        initVoice();
+        speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(value);
+        utter.lang = "tr-TR";
+        utter.voice = utteranceVoice || getVoice();
+        utter.rate = 0.95;
+        utter.pitch = 0.65;
+        utter.volume = 1;
+        speechSynthesis.speak(utter);
+      } catch (err) {
+        console.warn("Seslendirme çalışmadı:", err);
+      }
+    }
+
+    function stopSpeech() {
+      try { speechSynthesis.cancel(); } catch {}
+    }
+
+    function getModeLabel(mode) {
+      if (mode === "search") return "Web'de arama";
+      if (mode === "thinking") return "Düşünme modu";
+      return "Normal";
+    }
+
+    function getModeStatus(mode) {
+      if (mode === "search") return "Arıyor...";
+      if (mode === "thinking") return "Düşünüyor...";
+      return "";
+    }
+
+    function closeModeMenu() {
+      if (modeMenu) modeMenu.classList.add("hidden");
+      modeMenuOpen = false;
+      if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
+    }
+
+    function toggleModeMenu(force) {
+      if (!modeMenu) return;
+      const next = typeof force === "boolean" ? force : modeMenu.classList.contains("hidden");
+      modeMenu.classList.toggle("hidden", !next);
+      modeMenuOpen = next;
+      if (menuBtn) menuBtn.setAttribute("aria-expanded", next ? "true" : "false");
+    }
+
+    function setComposeMode(nextMode) {
+      composeMode = nextMode;
+      if (modePill) {
+        if (composeMode === "normal") {
+          modePill.classList.add("hidden");
+          modePill.textContent = "";
+        } else {
+          modePill.textContent = getModeLabel(composeMode);
+          modePill.classList.remove("hidden");
+        }
+      }
+      closeModeMenu();
+      updateComposerState();
+    }
+
+    function clearPendingModeRequest() {
+      pendingModeRequest = null;
+      if (modePill && composeMode !== "normal") {
+        modePill.textContent = getModeLabel(composeMode);
+        modePill.classList.remove("hidden");
+      }
+      updateComposerState();
+    }
+
+    function setPendingModeRequest(data) {
+      pendingModeRequest = data || null;
+      if (modePill) {
+        if (pendingModeRequest) {
+          modePill.textContent = getModeStatus(pendingModeRequest.mode) || getModeLabel(pendingModeRequest.mode);
+          modePill.classList.remove("hidden");
+        } else if (composeMode === "normal") {
+          modePill.classList.add("hidden");
+          modePill.textContent = "";
+        }
+      }
+      updateComposerState();
+    }
+
+    function normalizeModeFromMessage(item) {
+      if (!item) return null;
+      if (item.kind === "mode_request") return item.mode || null;
+      return null;
+    }
+
+    function syncModeRequestState(items = []) {
+      if (isAdmin) return;
+
+      const requests = items
+        .filter((item) => item.sender === currentUser && item.kind === "mode_request" && !item.cancelled)
+        .sort((a, b) => (a.createdAtClient || 0) - (b.createdAtClient || 0));
+
+      const latest = requests[requests.length - 1];
+      if (!latest) {
+        if (pendingModeRequest) clearPendingModeRequest();
+        return;
+      }
+
+      const replied = items.some((item) =>
+        item.sender === ADMIN_USER &&
+        (item.createdAtClient || 0) > (latest.createdAtClient || 0) &&
+        item.kind !== "mode_request"
+      );
+
+      if (replied) {
+        clearPendingModeRequest();
+        return;
+      }
+
+      setPendingModeRequest({ id: latest.id, mode: latest.mode, text: latest.text || "" });
+    }
+
+    function uint8ToBase64(uint8) {
+      let binary = "";
+      const chunkSize = 0x8000;
+      for (let i = 0; i < uint8.length; i += chunkSize) {
+        binary += String.fromCharCode(...uint8.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    function base64ToUint8(base64) {
+      const binary = atob(base64);
+      const arr = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+      return arr;
+    }
+
+    function getVideoObjectUrl(messageId) {
+      return videoObjectUrls.get(messageId) || "";
+    }
+
+    async function loadVideoBlob(messageId, mimeType = "video/mp4") {
+      if (!messageId) return "";
+      const cached = videoObjectUrls.get(messageId);
+      if (cached) return cached;
+
+      const chunksRef = collection(db, "messages", messageId, "videoChunks");
+      const chunkSnap = await getDocs(query(chunksRef, orderBy("index")));
+      const parts = [];
+      chunkSnap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        if (data.data) parts.push(base64ToUint8(data.data));
+      });
+
+      const blob = new Blob(parts, { type: mimeType || "video/mp4" });
+      const url = URL.createObjectURL(blob);
+      videoObjectUrls.set(messageId, url);
+      return url;
+    }
+
+    async function hydrateVideoMessages() {
+      const cards = Array.from(messagesEl.querySelectorAll("[data-video-message-id]"));
+      for (const card of cards) {
+        const messageId = card.dataset.videoMessageId;
+        const mimeType = card.dataset.videoMime || "video/mp4";
+        const loadingEl = card.querySelector("[data-video-loading]");
+        const videoEl = card.querySelector("[data-video-player]");
+        const fullBtn = card.querySelector("[data-fullscreen-video]");
+        const downloadBtn = card.querySelector("[data-download-video]");
+        if (!messageId || !videoEl || videoEl.dataset.loaded === "1") continue;
+
+        const messageStatus = card.dataset.videoStatus || "ready";
+        if (messageStatus !== "ready") {
+          if (loadingEl) loadingEl.textContent = "Video yükleniyor...";
+          continue;
+        }
+
+        if (loadingEl) loadingEl.textContent = "Video hazırlanıyor...";
+        try {
+          const url = await loadVideoBlob(messageId, mimeType);
+          videoEl.src = url;
+          videoEl.dataset.loaded = "1";
+          if (loadingEl) loadingEl.textContent = "Video hazır.";
+          if (fullBtn) fullBtn.disabled = false;
+          if (downloadBtn) downloadBtn.disabled = false;
+        } catch (err) {
+          console.warn("Video açılmadı:", err);
+          if (loadingEl) loadingEl.textContent = "Video yüklenemedi.";
+        }
+      }
+    }
+
+    function enterFullscreenForVideo(messageId) {
+      const safeId = String(messageId || "").replaceAll('"', '\\\"');
+      const card = messagesEl.querySelector(`[data-video-message-id="${safeId}"]`);
+      const videoEl = card?.querySelector("[data-video-player]");
+      if (videoEl?.requestFullscreen) {
+        videoEl.requestFullscreen().catch(() => {});
+      }
+    }
+
+    async function downloadVideoByMessageId(messageId, filename) {
+      const url = getVideoObjectUrl(messageId);
+      if (!url) {
+        const card = messagesEl.querySelector(`[data-video-message-id="${CSS.escape(messageId)}"]`);
+        const mimeType = card?.dataset.videoMime || "video/mp4";
+        const loadedUrl = await loadVideoBlob(messageId, mimeType);
+        await downloadDataUrl(loadedUrl, filename || "video.mp4");
+        return;
+      }
+      await downloadDataUrl(url, filename || "video.mp4");
+    }
+
+    async function deleteVideoChunks(messageId) {
+      const ref = collection(db, "messages", messageId, "videoChunks");
+      const snap = await getDocs(ref);
+      for (const d of snap.docs) {
+        await deleteDoc(doc(db, "messages", messageId, "videoChunks", d.id));
+      }
+    }
+
+    function cleanupVideoUrls() {
+      for (const url of videoObjectUrls.values()) {
+        try { URL.revokeObjectURL(url); } catch {}
+      }
+      videoObjectUrls = new Map();
+    }
+
+    async function sendModeRequest(mode, text) {
+      const threadId = isAdmin ? selectedThread : currentUser;
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+      const normalizedText = String(text || "").trim();
+      if (!normalizedText) {
+        alert("Bir şey yaz.");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Gönderiliyor...";
+
+      try {
+        const ref = await addDoc(collection(db, "messages"), {
+          threadId,
+          sender: currentUser,
+          recipient: isAdmin ? threadId : ADMIN_USER,
+          kind: "mode_request",
+          mode,
+          text: normalizedText,
+          cancelled: false,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + 6 * 60 * 60 * 1000))
+        });
+        pendingModeRequest = { id: ref.id, mode, text: normalizedText };
+        modePill.textContent = getModeStatus(mode) || getModeLabel(mode);
+        modePill.classList.remove("hidden");
+        messageInput.value = "";
+        charCount.textContent = "0";
+      } catch (err) {
+        console.error(err);
+        alert("İstek gönderilemedi.");
+      } finally {
+        updateComposerState();
+      }
+    }
+
+    async function cancelPendingModeRequest() {
+      if (!pendingModeRequest?.id) {
+        alert("İptal edilecek bekleyen istek yok.");
+        return;
+      }
+      try {
+        await updateDoc(doc(db, "messages", pendingModeRequest.id), {
+          cancelled: true,
+          cancelledAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        pendingModeRequest = null;
+        if (composeMode === "normal") {
+          modePill.classList.add("hidden");
+          modePill.textContent = "";
+        } else {
+          modePill.textContent = getModeLabel(composeMode);
+          modePill.classList.remove("hidden");
+        }
+        updateComposerState();
+      } catch (err) {
+        console.error(err);
+        alert("İstek iptal edilemedi.");
+      }
+    }
+
+    async function sendVideo(file) {
+      const threadId = isAdmin ? selectedThread : currentUser;
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+      if (!file) return;
+      if (!file.type.startsWith("video/")) {
+        alert("Sadece video yükleyebilirsin.");
+        return;
+      }
+      if (file.size > 50 * 1024 * 1024) {
+        alert("Video 50 MB sınırını geçti.");
+        return;
+      }
+
+      const messageRef = doc(collection(db, "messages"));
+      const chunkSize = 260 * 1024;
+      const totalChunks = Math.max(1, Math.ceil(file.size / chunkSize));
+      videoBtn.disabled = true;
+      videoBtn.textContent = "Yükleniyor 0%";
+
+      try {
+        await setDoc(messageRef, {
+          threadId,
+          sender: currentUser,
+          recipient: isAdmin ? threadId : ADMIN_USER,
+          kind: "video",
+          text: file.name || "video",
+          videoName: file.name || "video.mp4",
+          videoMime: file.type || "video/mp4",
+          videoSize: file.size,
+          videoChunkCount: totalChunks,
+          videoStatus: "uploading",
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + 6 * 60 * 60 * 1000))
+        });
+
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const chunksRef = collection(db, "messages", messageRef.id, "videoChunks");
+
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * chunkSize;
+          const end = Math.min(bytes.length, start + chunkSize);
+          const slice = bytes.slice(start, end);
+          await setDoc(doc(chunksRef, String(i).padStart(5, "0")), {
+            index: i,
+            data: uint8ToBase64(slice)
+          });
+          const pct = Math.floor(((i + 1) / totalChunks) * 100);
+          videoBtn.textContent = `Yükleniyor ${pct}%`;
+        }
+
+        await updateDoc(messageRef, {
+          videoStatus: "ready",
+          updatedAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.error(err);
+        alert(err?.message || "Video yüklenemedi.");
+      } finally {
+        videoBtn.disabled = false;
+        videoBtn.textContent = "Video";
+        videoInput.value = "";
+        updateComposerState();
+      }
+    }
+
+    function showApp() {
+      loginScreen.style.display = "none";
+      appScreen.style.display = "grid";
+      sidebar.classList.toggle("hidden", !isAdmin);
+      userPill.textContent = isAdmin ? "Admin" : currentUser;
+      adminPlusSection.classList.toggle("hidden", !isAdmin);
+
+      if (!isAdmin) {
+        selectedThread = currentUser;
+        setComposeMode("normal");
+      }
+
+      listenStatus();
+      listenMessages();
+      listenPresence();
+      listenPlusStatus();
+      if (isAdmin) listenThreads();
+      if (isAdmin) listenPlusAdmin();
+      if (isAdmin) listenPlusCodesAdmin();
+
+      startPresenceTracking();
+      cleanupExpiredMessages();
+      if (cleanupTimer) clearInterval(cleanupTimer);
+      cleanupTimer = setInterval(cleanupExpiredMessages, 10 * 60 * 1000);
+      updateComposerState();
+    }
+
+    function showLogin() {
+      loginScreen.style.display = "flex";
+      appScreen.style.display = "none";
+      setPlusPanelOpen(false);
+    }
+
+    async function login() {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!username || !password) {
+        setLoginError("Kullanıcı adı ve şifre yaz.");
+        return;
+      }
+
+      if (username === ADMIN_USER && password === ADMIN_PASS) {
+        currentUser = ADMIN_USER;
+        isAdmin = true;
+      } else {
+        currentUser = username;
+        isAdmin = false;
+      }
+
+      saveSession();
+      setLoginError("");
+      showApp();
+    }
+
+    async function logout() {
+      await endLiveSession(true);
+
+      if (unsubscribeMessages) unsubscribeMessages();
+      if (unsubscribeThreads) unsubscribeThreads();
+      if (unsubscribeStatus) unsubscribeStatus();
+      if (unsubscribePresence) unsubscribePresence();
+      if (unsubscribePlusSelf) unsubscribePlusSelf();
+      if (unsubscribePlusAdmin) unsubscribePlusAdmin();
+      if (unsubscribePlusCodesAdmin) unsubscribePlusCodesAdmin();
+
+      currentUser = null;
+      isAdmin = false;
+      selectedThread = null;
+      chatOpen = true;
+
+      stopPresenceTracking();
+      stopSpeech();
+      cleanupVideoUrls();
+      closeModeMenu();
+      composeMode = "normal";
+      pendingModeRequest = null;
+      modePill.classList.add("hidden");
+      modePill.textContent = "";
+
+      messageInput.value = "";
+      charCount.textContent = "0";
+      clearSession();
+      showLogin();
+    }
+
+    function renderEmpty(text) {
+      messagesEl.innerHTML = `<div class="empty">${escapeHtml(text)}</div>`;
+    }
+
+    function setPlusPanelOpen(open) {
+      plusPanelOpen = !!open;
+      plusPanel.classList.toggle("hidden", !plusPanelOpen);
+      const composerEl = document.querySelector(".composer");
+      if (plusPanelOpen) {
+        livePanelBaseHidden = livePanel.classList.contains("hidden");
+        messagesEl.classList.add("hidden");
+        if (composerEl) composerEl.classList.add("hidden");
+        livePanel.classList.add("hidden");
+      } else {
+        messagesEl.classList.remove("hidden");
+        if (composerEl) composerEl.classList.remove("hidden");
+        if (!livePanelBaseHidden) livePanel.classList.remove("hidden");
+      }
+    }
+
+    function updatePlusPill() {
+      if (!plusPill) return;
+      if (currentUser && !isAdmin && isPlusActive(currentPlus)) {
+        plusPill.textContent = "Plus Aktif";
+        plusPill.className = "pill plus-active-tag";
+        plusPill.classList.remove("hidden");
+      } else if (currentUser && !isAdmin) {
+        plusPill.textContent = "Plus Yok";
+        plusPill.className = "pill";
+        plusPill.classList.remove("hidden");
+      } else {
+        plusPill.classList.add("hidden");
+        plusPill.textContent = "";
+      }
+    }
+
+    function updatePlusStatusText() {
+      if (!plusStatusText) return;
+      if (isAdmin) {
+        plusStatusText.textContent = "Admin olarak kod oluşturabilir ve Plus listesini görebilirsin.";
+        return;
+      }
+      const ms = getPlusRemainingMs(currentPlus);
+      if (ms > 0) {
+        plusStatusText.textContent = `Plus aktif. Kalan süre: ${formatDaysLeft(ms)}.`;
+      } else {
+        plusStatusText.textContent = "Sadece kod girmen yeterli.";
+      }
+    }
+
+    async function ensureDefaultPlusCode() {
+      try {
+        const ref = doc(db, "plusCodes", PLUS_SECRET_CODE);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+          await setDoc(ref, {
+            code: PLUS_SECRET_CODE,
+            daysGranted: DEFAULT_PLUS_DAYS,
+            used: false,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+        }
+      } catch (err) {
+        console.warn("Plus kodu hazırlanamadı:", err);
+      }
+    }
+
+    function renderPlusAdminList() {
+      if (!plusAdminList || !isAdmin) return;
+      const rows = Array.from(plusMap.values())
+        .sort((a, b) => getPlusRemainingMs(b) - getPlusRemainingMs(a))
+        .map((data) => {
+          const ms = getPlusRemainingMs(data);
+          const name = data.username || data.usernameKey || "Bilinmeyen";
+          const active = ms > 0;
+          const until = data.plusUntil?.toDate ? data.plusUntil.toDate().toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : "";
+          return `
+            <div class="plus-row">
+              <div>
+                <strong>${escapeHtml(name)}</strong>
+                <div class="muted">${active ? "Aktif" : "Süresi bitmiş"}</div>
+              </div>
+              <div style="text-align:right">
+                <div><strong>${escapeHtml(formatDaysLeft(ms))}</strong></div>
+                <div class="muted">${until ? `Bitiş: ${escapeHtml(until)}` : "Bitiş yok"}</div>
+              </div>
+            </div>
+          `;
+        });
+      plusAdminList.innerHTML = rows.length ? rows.join("") : '<div class="empty" style="padding:18px;">Henüz Plus kaydı yok.</div>';
+    }
+
+    function renderPlusCodeAdminList() {
+      if (!plusCodeAdminList || !isAdmin) return;
+      const rows = Array.from(plusCodeMap.values())
+        .sort((a, b) => (Number(b.createdAtClient || 0) - Number(a.createdAtClient || 0)))
+        .map((data) => {
+          const code = data.code || data.id || "";
+          const days = Number.parseInt(String(data.daysGranted ?? DEFAULT_PLUS_DAYS), 10);
+          const used = !!data.used;
+          const created = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : (data.createdAtClient ? new Date(Number(data.createdAtClient)).toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : "");
+          const usedAt = data.usedAt?.toDate ? data.usedAt.toDate().toLocaleString("tr-TR", { dateStyle: "short", timeStyle: "short" }) : "";
+          return `
+            <div class="plus-row">
+              <div>
+                <strong>${escapeHtml(code)}</strong>
+                <div class="muted">${escapeHtml(String(Number.isFinite(days) && days > 0 ? days : DEFAULT_PLUS_DAYS))} gün · ${used ? "Kullanıldı" : "Kullanılmadı"}</div>
+              </div>
+              <div style="text-align:right">
+                <div><strong>${used ? "Tek kullanımlık" : "Hazır"}</strong></div>
+                <div class="muted">${used ? `Kullanan: ${escapeHtml(data.usedBy || "Bilinmiyor")}` : "Bekliyor"}</div>
+                <div class="muted">${usedAt ? `Kullanım: ${escapeHtml(usedAt)}` : `Oluşum: ${escapeHtml(created || "Bilinmiyor")}`}</div>
+              </div>
+            </div>
+          `;
+        });
+
+      plusCodeAdminList.innerHTML = rows.length ? rows.join("") : '<div class="empty" style="padding:18px;">Henüz kod yok.</div>';
+    }
+
+    function listenPlusCodesAdmin() {
+      if (unsubscribePlusCodesAdmin) unsubscribePlusCodesAdmin();
+      if (!isAdmin) {
+        plusCodeMap = new Map();
+        renderPlusCodeAdminList();
+        return;
+      }
+
+      unsubscribePlusCodesAdmin = onSnapshot(plusCodeCollectionRef, (snap) => {
+        const map = new Map();
+        snap.forEach((d) => map.set(d.id, { id: d.id, ...d.data() }));
+        plusCodeMap = map;
+        renderPlusCodeAdminList();
+      }, () => {
+        plusCodeMap = new Map();
+        renderPlusCodeAdminList();
+      });
+    }
+
+    async function createPlusCode() {
+      if (!isAdmin) return;
+
+      const code = normalizePlusCode(plusCreateCodeInput?.value);
+      const daysRaw = String(plusCreateDaysInput?.value || "").trim();
+      const days = Number.parseInt(daysRaw, 10);
+
+      if (!code) {
+        setPlusCreateMsg("Kod yaz.");
+        return;
+      }
+      if (!Number.isFinite(days) || days < 1) {
+        setPlusCreateMsg("Gün sayısı en az 1 olmalı.");
+        return;
+      }
+
+      plusCreateBtn.disabled = true;
+      plusCreateBtn.textContent = "Oluşturuluyor...";
+
+      try {
+        await runTransaction(db, async (tx) => {
+          const codeRef = doc(db, "plusCodes", code);
+          const snap = await tx.get(codeRef);
+          if (snap.exists()) {
+            throw new Error("Bu kod zaten var.");
+          }
+
+          tx.set(codeRef, {
+            code,
+            daysGranted: days,
+            used: false,
+            createdBy: currentUser,
+            createdAt: serverTimestamp(),
+            createdAtClient: Date.now(),
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now()
+          });
+        });
+
+        setPlusCreateMsg(`Kod oluşturuldu: ${code}`, true);
+        if (plusCreateCodeInput) plusCreateCodeInput.value = "";
+        if (plusCreateDaysInput) plusCreateDaysInput.value = "1";
+      } catch (err) {
+        console.error(err);
+        setPlusCreateMsg(err?.message || "Kod oluşturulamadı.");
+      } finally {
+        plusCreateBtn.disabled = false;
+        plusCreateBtn.textContent = "Kod Oluştur";
+        renderPlusCodeAdminList();
+      }
+    }
+
+    async function activatePlus() {
+      if (!currentUser) return;
+      const code = normalizePlusCode(plusCodeInput.value || "");
+
+      if (!code) {
+        setPlusMsg("Kod gir.");
+        return;
+      }
+
+      plusActivateBtn.disabled = true;
+      plusActivateBtn.textContent = "Kontrol ediliyor...";
+
+      try {
+        const result = await runTransaction(db, async (tx) => {
+          const codeRef = doc(db, "plusCodes", code);
+          const codeSnap = await tx.get(codeRef);
+          const codeData = codeSnap.exists() ? codeSnap.data() : null;
+
+          if (!codeData) {
+            throw new Error("Kod bulunamadı.");
+          }
+          if (codeData?.used) {
+            throw new Error("Bu kod daha önce kullanılmış.");
+          }
+
+          const daysFromCode = Number.parseInt(String(codeData?.daysGranted ?? DEFAULT_PLUS_DAYS), 10);
+          const days = Number.isFinite(daysFromCode) && daysFromCode > 0 ? daysFromCode : DEFAULT_PLUS_DAYS;
+
+          const memberRef = doc(db, "plusMembers", plusDocId(currentUser));
+          const memberSnap = await tx.get(memberRef);
+          const currentUntil = memberSnap.exists()
+            ? (memberSnap.data()?.plusUntil?.toDate ? memberSnap.data().plusUntil.toDate() : (memberSnap.data()?.plusUntil ? new Date(memberSnap.data().plusUntil) : null))
+            : (currentPlus?.plusUntil?.toDate ? currentPlus.plusUntil.toDate() : (currentPlus?.plusUntil ? new Date(currentPlus.plusUntil) : null));
+          const base = currentUntil && !isNaN(currentUntil.getTime()) ? Math.max(Date.now(), currentUntil.getTime()) : Date.now();
+          const plusUntil = new Date(base + days * DAY_MS);
+
+          tx.set(codeRef, {
+            ...codeData,
+            used: true,
+            usedBy: currentUser,
+            usedAt: serverTimestamp(),
+            usedAtClient: Date.now(),
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now()
+          }, { merge: true });
+
+          tx.set(memberRef, {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            plusUntil: Timestamp.fromDate(plusUntil),
+            isActive: true,
+            activatedAt: serverTimestamp(),
+            activatedAtClient: Date.now(),
+            activatedBy: currentUser,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            daysGranted: days,
+            lastCode: code
+          }, { merge: true });
+
+          return { days, plusUntil };
+        });
+
+        setPlusMsg(`Plus aktif edildi. (${result.days} gün)`, true);
+        if (plusCodeInput) plusCodeInput.value = "";
+      } catch (err) {
+        console.error(err);
+        setPlusMsg(err?.message || "Plus etkinleştirilemedi.");
+      } finally {
+        plusActivateBtn.disabled = false;
+        plusActivateBtn.textContent = "Plus Aktifleştir";
+        updatePlusStatusText();
+      }
+    }
+
+    async function openPlusPanel() {
+      setPlusPanelOpen(true);
+      clearPlusMsg();
+      clearPlusCreateMsg();
+      updatePlusStatusText();
+      plusPanel.scrollTop = 0;
+      const card = plusPanel.querySelector('.plus-card');
+      if (card) card.scrollTop = 0;
+      if (isAdmin) {
+        renderPlusAdminList();
+        renderPlusCodeAdminList();
+      }
+    }
+
+    function closePlusPanel() {
+      setPlusPanelOpen(false);
+    }
+
+    async function markPresence(isOnline = true) {
+      if (!currentUser) return;
+      try {
+        await setDoc(doc(db, "presence", safeDocId(currentUser)), {
+          username: currentUser,
+          usernameKey: normalizeKey(currentUser),
+          isAdmin,
+          isOnline,
+          lastSeen: serverTimestamp(),
+          lastSeenClient: Date.now(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (err) {
+        console.warn("Presence update skipped:", err);
+      }
+    }
+
+    function startPresenceTracking() {
+      stopPresenceTracking();
+      void markPresence(true);
+      presenceTimer = setInterval(() => {
+        if (document.visibilityState === "visible") {
+          void markPresence(true);
+        }
+      }, PRESENCE_HEARTBEAT_MS);
+      window.addEventListener("beforeunload", handleLeave, { once: true });
+      window.addEventListener("pagehide", handleLeave, { once: true });
+      document.addEventListener("visibilitychange", handleVisibility);
+    }
+
+    function stopPresenceTracking() {
+      if (presenceTimer) clearInterval(presenceTimer);
+      presenceTimer = null;
+      document.removeEventListener("visibilitychange", handleVisibility);
+    }
+
+    function handleVisibility() {
+      if (!currentUser) return;
+      if (document.visibilityState === "visible") void markPresence(true);
+      else void markPresence(false);
+    }
+
+    function handleLeave() {
+      void markPresence(false);
+    }
+
+    function setLiveState(next) {
+      liveState = next;
+      updateComposerState();
+    }
+
+    function stopLiveListenersOnly() {
+      if (unsubscribeLiveDoc) unsubscribeLiveDoc();
+      if (unsubscribeCallerCandidates) unsubscribeCallerCandidates();
+      if (unsubscribeCalleeCandidates) unsubscribeCalleeCandidates();
+      unsubscribeLiveDoc = null;
+      unsubscribeCallerCandidates = null;
+      unsubscribeCalleeCandidates = null;
+    }
+
+    async function endLiveSession(silent = false) {
+      try {
+        stopLiveListenersOnly();
+
+        if (pc) {
+          try { pc.ontrack = null; pc.onicecandidate = null; pc.onconnectionstatechange = null; pc.close(); } catch {}
+        }
+        pc = null;
+
+        if (localStream) {
+          localStream.getTracks().forEach(t => t.stop());
+        }
+        localStream = null;
+
+        remoteVideo.srcObject = null;
+        localVideo.srcObject = null;
+
+        if (liveSessionId) {
+          try {
+            await updateDoc(doc(db, "liveSessions", liveSessionId), {
+              status: "ended",
+              endedAt: serverTimestamp(),
+              endedBy: currentUser || "system",
+              updatedAt: serverTimestamp()
+            });
+          } catch {}
+        }
+      } finally {
+        liveSessionId = "";
+        pendingRemoteCandidates = [];
+        pendingLocalCandidates = [];
+        if (liveState !== "idle") setLiveState("idle");
+        if (!silent) updateLiveUI();
+      }
+    }
+
+    async function preparePeer(isCaller) {
+      pc = new RTCPeerConnection({ iceServers: STUN_SERVERS });
+      pendingRemoteCandidates = [];
+      pendingLocalCandidates = [];
+
+      pc.ontrack = (event) => {
+        const [stream] = event.streams;
+        if (stream) remoteVideo.srcObject = stream;
+      };
+
+      pc.onconnectionstatechange = async () => {
+        const state = pc?.connectionState || "";
+        if (state === "failed" || state === "disconnected" || state === "closed") {
+          if (liveState !== "idle") await endLiveSession();
+        }
+      };
+
+      pc.onicecandidate = async (event) => {
+        if (!event.candidate || !liveSessionId) return;
+        try {
+          const candidateData = event.candidate.toJSON();
+          const targetCollection = isCaller ? "callerCandidates" : "calleeCandidates";
+          await addDoc(collection(db, "liveSessions", liveSessionId, targetCollection), candidateData);
+        } catch (err) {
+          console.warn("ICE kaydedilemedi:", err);
+        }
+      };
+    }
+
+    async function flushQueuedCandidates() {
+      if (!pc || !pc.remoteDescription) return;
+      const queue = pendingRemoteCandidates.splice(0);
+      for (const cand of queue) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(cand));
+        } catch (err) {
+          console.warn("ICE eklenemedi:", err);
+        }
+      }
+    }
+
+    async function startLiveAsCaller() {
+      if (!currentUser || isAdmin) return;
+      if (!selectedThread) selectedThread = currentUser;
+
+      await endLiveSession(true);
+      liveSessionId = safeDocId(`live_${selectedThread}`);
+      setLiveState("requesting");
+      updateLiveUI();
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localVideo.srcObject = localStream;
+        remoteVideo.srcObject = null;
+
+        await preparePeer(true);
+        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+
+        const sessionRef = doc(db, "liveSessions", liveSessionId);
+        const callerCandidatesRef = collection(db, "liveSessions", liveSessionId, "callerCandidates");
+        const calleeCandidatesRef = collection(db, "liveSessions", liveSessionId, "calleeCandidates");
+
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        await setDoc(sessionRef, {
+          threadId: selectedThread,
+          caller: currentUser,
+          callee: ADMIN_USER,
+          status: "requesting",
+          offer: {
+            type: offer.type,
+            sdp: offer.sdp
+          },
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        if (unsubscribeLiveDoc) unsubscribeLiveDoc();
+        unsubscribeLiveDoc = onSnapshot(sessionRef, async (snap) => {
+          if (!snap.exists()) {
+            return;
+          }
+          const data = snap.data() || {};
+          if (data.status === "active" && liveState !== "active") {
+            setLiveState("active");
+            liveInfo.textContent = "Canlı bağlantı aktif.";
+          }
+          if (data.answer && pc && !pc.currentRemoteDescription) {
+            try {
+              await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+              await flushQueuedCandidates();
+            } catch (err) {
+              console.warn("Answer işlenemedi:", err);
+            }
+          }
+          if (data.status === "ended") {
+            await endLiveSession();
+          }
+        });
+
+        if (unsubscribeCalleeCandidates) unsubscribeCalleeCandidates();
+        unsubscribeCalleeCandidates = onSnapshot(calleeCandidatesRef, async (snap) => {
+          snap.docChanges().forEach(async (change) => {
+            if (change.type === "added") {
+              const data = change.doc.data();
+              if (!pc || !pc.remoteDescription) {
+                pendingRemoteCandidates.push(data);
+              } else {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(data));
+                } catch (err) {
+                  console.warn("ICE eklenemedi:", err);
+                }
+              }
+            }
+          });
+          await flushQueuedCandidates();
+        });
+      } catch (err) {
+        console.error(err);
+        alert(err?.message || "Live başlatılamadı.");
+        await endLiveSession();
+      } finally {
+        updateLiveUI();
+      }
+    }
+
+    async function acceptLiveAsAdmin(sessionData) {
+      if (!isAdmin || !selectedThread) return;
+      if (!sessionData?.offer) return;
+
+      await endLiveSession(true);
+      liveSessionId = safeDocId(`live_${selectedThread}`);
+      setLiveState("active");
+      updateLiveUI();
+
+      try {
+        await preparePeer(false);
+
+        const sessionRef = doc(db, "liveSessions", liveSessionId);
+        const callerCandidatesRef = collection(db, "liveSessions", liveSessionId, "callerCandidates");
+        const calleeCandidatesRef = collection(db, "liveSessions", liveSessionId, "calleeCandidates");
+
+        if (unsubscribeCallerCandidates) unsubscribeCallerCandidates();
+        unsubscribeCallerCandidates = onSnapshot(callerCandidatesRef, async (snap) => {
+          snap.docChanges().forEach(async (change) => {
+            if (change.type === "added") {
+              const data = change.doc.data();
+              if (!pc || !pc.remoteDescription) {
+                pendingRemoteCandidates.push(data);
+              } else {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(data));
+                } catch (err) {
+                  console.warn("ICE eklenemedi:", err);
+                }
+              }
+            }
+          });
+          await flushQueuedCandidates();
+        });
+
+        if (unsubscribeCalleeCandidates) unsubscribeCalleeCandidates();
+        unsubscribeCalleeCandidates = onSnapshot(calleeCandidatesRef, async (snap) => {
+          snap.docChanges().forEach(async (change) => {
+            if (change.type === "added") {
+              const data = change.doc.data();
+              if (!pc || !pc.remoteDescription) {
+                pendingLocalCandidates.push(data);
+              } else {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(data));
+                } catch (err) {
+                  console.warn("ICE eklenemedi:", err);
+                }
+              }
+            }
+          });
+          if (pc?.remoteDescription) {
+            for (const c of pendingLocalCandidates.splice(0)) {
+              try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch {}
+            }
+          }
+        });
+
+        await pc.setRemoteDescription(new RTCSessionDescription(sessionData.offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+
+        await setDoc(sessionRef, {
+          threadId: selectedThread,
+          caller: sessionData.caller || selectedThread,
+          callee: ADMIN_USER,
+          status: "active",
+          answer: {
+            type: answer.type,
+            sdp: answer.sdp
+          },
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        if (unsubscribeLiveDoc) unsubscribeLiveDoc();
+        unsubscribeLiveDoc = onSnapshot(sessionRef, async (snap) => {
+          if (!snap.exists()) return;
+          const data = snap.data() || {};
+          if (data.status === "ended") {
+            await endLiveSession();
+          }
+        });
+
+        await flushQueuedCandidates();
+      } catch (err) {
+        console.error(err);
+        alert(err?.message || "Canlı kabul edilemedi.");
+        await endLiveSession();
+      } finally {
+        updateLiveUI();
+      }
+    }
+
+    function listenLiveSession() {
+      stopLiveListenersOnly();
+
+      if (!selectedThread) {
+        setLiveState("idle");
+        updateLiveUI();
+        return;
+      }
+
+      const sessionRef = doc(db, "liveSessions", safeDocId(`live_${selectedThread}`));
+      unsubscribeLiveDoc = onSnapshot(sessionRef, async (snap) => {
+        if (!snap.exists()) {
+          if (liveState !== "idle") {
+            await endLiveSession(true);
+          } else {
+            updateLiveUI();
+          }
+          return;
+        }
+
+        const data = snap.data() || {};
+        liveSessionId = safeDocId(`live_${selectedThread}`);
+
+        if (!isAdmin) {
+          if (data.status === "requesting" && liveState !== "requesting") {
+            setLiveState("requesting");
+            liveInfo.textContent = "Bekleniyor...";
+          }
+          if (data.answer && pc && !pc.currentRemoteDescription) {
+            try {
+              await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+              setLiveState("active");
+              await flushQueuedCandidates();
+            } catch (err) {
+              console.warn("Remote answer alınamadı:", err);
+            }
+          }
+          if (data.status === "ended") {
+            await endLiveSession();
+          }
+        } else {
+          if (data.status === "requesting") {
+            setLiveState("requesting");
+            liveInfo.textContent = `Canlı isteği: ${selectedThread}`;
+          } else if (data.status === "active") {
+            setLiveState("active");
+            liveInfo.textContent = "Canlı bağlantı aktif.";
+          } else if (data.status === "ended") {
+            await endLiveSession();
+          }
+        }
+
+        updateLiveUI();
+      });
+
+      if (isAdmin) {
+        const callerCandidatesRef = collection(db, "liveSessions", safeDocId(`live_${selectedThread}`), "callerCandidates");
+        unsubscribeCallerCandidates = onSnapshot(callerCandidatesRef, async (snap) => {
+          snap.docChanges().forEach(async (change) => {
+            if (change.type === "added") {
+              const data = change.doc.data();
+              if (!pc || !pc.remoteDescription) {
+                pendingRemoteCandidates.push(data);
+              } else {
+                try {
+                  await pc.addIceCandidate(new RTCIceCandidate(data));
+                } catch (err) {
+                  console.warn("ICE eklenemedi:", err);
+                }
+              }
+            }
+          });
+          await flushQueuedCandidates();
+        });
+      }
+    }
+
+    async function toggleChatStatus() {
+      if (!isAdmin) return;
+      try {
+        await setDoc(statusDocRef, {
+          open: !chatOpen,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch {
+        alert("Durum değiştirilemedi.");
+      }
+    }
+
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      const threadId = isAdmin ? selectedThread : currentUser;
+
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+
+      if (!text) return;
+      if (text.length > MAX_TEXT) {
+        alert("Mesaj çok uzun.");
+        return;
+      }
+
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Gönderiliyor...";
+
+      try {
+        await addDoc(collection(db, "messages"), {
+          threadId,
+          sender: currentUser,
+          recipient: isAdmin ? threadId : ADMIN_USER,
+          kind: "text",
+          text,
+          imageDataUrl: "",
+          imageName: "",
+          imageType: "",
+          imageWidth: 0,
+          imageHeight: 0,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + DAY_MS))
+        });
+
+        messageInput.value = "";
+        charCount.textContent = "0";
+      } catch (err) {
+        console.error(err);
+        alert("Mesaj gönderilemedi.");
+      } finally {
+        updateComposerState();
+      }
+    }
+
+    async function sendImage(file) {
+      const threadId = isAdmin ? selectedThread : currentUser;
+
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        alert("Sadece resim yükleyebilirsin.");
+        return;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        alert("Resim çok büyük. Daha küçük bir resim seç.");
+        return;
+      }
+
+      imageBtn.disabled = true;
+      imageBtn.textContent = "Sıkıştırılıyor...";
+
+      try {
+        const compressed = await compressImageToDataUrl(file);
+        if (!dataUrlSizeOk(compressed.dataUrl)) {
+          throw new Error("Resim çok büyük. Daha küçük bir resim seç.");
+        }
+
+        await addDoc(collection(db, "messages"), {
+          threadId,
+          sender: currentUser,
+          recipient: isAdmin ? threadId : ADMIN_USER,
+          text: "",
+          imageDataUrl: compressed.dataUrl,
+          imageName: file.name,
+          imageType: compressed.mime,
+          imageWidth: compressed.width,
+          imageHeight: compressed.height,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + IMAGE_EXPIRE_MS))
+        });
+      } catch (err) {
+        console.error(err);
+        alert(err?.message || "Fotoğraf yüklenemedi.");
+      } finally {
+        imageBtn.disabled = false;
+        imageBtn.textContent = "Resim";
+        imageInput.value = "";
+        updateComposerState();
+      }
+    }
+
+    async function cleanupExpiredMessages() {
+      try {
+        const now = Timestamp.now();
+        const q = query(collection(db, "messages"), where("expiresAt", "<=", now));
+        const snap = await getDocs(q);
+        for (const d of snap.docs) {
+          const data = d.data() || {};
+          if (data.kind === "video") {
+            try { await deleteVideoChunks(d.id); } catch {}
+          }
+          await deleteDoc(doc(db, "messages", d.id));
+        }
+      } catch (err) {
+        console.warn("Cleanup skipped:", err);
+      }
+    }
+
+    function listenMessages() {
+      if (unsubscribeMessages) unsubscribeMessages();
+      messagesHydrated = false;
+      seenMessageIds = new Set();
+      messagesEl.innerHTML = `<div class="empty">Yükleniyor...</div>`;
+
+      const threadId = isAdmin ? selectedThread : currentUser;
+      if (!threadId) {
+        renderEmpty("Bir sohbet seç.");
+        return;
+      }
+
+      const q = query(collection(db, "messages"), where("threadId", "==", threadId));
+      unsubscribeMessages = onSnapshot(q, (snap) => {
+        const items = [];
+        snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        items.sort((a, b) => (a.createdAtClient || 0) - (b.createdAtClient || 0));
+
+        if (!items.length) {
+          renderEmpty("Henüz mesaj yok.");
+          clearPendingModeRequest();
+          return;
+        }
+
+        if (!messagesHydrated) {
+          items.forEach(item => seenMessageIds.add(item.id));
+          messagesHydrated = true;
+        } else if (!isAdmin) {
+          for (const item of items) {
+            const isNew = !seenMessageIds.has(item.id);
+            if (isNew) {
+              seenMessageIds.add(item.id);
+              if (item.sender === ADMIN_USER && item.kind !== "mode_request" && item.text && String(item.text).trim().length <= 500) {
+                speakRobot(item.text);
+              }
+            }
+          }
+        }
+
+        if (!isAdmin) {
+          syncModeRequestState(items);
+        }
+
+        messagesEl.innerHTML = items.map(renderMessage).join("");
+
+        messagesEl.querySelectorAll(".copy-btn").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const text = decodeURIComponent(btn.dataset.copy || "");
+            await copyText(text, btn);
+          });
+        });
+
+        messagesEl.querySelectorAll("[data-open-image]").forEach((btn) => {
+          btn.addEventListener("click", () => openImageModal(btn.dataset.openImage || "", btn.dataset.imageName || "Resim"));
+        });
+
+        messagesEl.querySelectorAll("[data-download-image]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            await downloadDataUrl(btn.dataset.downloadImage || "", btn.dataset.imageName || "resim.jpg");
+          });
+        });
+
+        messagesEl.querySelectorAll(".message-image").forEach((img) => {
+          img.addEventListener("click", () => {
+            openImageModal(img.dataset.imageUrl || "", img.dataset.imageName || "Resim");
+          });
+        });
+
+        messagesEl.querySelectorAll("[data-video-message-id]").forEach((card) => {
+          const messageId = card.dataset.videoMessageId;
+          const mimeType = card.dataset.videoMime || "video/mp4";
+          const status = card.dataset.videoStatus || "uploading";
+          const loadingEl = card.querySelector("[data-video-loading]");
+          const videoEl = card.querySelector("[data-video-player]");
+          const fullBtn = card.querySelector("[data-fullscreen-video]");
+          const downloadBtn = card.querySelector("[data-download-video]");
+          if (!messageId || !videoEl) return;
+
+          if (status !== "ready") {
+            if (loadingEl) loadingEl.textContent = "Video yükleniyor...";
+            return;
+          }
+
+          const existing = videoObjectUrls.get(messageId);
+          const ready = () => {
+            videoEl.src = existing || "";
+            videoEl.controls = true;
+            if (loadingEl) loadingEl.textContent = "Video hazır.";
+            if (fullBtn) fullBtn.disabled = false;
+            if (downloadBtn) downloadBtn.disabled = false;
+          };
+
+          if (existing) {
+            ready();
+          } else {
+            loadVideoBlob(messageId, mimeType)
+              .then((url) => {
+                videoEl.src = url;
+                videoEl.controls = true;
+                if (loadingEl) loadingEl.textContent = "Video hazır.";
+                if (fullBtn) fullBtn.disabled = false;
+                if (downloadBtn) downloadBtn.disabled = false;
+              })
+              .catch((err) => {
+                console.warn("Video yüklenemedi:", err);
+                if (loadingEl) loadingEl.textContent = "Video yüklenemedi.";
+              });
+          }
+
+          if (fullBtn) {
+            fullBtn.addEventListener("click", () => enterFullscreenForVideo(messageId));
+          }
+          if (downloadBtn) {
+            downloadBtn.addEventListener("click", async () => {
+              await downloadVideoByMessageId(messageId, card.dataset.videoName || "video.mp4");
+            });
+          }
+        });
+
+        requestAnimationFrame(scrollToBottomFast);
+        hydrateVideoMessages();
+      }, () => {
+        renderEmpty("Mesajlar yüklenemedi.");
+      });
+    }
+
+    function listenThreads() {
+      if (unsubscribeThreads) unsubscribeThreads();
+
+      const q = query(collection(db, "messages"), orderBy("createdAtClient", "desc"));
+      unsubscribeThreads = onSnapshot(q, (snap) => {
+        const latestByUser = new Map();
+        snap.forEach((d) => {
+          const data = d.data();
+          if (!data.threadId) return;
+          if (data.sender === ADMIN_USER) return;
+          if (!latestByUser.has(data.threadId)) {
+            latestByUser.set(data.threadId, data);
+          }
+        });
+
+        lastThreadsCache = Array.from(latestByUser.entries()).map(([thread, data]) => ({ thread, data }));
+
+        if (!selectedThread && lastThreadsCache.length) {
+          selectedThread = lastThreadsCache[0].thread;
+          listenMessages();
+          listenLiveSession();
+        }
+
+        renderThreadList();
+        updateThreadStatusPill();
+      });
+    }
+
+    function listenPlusStatus() {
+      if (unsubscribePlusSelf) unsubscribePlusSelf();
+      if (!currentUser || isAdmin) {
+        currentPlus = null;
+        updatePlusStatusText();
+        updatePlusPill();
+        return;
+      }
+
+      unsubscribePlusSelf = onSnapshot(doc(db, "plusMembers", plusDocId(currentUser)), (snap) => {
+        currentPlus = snap.exists() ? { id: snap.id, ...snap.data() } : null;
+        updatePlusStatusText();
+        updatePlusPill();
+      }, () => {
+        currentPlus = null;
+        updatePlusStatusText();
+        updatePlusPill();
+      });
+    }
+
+    function listenPlusAdmin() {
+      if (unsubscribePlusAdmin) unsubscribePlusAdmin();
+      if (!isAdmin) return;
+
+      unsubscribePlusAdmin = onSnapshot(plusCollectionRef, (snap) => {
+        const map = new Map();
+        snap.forEach((d) => map.set(d.id, { id: d.id, ...d.data() }));
+        plusMap = map;
+        renderPlusAdminList();
+      }, () => {
+        plusMap = new Map();
+        renderPlusAdminList();
+      });
+    }
+
+    function listenPresence() {
+      if (unsubscribePresence) unsubscribePresence();
+
+      unsubscribePresence = onSnapshot(collection(db, "presence"), (snap) => {
+        const map = new Map();
+        snap.forEach((d) => {
+          const data = d.data() || {};
+          const key = normalizeKey(data.username || data.usernameKey || d.id);
+          map.set(key, { ...data, _id: d.id });
+        });
+        presenceMap = map;
+        renderThreadList();
+        updateThreadStatusPill();
+      }, () => {
+        presenceMap = new Map();
+        renderThreadList();
+        updateThreadStatusPill();
+      });
+    }
+
+    function listenStatus() {
+      if (unsubscribeStatus) unsubscribeStatus();
+
+      unsubscribeStatus = onSnapshot(statusDocRef, async (snap) => {
+        chatOpen = snap.exists() ? (snap.data()?.open !== false) : true;
+        updateComposerState();
+      }, async () => {
+        chatOpen = true;
+        updateComposerState();
+      });
+    }
+
+    loginBtn.addEventListener("click", login);
+    passwordInput.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+    usernameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
+    logoutBtn.addEventListener("click", logout);
+
+    plusBtn.addEventListener("click", openPlusPanel);
+    plusCloseBtn.addEventListener("click", closePlusPanel);
+    plusActivateBtn.addEventListener("click", activatePlus);
+    if (plusCreateBtn) plusCreateBtn.addEventListener("click", createPlusCode);
+    if (plusCreateCodeInput) {
+      plusCreateCodeInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") createPlusCode();
+      });
+    }
+    if (plusCreateDaysInput) {
+      plusCreateDaysInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") createPlusCode();
+      });
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    if (voiceToggleBtn) {
+      voiceToggleBtn.addEventListener("click", () => {
+        voiceEnabled = !voiceEnabled;
+        saveVoiceSetting();
+        updateVoiceToggleUI();
+      });
+    }
+    scrollBottomBtn.addEventListener("click", scrollToBottomFast);
+    statusToggleBtn.addEventListener("click", toggleChatStatus);
+
+    liveBtn.addEventListener("click", async () => {
+      if (liveState === "idle") await startLiveAsCaller();
+      else await endLiveSession();
+    });
+
+    liveAcceptBtn.addEventListener("click", async () => {
+      if (!isAdmin || !selectedThread) return;
+      const sessionRef = doc(db, "liveSessions", safeDocId(`live_${selectedThread}`));
+      const snap = await getDoc(sessionRef);
+      const data = snap.exists() ? snap.data() : null;
+      if (data?.offer) {
+        await acceptLiveAsAdmin(data);
+      } else {
+        alert("Canlı isteği bulunamadı.");
+      }
+    });
+
+    liveEndBtn.addEventListener("click", async () => {
+      await endLiveSession();
+    });
+
+    imageBtn.addEventListener("click", () => {
+      if (imageBtn.disabled) return;
+      imageInput.click();
+    });
+    videoBtn.addEventListener("click", () => {
+      if (videoBtn.disabled) return;
+      videoInput.click();
+    });
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files && imageInput.files[0];
+      if (file) sendImage(file);
+    });
+    videoInput.addEventListener("change", () => {
+      const file = videoInput.files && videoInput.files[0];
+      if (file) sendVideo(file);
+    });
+
+    messageInput.addEventListener("input", () => {
+      charCount.textContent = String(messageInput.value.length);
+    });
+
+    messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        sendMessage();
+      }
+    });
+
+    imageModalBackdrop.addEventListener("click", closeImageModal);
+    imageModalClose.addEventListener("click", closeImageModal);
+
+    imageModalOpenNewTab.addEventListener("click", () => {
+      if (currentModalImageUrl) {
+        window.open(currentModalImageUrl, "_blank", "noopener,noreferrer");
+      }
+    });
+
+    imageModalDownload.addEventListener("click", async () => {
+      if (currentModalImageUrl) {
+        await downloadDataUrl(currentModalImageUrl, currentModalImageName || "resim.jpg");
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !imageModal.classList.contains("hidden")) {
+        closeImageModal();
+      }
+    });
+
+    loadVoiceSetting();
+    void ensureDefaultPlusCode();
+
+    if (loadSession()) {
+      showApp();
+    } else {
+      showLogin();
+    }
+
+    // Make sure UI reflects selected role immediately.
+    updateComposerState();
+  </script>
+</body>
+</html>
