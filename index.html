@@ -367,7 +367,7 @@
       border:1px solid rgba(255,255,255,.08);
       border-radius:18px;
       overflow:hidden;
-      min-height:220px;
+      min-height:320px;
       display:flex;
       flex-direction:column;
     }
@@ -1134,9 +1134,8 @@
             <div class="live-grid">
               <div class="video-card">
                 <div class="video-label">Kullanıcının kamerası</div>
-                <video id="localVideo" autoplay playsinline muted></video>
+                <video id="remoteVideo" autoplay playsinline muted></video>
               </div>
-              <video id="remoteVideo" class="hidden" autoplay playsinline></video>
             </div>
           </section>
 
@@ -1380,6 +1379,7 @@
 
     let messagesHydrated = false;
     let seenMessageIds = new Set();
+    let spokenMessageIds = new Set();
 
     let liveState = "idle"; // idle | requesting | active
     let liveSessionId = "";
@@ -1540,6 +1540,17 @@
 
     function scrollToBottomFast() {
       messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    async function attachStreamToVideo(videoEl, stream) {
+      if (!videoEl) return;
+      videoEl.srcObject = stream || null;
+      try {
+        if (stream) {
+          videoEl.muted = true;
+          await videoEl.play();
+        }
+      } catch {}
     }
 
     function updateLiveUI() {
@@ -1942,6 +1953,7 @@
     function stopSpeech() {
       speechQueue = [];
       speechBusy = false;
+      spokenMessageIds = new Set();
       try { speechSynthesis.cancel(); } catch {}
     }
 
@@ -2582,8 +2594,7 @@
         }
         localStream = null;
 
-        remoteVideo.srcObject = null;
-        localVideo.srcObject = null;
+        try { if (remoteVideo) remoteVideo.srcObject = null; } catch {}
         pendingRemoteCandidates = [];
         pendingLocalCandidates = [];
       }
@@ -2621,7 +2632,14 @@
 
       pc.ontrack = (event) => {
         const [stream] = event.streams;
-        if (stream) remoteVideo.srcObject = stream;
+        if (stream) {
+          const videoTrack = stream.getVideoTracks?.()[0];
+          const displayStream = new MediaStream();
+          if (videoTrack) displayStream.addTrack(videoTrack);
+          if (displayStream.getTracks().length) {
+            attachStreamToVideo(remoteVideo, displayStream);
+          }
+        }
       };
 
       pc.onconnectionstatechange = async () => {
@@ -2665,12 +2683,11 @@
       liveBtn.textContent = "Bağlanıyor...";
 
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localVideo.srcObject = localStream;
-        remoteVideo.srcObject = null;
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        await attachStreamToVideo(remoteVideo, localStream);
 
         await preparePeer(true);
-        localStream.getTracks().forEach((track) => pc.addTrack(track, localStream));
+        localStream.getVideoTracks().forEach((track) => pc.addTrack(track, localStream));
 
         const sessionRef = doc(db, "liveSessions", liveSessionId);
         const callerCandidatesRef = collection(db, "liveSessions", liveSessionId, "callerCandidates");
@@ -3059,6 +3076,7 @@
       if (unsubscribeMessages) unsubscribeMessages();
       messagesHydrated = false;
       seenMessageIds = new Set();
+      spokenMessageIds = new Set();
       messagesEl.innerHTML = `<div class="empty">Yükleniyor...</div>`;
 
       const threadId = isAdmin ? selectedThread : currentUser;
@@ -3090,8 +3108,10 @@
                 item.sender === ADMIN_USER &&
                 item.kind !== "mode_request" &&
                 item.text &&
-                liveState === "active"
+                liveState === "active" &&
+                !spokenMessageIds.has(item.id)
               ) {
+                spokenMessageIds.add(item.id);
                 speakRobot(item.text);
               }
             }
