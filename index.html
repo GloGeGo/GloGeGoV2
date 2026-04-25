@@ -1379,9 +1379,11 @@
     let messagesHydrated = false;
     let seenMessageIds = new Set();
     let spokenMessageIds = new Set();
+    let lastMessagesCache = [];
 
     let liveState = "idle"; // idle | requesting | active
     let liveSessionId = "";
+    let liveActivatedAtClient = 0;
     let pc = null;
     let localStream = null;
     let pendingRemoteCandidates = [];
@@ -1539,6 +1541,14 @@
 
     function scrollToBottomFast() {
       messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function primeSpeech() {
+      try {
+        if (!window.speechSynthesis) return;
+        if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+        else window.speechSynthesis.resume();
+      } catch {}
     }
 
     async function attachStreamToVideo(videoEl, stream) {
@@ -1931,6 +1941,9 @@
         utter.rate = 0.95;
         utter.pitch = 0.65;
         utter.volume = 1;
+        utter.onstart = () => {
+          try { window.speechSynthesis.resume(); } catch {}
+        };
         utter.onend = () => {
           speechBusy = false;
           speakNextQueuedChunk();
@@ -1939,7 +1952,14 @@
           speechBusy = false;
           speakNextQueuedChunk();
         };
-        speechSynthesis.speak(utter);
+        try { window.speechSynthesis.resume(); } catch {}
+        try {
+          window.speechSynthesis.speak(utter);
+        } catch (err) {
+          speechBusy = false;
+          console.warn("Seslendirme çalışmadı:", err);
+          speakNextQueuedChunk();
+        }
       } catch (err) {
         speechBusy = false;
         console.warn("Seslendirme çalışmadı:", err);
@@ -1951,6 +1971,7 @@
       if (isAdmin || !voiceEnabled || liveState !== "active") return;
       const value = String(text || "").trim();
       if (!value) return;
+      primeSpeech();
       if (!speechQueue.length && !speechBusy) {
         try { speechSynthesis.cancel(); } catch {}
       }
@@ -1962,7 +1983,25 @@
       speechQueue = [];
       speechBusy = false;
       spokenMessageIds = new Set();
+      liveActivatedAtClient = 0;
       try { speechSynthesis.cancel(); } catch {}
+    }
+
+    function speakCurrentLiveMessages(items = []) {
+      if (isAdmin || liveState !== "active") return;
+      for (const item of items) {
+        const isNewEnough = Number(item.createdAtClient || 0) >= Math.max(0, liveActivatedAtClient - 1000);
+        if (
+          isNewEnough &&
+          item.sender === ADMIN_USER &&
+          item.kind !== "mode_request" &&
+          item.text &&
+          !spokenMessageIds.has(item.id)
+        ) {
+          spokenMessageIds.add(item.id);
+          speakRobot(item.text);
+        }
+      }
     }
 
 
@@ -2199,6 +2238,7 @@
       saveSession();
       setLoginError("");
       showApp();
+      primeSpeech();
     }
 
     async function logout() {
@@ -2576,6 +2616,9 @@
     function setLiveState(next) {
       liveState = next;
       updateComposerState();
+      if (!isAdmin && liveState === "active" && Array.isArray(lastMessagesCache) && lastMessagesCache.length) {
+        speakCurrentLiveMessages(lastMessagesCache);
+      }
     }
 
     function stopLiveListenersOnly() {
@@ -2691,6 +2734,8 @@
       liveBtn.textContent = "Bağlanıyor...";
 
       try {
+        primeSpeech();
+        liveActivatedAtClient = Date.now();
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         await attachStreamToVideo(callVideo, localStream);
 
@@ -2779,6 +2824,8 @@
       liveControlHint.textContent = "";
 
       try {
+        primeSpeech();
+        liveActivatedAtClient = Date.now();
         await preparePeer(false);
 
         const sessionRef = doc(db, "liveSessions", liveSessionId);
@@ -2896,6 +2943,8 @@
           if (data.answer && pc && !pc.currentRemoteDescription) {
             try {
               await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+              liveActivatedAtClient = Date.now();
+              primeSpeech();
               setLiveState("active");
               await flushQueuedCandidates();
             } catch (err) {
@@ -2910,6 +2959,8 @@
             setLiveState("requesting");
             liveInfo.textContent = `Canlı isteği: ${selectedThread}`;
           } else if (data.status === "active") {
+            liveActivatedAtClient = Date.now();
+            primeSpeech();
             setLiveState("active");
             liveInfo.textContent = "Canlı bağlantı aktif.";
           } else if (data.status === "ended") {
@@ -3098,6 +3149,7 @@
         const items = [];
         snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
         items.sort((a, b) => (a.createdAtClient || 0) - (b.createdAtClient || 0));
+        lastMessagesCache = items;
 
         if (!items.length) {
           renderEmpty("Henüz mesaj yok.");
@@ -3124,6 +3176,10 @@
               }
             }
           }
+        }
+
+        if (!isAdmin && liveState === "active") {
+          speakCurrentLiveMessages(items);
         }
 
         messagesEl.innerHTML = items.map(renderMessage).join("");
@@ -3330,17 +3386,23 @@
         voiceEnabled = !voiceEnabled;
         saveVoiceSetting();
         updateVoiceToggleUI();
+        primeSpeech();
+        if (!isAdmin && liveState === "active" && Array.isArray(lastMessagesCache) && lastMessagesCache.length) {
+          speakCurrentLiveMessages(lastMessagesCache);
+        }
       });
     }
     scrollBottomBtn.addEventListener("click", scrollToBottomFast);
     statusToggleBtn.addEventListener("click", toggleChatStatus);
 
     liveBtn.addEventListener("click", async () => {
+      primeSpeech();
       if (liveState === "idle") await startLiveAsCaller();
       else await endLiveSession();
     });
 
     liveAcceptBtn.addEventListener("click", async () => {
+      primeSpeech();
       if (!isAdmin || !selectedThread) return;
       const sessionRef = doc(db, "liveSessions", safeDocId(`live_${selectedThread}`));
       const snap = await getDoc(sessionRef);
