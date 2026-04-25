@@ -1133,11 +1133,11 @@
             </div>
             <div class="live-grid">
               <div class="video-card">
-                <div class="video-label">Karşı taraf</div>
+                <div class="video-label">Kullanıcının kamerası</div>
                 <video id="remoteVideo" autoplay playsinline></video>
               </div>
               <div class="video-card">
-                <div class="video-label">Benim kameram</div>
+                <div class="video-label">Kullanıcının kendi kamerası</div>
                 <video id="localVideo" autoplay playsinline muted></video>
               </div>
             </div>
@@ -1555,12 +1555,14 @@
       if (selectedThread && chatOpen) {
           if (!isAdmin) {
               if (liveState === "idle") {
+                  liveBtn.textContent = "GloGeGo Live";
                   liveBtn.classList.remove("hidden");
               } else if (liveState === "requesting") {
-                  liveBtn.classList.remove("hidden");
                   liveBtn.textContent = "Bağlanıyor...";
+                  liveBtn.classList.remove("hidden");
                   livePanel.classList.remove("hidden");
               } else if (liveState === "active") {
+                  liveBtn.textContent = "GloGeGo Live";
                   liveEndBtn.classList.remove("hidden");
                   livePanel.classList.remove("hidden");
               }
@@ -1776,7 +1778,7 @@
 
     function renderMessage(docData) {
       const mine = docData.sender === currentUser;
-      const isPlusUser = !!docData.isPlus; // Şık baloncuklar için plus kontrolü
+      const isPlusUser = !!docData.isPlus && docData.sender !== ADMIN_USER; // Sadece plus kullanıcı mesajları
       const kind = docData.kind || (docData.videoStatus ? "video" : ((docData.imageDataUrl || docData.imageName) ? "image" : "text"));
       const textValue = docData.text || "";
       const imageDataUrl = docData.imageDataUrl || "";
@@ -2518,22 +2520,32 @@
       unsubscribeCalleeCandidates = null;
     }
 
-    async function endLiveSession(silent = false) {
+    function cleanupLiveMedia() {
       try {
-        stopLiveListenersOnly();
-
         if (pc) {
           try { pc.ontrack = null; pc.onicecandidate = null; pc.onconnectionstatechange = null; pc.close(); } catch {}
         }
+      } finally {
         pc = null;
 
         if (localStream) {
-          localStream.getTracks().forEach(t => t.stop());
+          try {
+            localStream.getTracks().forEach(t => t.stop());
+          } catch {}
         }
         localStream = null;
 
         remoteVideo.srcObject = null;
         localVideo.srcObject = null;
+        pendingRemoteCandidates = [];
+        pendingLocalCandidates = [];
+      }
+    }
+
+    async function endLiveSession(silent = false) {
+      try {
+        stopLiveListenersOnly();
+        cleanupLiveMedia();
 
         if (liveSessionId) {
           try {
@@ -2686,10 +2698,12 @@
       if (!isAdmin || !selectedThread) return;
       if (!sessionData?.offer) return;
 
-      await endLiveSession(true);
+      stopLiveListenersOnly();
+      cleanupLiveMedia();
       liveSessionId = safeDocId(`live_${selectedThread}`);
       setLiveState("active");
-      updateLiveUI();
+      liveInfo.textContent = "Canlı açılıyor...";
+      liveControlHint.textContent = "";
 
       try {
         await preparePeer(false);
@@ -2766,6 +2780,8 @@
         });
 
         await flushQueuedCandidates();
+        liveInfo.textContent = "Canlı bağlantı aktif.";
+        liveControlHint.textContent = "Kabul edildi.";
       } catch (err) {
         console.error(err);
         alert(err?.message || "Canlı kabul edilemedi.");
