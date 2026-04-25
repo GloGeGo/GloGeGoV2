@@ -487,46 +487,48 @@
 
     .composer-top{
       display:grid;
-      grid-template-columns:1fr 180px;
-      gap:12px;
+      grid-template-columns:minmax(0, 1fr) 120px;
+      gap:10px;
       align-items:stretch;
     }
 
     .button-stack{
       display:grid;
-      gap:12px;
+      gap:8px;
     }
 
     textarea{
       resize:none;
-      min-height:110px;
-      max-height:240px;
+      min-height:170px;
+      max-height:280px;
       width:100%;
       border:1px solid transparent;
       background:#0f1420;
       color:var(--text);
       border-radius:16px;
-      padding:14px 16px;
+      padding:16px 18px;
       font-size:15px;
       outline:none;
       line-height:1.45;
     }
 
     .send-btn{
-      min-width:150px;
-      min-height:110px;
+      min-width:0;
+      min-height:44px;
       border:none;
-      border-radius:16px;
+      border-radius:12px;
       cursor:pointer;
       background:linear-gradient(135deg,var(--accent),var(--accent2));
       color:#fff;
-      font-size:16px;
+      font-size:13px;
       font-weight:800;
+      padding:10px 12px;
+      white-space:nowrap;
     }
 
     .send-btn.small{
-      min-height:56px;
-      font-size:15px;
+      min-height:40px;
+      font-size:12px;
     }
 
     .send-btn:disabled, .img-action-btn:disabled, .live-btn:disabled{
@@ -849,8 +851,10 @@
         border-bottom:1px solid var(--line);
         height:auto;
       }
-      .composer-top{grid-template-columns:1fr}
-      .send-btn{min-height:56px; width:100%}
+      .composer-top{grid-template-columns:minmax(0,1fr)}
+      .button-stack{grid-template-columns:repeat(2, minmax(0, 1fr));}
+      .send-btn{min-height:36px; width:100%; font-size:11px; padding:7px 6px}
+      .send-btn.small{min-height:36px; font-size:11px}
       .messages{padding:14px}
       .text{padding-right:0}
       .copy-btn{
@@ -992,6 +996,43 @@
     }
     .video-actions .img-action-btn:disabled{
       opacity:.6;
+    }
+
+    .audio-upload-card{
+      margin-top:10px;
+      display:grid;
+      gap:10px;
+    }
+
+    .audio-upload-loading{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .audio-wrap{
+      width:100%;
+      background:#05070c;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      overflow:hidden;
+      padding:12px;
+    }
+
+    .audio-player{
+      width:100%;
+      display:block;
+    }
+
+    .audio-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .send-btn.recording{
+      background:linear-gradient(135deg,#ef4444,#b91c1c);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 0 0 3px rgba(239,68,68,.12);
     }
 
     .request-bubble{
@@ -1165,6 +1206,7 @@
                   <button id="sendBtn" class="send-btn">Gönder</button>
                   <button id="imageBtn" class="send-btn small">Resim</button>
                   <button id="videoBtn" class="send-btn small">Video</button>
+                  <button id="audioBtn" class="send-btn small">Ses</button>
                 </div>
               </div>
 
@@ -1173,6 +1215,7 @@
 
               <div class="composer-bottom">
                 <span class="counter"><span id="charCount">0</span> / 500000</span>
+                <span id="audioStatusLine" class="status-line"></span>
                 <span id="statusLine" class="status-line"></span>
               </div>
             </div>
@@ -1240,6 +1283,8 @@
     const MAX_IMAGE_SIDE = 1400;
     const START_JPEG_QUALITY = 0.82;
     const MAX_DATAURL_LENGTH = 850000;
+    const AUDIO_MAX_MS = 2 * 60 * 1000;
+    const AUDIO_MAX_SIZE = 15 * 1024 * 1024;
     const PRESENCE_ONLINE_MS = 20 * 1000;
     const PRESENCE_HEARTBEAT_MS = 10 * 1000;
     const STUN_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
@@ -1291,9 +1336,11 @@
     const sendBtn = document.getElementById("sendBtn");
     const imageBtn = document.getElementById("imageBtn");
     const videoBtn = document.getElementById("videoBtn");
+    const audioBtn = document.getElementById("audioBtn");
     const imageInput = document.getElementById("imageInput");
     const videoInput = document.getElementById("videoInput");
     const charCount = document.getElementById("charCount");
+    const audioStatusLine = document.getElementById("audioStatusLine");
 
     const remoteVideo = document.getElementById("remoteVideo");
     const localVideo = document.getElementById("localVideo");
@@ -1359,6 +1406,13 @@
     let pendingModeRequest = null;
     let modeMenuOpen = false;
     let videoObjectUrls = new Map();
+    let audioObjectUrls = new Map();
+    let audioRecorder = null;
+    let audioStream = null;
+    let audioChunks = [];
+    let audioRecording = false;
+    let audioRecordingStart = 0;
+    let audioRecordingTimer = null;
 
     function escapeHtml(str = "") {
       return String(str)
@@ -1529,9 +1583,11 @@
         sendBtn.disabled = false;
         imageBtn.disabled = false;
         videoBtn.disabled = false;
+        audioBtn.disabled = false;
         sendBtn.textContent = "Gönder";
         imageBtn.textContent = "Resim";
         videoBtn.textContent = "Video";
+        if (!audioRecording) audioBtn.textContent = "Ses";
         statusLine.textContent = chatOpen ? "Sohbet açık." : "Sohbet kapalı.";
       } else {
         if (chatOpen) {
@@ -1539,18 +1595,22 @@
           sendBtn.disabled = false;
           imageBtn.disabled = false;
           videoBtn.disabled = false;
+          audioBtn.disabled = false;
           sendBtn.textContent = "Gönder";
           imageBtn.textContent = "Resim";
           videoBtn.textContent = "Video";
+          if (!audioRecording) audioBtn.textContent = "Ses";
           statusLine.textContent = "";
         } else {
           messageInput.placeholder = "GloGeGo müsait değil";
           sendBtn.disabled = true;
           imageBtn.disabled = true;
           videoBtn.disabled = true;
+          audioBtn.disabled = true;
           sendBtn.textContent = "Kapalı";
           imageBtn.textContent = "Kapalı";
           videoBtn.textContent = "Kapalı";
+          if (!audioRecording) audioBtn.textContent = "Ses";
           statusLine.textContent = "GloGeGo müsait değil";
         }
       }
@@ -1728,6 +1788,27 @@
             <div class="text">${escapeHtml(textValue)}</div>
             <div class="request-status ${cancelled ? "cancelled" : "pending"}">
               ${cancelled ? "İptal edildi" : modeText || "Bekleniyor..."}
+            </div>
+          </div>
+        `;
+      }
+
+      if (kind === "audio") {
+        const status = docData.audioStatus || "uploading";
+        return `
+          <div class="bubble ${mine ? "me" : ""}" data-audio-message-id="${messageId}" data-audio-name="${escapeHtml(docData.audioName || "sesli-mesaj.webm")}" data-audio-mime="${escapeHtml(docData.audioMime || "audio/webm")}" data-audio-status="${escapeHtml(status)}">
+            <div class="meta">
+              <span>${escapeHtml(docData.sender || "")}</span>
+              <span>${created}</span>
+            </div>
+            <div class="audio-upload-card">
+              <div class="audio-upload-loading" data-audio-loading>Sesli mesaj ${status === "ready" ? "hazırlanıyor..." : "yükleniyor..."}</div>
+              <div class="audio-wrap">
+                <audio class="audio-player" controls playsinline preload="metadata" data-audio-player></audio>
+              </div>
+              <div class="audio-actions">
+                <button class="img-action-btn" type="button" data-download-audio="${messageId}" data-audio-name="${safeName}" disabled>İndir</button>
+              </div>
             </div>
           </div>
         `;
@@ -1977,6 +2058,25 @@
       return url;
     }
 
+    async function loadAudioBlob(messageId, mimeType = "audio/webm") {
+      if (!messageId) return "";
+      const cached = audioObjectUrls.get(messageId);
+      if (cached) return cached;
+
+      const chunksRef = collection(db, "messages", messageId, "audioChunks");
+      const chunkSnap = await getDocs(query(chunksRef, orderBy("index")));
+      const parts = [];
+      chunkSnap.forEach((docSnap) => {
+        const data = docSnap.data() || {};
+        if (data.data) parts.push(base64ToUint8(data.data));
+      });
+
+      const blob = new Blob(parts, { type: mimeType || "audio/webm" });
+      const url = URL.createObjectURL(blob);
+      audioObjectUrls.set(messageId, url);
+      return url;
+    }
+
     async function hydrateVideoMessages() {
       const cards = Array.from(messagesEl.querySelectorAll("[data-video-message-id]"));
       for (const card of cards) {
@@ -2005,6 +2105,36 @@
         } catch (err) {
           console.warn("Video açılmadı:", err);
           if (loadingEl) loadingEl.textContent = "Video yüklenemedi.";
+        }
+      }
+    }
+
+    async function hydrateAudioMessages() {
+      const cards = Array.from(messagesEl.querySelectorAll("[data-audio-message-id]"));
+      for (const card of cards) {
+        const messageId = card.dataset.audioMessageId;
+        const mimeType = card.dataset.audioMime || "audio/webm";
+        const loadingEl = card.querySelector("[data-audio-loading]");
+        const audioEl = card.querySelector("[data-audio-player]");
+        const downloadBtn = card.querySelector("[data-download-audio]");
+        if (!messageId || !audioEl || audioEl.dataset.loaded === "1") continue;
+
+        const messageStatus = card.dataset.audioStatus || "ready";
+        if (messageStatus !== "ready") {
+          if (loadingEl) loadingEl.textContent = "Sesli mesaj yükleniyor...";
+          continue;
+        }
+
+        if (loadingEl) loadingEl.textContent = "Sesli mesaj hazırlanıyor...";
+        try {
+          const url = await loadAudioBlob(messageId, mimeType);
+          audioEl.src = url;
+          audioEl.dataset.loaded = "1";
+          if (loadingEl) loadingEl.textContent = "Sesli mesaj hazır.";
+          if (downloadBtn) downloadBtn.disabled = false;
+        } catch (err) {
+          console.warn("Ses açılmadı:", err);
+          if (loadingEl) loadingEl.textContent = "Sesli mesaj yüklenemedi.";
         }
       }
     }
@@ -2038,11 +2168,50 @@
       }
     }
 
+    async function deleteAudioChunks(messageId) {
+      const ref = collection(db, "messages", messageId, "audioChunks");
+      const snap = await getDocs(ref);
+      for (const d of snap.docs) {
+        await deleteDoc(doc(db, "messages", messageId, "audioChunks", d.id));
+      }
+    }
+
     function cleanupVideoUrls() {
       for (const url of videoObjectUrls.values()) {
         try { URL.revokeObjectURL(url); } catch {}
       }
       videoObjectUrls = new Map();
+    }
+
+    function cleanupAudioUrls() {
+      for (const url of audioObjectUrls.values()) {
+        try { URL.revokeObjectURL(url); } catch {}
+      }
+      audioObjectUrls = new Map();
+    }
+
+    function stopAudioStreamTracks() {
+      if (audioStream) {
+        for (const track of audioStream.getTracks()) {
+          try { track.stop(); } catch {}
+        }
+      }
+      audioStream = null;
+    }
+
+    function resetAudioRecordingUI() {
+      audioRecording = false;
+      audioRecordingStart = 0;
+      if (audioRecordingTimer) {
+        clearTimeout(audioRecordingTimer);
+        audioRecordingTimer = null;
+      }
+      if (audioBtn) {
+        audioBtn.disabled = false;
+        audioBtn.textContent = "Ses";
+        audioBtn.classList.remove("recording");
+      }
+      if (audioStatusLine) audioStatusLine.textContent = "";
     }
 
     async function sendModeRequest(mode, text) {
@@ -2113,6 +2282,180 @@
       } catch (err) {
         console.error(err);
         alert("İstek iptal edilemedi.");
+      }
+    }
+
+    function getSupportedAudioMimeType() {
+      const candidates = [
+        "audio/webm;codecs=opus",
+        "audio/webm",
+        "audio/ogg;codecs=opus",
+        "audio/ogg"
+      ];
+      if (!window.MediaRecorder || typeof MediaRecorder.isTypeSupported !== "function") return "";
+      return candidates.find((type) => MediaRecorder.isTypeSupported(type)) || "";
+    }
+
+    async function sendAudioBlob(blob, mimeType, durationMs, fileName = "sesli-mesaj.webm") {
+      const threadId = isAdmin ? selectedThread : currentUser;
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+      if (!blob) return;
+      if (blob.size > AUDIO_MAX_SIZE) {
+        throw new Error("Sesli mesaj çok büyük.");
+      }
+
+      const messageRef = doc(collection(db, "messages"));
+      const chunkSize = 180 * 1024;
+      const totalChunks = Math.max(1, Math.ceil(blob.size / chunkSize));
+
+      try {
+        await setDoc(messageRef, {
+          threadId,
+          sender: currentUser,
+          recipient: isAdmin ? threadId : ADMIN_USER,
+          kind: "audio",
+          text: "Sesli mesaj",
+          audioName: fileName || "sesli-mesaj.webm",
+          audioMime: mimeType || blob.type || "audio/webm",
+          audioSize: blob.size,
+          audioDurationMs: Math.max(0, Math.min(AUDIO_MAX_MS, durationMs || 0)),
+          audioChunkCount: totalChunks,
+          audioStatus: "uploading",
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          expiresAt: Timestamp.fromDate(new Date(Date.now() + DAY_MS))
+        });
+
+        const bytes = new Uint8Array(await blob.arrayBuffer());
+        const chunksRef = collection(db, "messages", messageRef.id, "audioChunks");
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * chunkSize;
+          const end = Math.min(bytes.length, start + chunkSize);
+          const slice = bytes.slice(start, end);
+          await setDoc(doc(chunksRef, String(i).padStart(5, "0")), {
+            index: i,
+            data: uint8ToBase64(slice)
+          });
+        }
+
+        await updateDoc(messageRef, {
+          audioStatus: "ready",
+          updatedAt: serverTimestamp()
+        });
+      } catch (err) {
+        try {
+          await deleteAudioChunks(messageRef.id);
+          await deleteDoc(messageRef);
+        } catch {}
+        throw err;
+      }
+    }
+
+    async function startAudioRecording() {
+      const threadId = isAdmin ? selectedThread : currentUser;
+      if (!threadId) {
+        alert("Önce bir sohbet seç.");
+        return;
+      }
+      if (!isAdmin && !chatOpen) {
+        alert("GloGeGo müsait değil.");
+        return;
+      }
+      if (audioRecording) {
+        await stopAudioRecording();
+        return;
+      }
+      if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+        alert("Tarayıcın ses kaydını desteklemiyor.");
+        return;
+      }
+
+      audioBtn.disabled = true;
+      audioBtn.textContent = "İzin...";
+      if (audioStatusLine) audioStatusLine.textContent = "Mikrofon izni bekleniyor...";
+
+      try {
+        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const mimeType = getSupportedAudioMimeType();
+        audioChunks = [];
+        audioRecorder = mimeType ? new MediaRecorder(audioStream, { mimeType }) : new MediaRecorder(audioStream);
+        audioRecording = true;
+        audioRecordingStart = Date.now();
+        audioBtn.disabled = false;
+        audioBtn.textContent = "Durdur";
+        audioBtn.classList.add("recording");
+        if (audioStatusLine) audioStatusLine.textContent = "Kayıt başladı. En fazla 2 dakika.";
+
+        audioRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size) audioChunks.push(event.data);
+        };
+
+        audioRecorder.onerror = (event) => {
+          console.error("Ses kaydı hatası:", event.error || event);
+          alert("Ses kaydı sırasında hata oluştu.");
+          void stopAudioRecording(true);
+        };
+
+        audioRecorder.onstop = async () => {
+          const durationMs = Date.now() - audioRecordingStart;
+          const savedMime = audioRecorder?.mimeType || mimeType || "audio/webm";
+          const blob = new Blob(audioChunks, { type: savedMime });
+          const ext = savedMime.includes("ogg") ? "ogg" : "webm";
+          const name = `sesli-mesaj-${new Date().toISOString().replace(/[:.]/g, "-")}.${ext}`;
+          resetAudioRecordingUI();
+          stopAudioStreamTracks();
+          if (audioStatusLine) audioStatusLine.textContent = "Sesli mesaj gönderiliyor...";
+          try {
+            await sendAudioBlob(blob, savedMime, durationMs, name);
+            if (audioStatusLine) audioStatusLine.textContent = "";
+          } catch (err) {
+            console.error(err);
+            alert(err?.message || "Sesli mesaj gönderilemedi.");
+            if (audioStatusLine) audioStatusLine.textContent = "Sesli mesaj gönderilemedi.";
+            setTimeout(() => {
+              if (audioStatusLine && !audioRecording) audioStatusLine.textContent = "";
+            }, 2500);
+          } finally {
+            audioChunks = [];
+            audioRecorder = null;
+          }
+        };
+
+        audioRecorder.start();
+        if (audioRecordingTimer) clearTimeout(audioRecordingTimer);
+        audioRecordingTimer = setTimeout(() => {
+          if (audioRecording) void stopAudioRecording(true);
+        }, AUDIO_MAX_MS);
+      } catch (err) {
+        console.error(err);
+        resetAudioRecordingUI();
+        stopAudioStreamTracks();
+        alert(err?.message || "Mikrofon açılamadı.");
+      }
+    }
+
+    async function stopAudioRecording(fromTimeout = false) {
+      if (!audioRecorder || audioRecorder.state !== "recording") {
+        resetAudioRecordingUI();
+        stopAudioStreamTracks();
+        return;
+      }
+      if (audioStatusLine) {
+        audioStatusLine.textContent = fromTimeout ? "Süre doldu, kaydediliyor..." : "Kayıt durduruluyor...";
+      }
+      try {
+        audioRecorder.stop();
+      } catch (err) {
+        console.warn("Kayıt durdurulamadı:", err);
+        resetAudioRecordingUI();
+        stopAudioStreamTracks();
       }
     }
 
@@ -2220,6 +2563,8 @@
       loginScreen.style.display = "flex";
       appScreen.style.display = "none";
       setPlusPanelOpen(false);
+      resetAudioRecordingUI();
+      stopAudioStreamTracks();
     }
 
     async function login() {
@@ -2263,6 +2608,9 @@
       stopPresenceTracking();
       stopSpeech();
       cleanupVideoUrls();
+      cleanupAudioUrls();
+      resetAudioRecordingUI();
+      stopAudioStreamTracks();
       closeModeMenu();
       composeMode = "normal";
       pendingModeRequest = null;
@@ -3083,6 +3431,9 @@
           if (data.kind === "video") {
             try { await deleteVideoChunks(d.id); } catch {}
           }
+          if (data.kind === "audio") {
+            try { await deleteAudioChunks(d.id); } catch {}
+          }
           await deleteDoc(doc(db, "messages", d.id));
         }
       } catch (err) {
@@ -3152,10 +3503,29 @@
           });
         });
 
+        messagesEl.querySelectorAll("[data-download-audio]").forEach((btn) => {
+          btn.addEventListener("click", async () => {
+            const card = btn.closest("[data-audio-message-id]");
+            const messageId = card?.dataset.audioMessageId || "";
+            const mimeType = card?.dataset.audioMime || "audio/webm";
+            const url = await loadAudioBlob(messageId, mimeType);
+            await downloadDataUrl(url, btn.dataset.audioName || "sesli-mesaj.webm");
+          });
+        });
+
         messagesEl.querySelectorAll(".message-image").forEach((img) => {
           img.addEventListener("click", () => {
             openImageModal(img.dataset.imageUrl || "", img.dataset.imageName || "Resim");
           });
+        });
+
+        messagesEl.querySelectorAll("[data-audio-message-id]").forEach((card) => {
+          const audioEl = card.querySelector("[data-audio-player]");
+          if (audioEl && !audioEl.dataset.loaded) {
+            audioEl.addEventListener("loadedmetadata", () => {
+              audioEl.dataset.loaded = "1";
+            }, { once: true });
+          }
         });
 
         messagesEl.querySelectorAll("[data-video-message-id]").forEach((card) => {
@@ -3211,6 +3581,7 @@
 
         requestAnimationFrame(scrollToBottomFast);
         hydrateVideoMessages();
+        hydrateAudioMessages();
       }, () => {
         renderEmpty("Mesajlar yüklenemedi.");
       });
@@ -3370,6 +3741,14 @@
     videoBtn.addEventListener("click", () => {
       if (videoBtn.disabled) return;
       videoInput.click();
+    });
+    audioBtn.addEventListener("click", async () => {
+      if (audioBtn.disabled) return;
+      if (audioRecording) {
+        await stopAudioRecording();
+      } else {
+        await startAudioRecording();
+      }
     });
 
     imageInput.addEventListener("change", () => {
