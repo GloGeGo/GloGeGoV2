@@ -844,6 +844,312 @@
       color:#d7ffe0;
     }
 
+
+
+    .gp-pill{
+      font-size:12px;
+      color:#d7ffe0;
+      background:#16341f;
+      border:1px solid #2b6a3e;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+    .gp-pill.zero{background:#3a1a1a;border-color:#7b3434;color:#ffd7d7;}
+
+    .gp-panel{
+      position:fixed;
+      inset:0;
+      z-index:1250;
+      padding:18px;
+      background:rgba(16,21,33,.98);
+      backdrop-filter:blur(10px);
+      overflow-y:auto;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      scrollbar-gutter:stable;
+    }
+    .gp-panel.hidden{display:none !important}
+    .gp-card{
+      width:min(1500px, calc(100vw - 36px));
+      min-height:calc(100vh - 36px);
+      border:1px solid rgba(255,255,255,.08);
+      background:#0f1420;
+      border-radius:24px;
+      padding:18px;
+      box-shadow:0 18px 54px rgba(0,0,0,.28);
+      display:grid;
+      grid-template-rows:auto auto minmax(0,1fr) auto;
+      gap:14px;
+      overflow-y:auto;
+      overscroll-behavior:contain;
+      scrollbar-gutter:stable;
+      min-width:0;
+    }
+    .gp-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .gp-title{
+      font-size:22px;
+      font-weight:900;
+      margin-bottom:4px;
+    }
+    .gp-status{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.4;
+    }
+    .gp-close{
+      border:none;
+      cursor:pointer;
+      border-radius:12px;
+      padding:10px 14px;
+      background:#18223b;
+      color:#dbe5ff;
+      border:1px solid #2c3560;
+      font-weight:800;
+    }
+    .gp-banner{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:12px;
+      align-items:center;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.06);
+      background:#121826;
+      border-radius:18px;
+    }
+    .gp-banner strong{font-size:18px;}
+    .gp-banner .muted{color:var(--muted);font-size:13px;line-height:1.45;}
+    .gp-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);
+      gap:14px;
+      align-items:start;
+      min-height:0;
+      min-width:0;
+      overflow:auto;
+      padding-right:4px;
+      overscroll-behavior:contain;
+    }
+    .gp-box{
+      border:1px solid rgba(255,255,255,.06);
+      background:#121826;
+      border-radius:18px;
+      padding:14px;
+      display:grid;
+      gap:10px;
+      height:fit-content;
+      min-width:0;
+      min-height:0;
+      overflow:auto;
+    }
+    .gp-box-title{
+      font-size:16px;
+      font-weight:900;
+      margin-bottom:2px;
+      line-height:1.25;
+      overflow-wrap:anywhere;
+    }
+    .gp-input,.gp-textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:#0c111c;
+      color:var(--text);
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      outline:none;
+    }
+    .gp-textarea{min-height:110px;resize:vertical;}
+    .gp-input:focus,.gp-textarea:focus{
+      border-color:#5165a7;
+      box-shadow:0 0 0 3px rgba(110,168,254,.12);
+    }
+    .gp-toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .gp-products{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+      gap:12px;
+      align-content:start;
+      min-width:0;
+    }
+    .gp-product-card{
+      border-radius:18px;
+      background:#101726;
+      border:1px solid rgba(255,255,255,.06);
+      overflow:hidden;
+      display:grid;
+      gap:10px;
+      min-width:0;
+      box-shadow:0 10px 28px rgba(0,0,0,.12);
+    }
+    .gp-product-image-wrap{
+      aspect-ratio: 16 / 11;
+      background:#05070c;
+      overflow:hidden;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .gp-product-image{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .gp-product-body{
+      padding:12px;
+      display:grid;
+      gap:8px;
+      min-width:0;
+    }
+    .gp-product-title{
+      font-weight:900;
+      font-size:15px;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+    }
+    .gp-product-desc{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      overflow:hidden;
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      min-height:56px;
+    }
+    .gp-price-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .gp-price{font-weight:900;font-size:16px;}
+    .gp-old-price{color:var(--muted);text-decoration:line-through;font-size:13px;}
+    .gp-badge{
+      font-size:12px;
+      padding:5px 8px;
+      border-radius:999px;
+      font-weight:800;
+      background:#2b2147;
+      border:1px solid #5f44a4;
+      color:#efe3ff;
+    }
+    .gp-badge.discount{background:#16341f;border-color:#2b6a3e;color:#d7ffe0;}
+    .gp-product-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .gp-product-actions .btn,.gp-product-actions .img-action-btn{min-height:42px;}
+    .gp-admin{
+      display:grid;
+      gap:10px;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      min-width:0;
+      overflow:auto;
+      padding-right:4px;
+      align-content:start;
+    }
+    .gp-admin-title{
+      font-size:18px;
+      font-weight:900;
+      grid-column:1 / -1;
+    }
+    .gp-admin-note{
+      color:var(--muted);
+      font-size:13px;
+      grid-column:1 / -1;
+    }
+    .gp-admin-create{
+      display:grid;
+      gap:10px;
+      padding:12px;
+      border-radius:16px;
+      background:#101726;
+      border:1px solid rgba(255,255,255,.06);
+      grid-column:1 / -1;
+      min-width:0;
+    }
+    .gp-admin-create-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(120px,.65fr) minmax(120px,.55fr) minmax(120px,.55fr);
+      gap:10px;
+      align-items:stretch;
+      min-width:0;
+    }
+    .gp-admin-create-grid .btn{min-height:52px;white-space:nowrap;}
+    .gp-admin-list{
+      display:grid;
+      gap:10px;
+      min-width:0;
+      max-height:420px;
+      overflow:auto;
+      padding-right:4px;
+      align-content:start;
+    }
+    .gp-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:12px;
+      align-items:start;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#182038;
+      border:1px solid rgba(110,168,254,.14);
+      font-size:14px;
+      min-width:0;
+    }
+    .gp-row strong{font-size:15px;overflow-wrap:anywhere;}
+    .gp-row .muted{color:var(--muted);font-size:13px;overflow-wrap:anywhere;}
+    .gp-modal{
+      position:fixed;
+      inset:0;
+      z-index:1300;
+      display:grid;
+      place-items:center;
+      padding:18px;
+    }
+    .gp-modal.hidden{display:none !important}
+    .gp-modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);}
+    .gp-modal-panel{
+      position:relative;
+      z-index:1;
+      width:min(96vw, 1040px);
+      max-height:92vh;
+      background:#101521;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:22px;
+      box-shadow:0 24px 80px rgba(0,0,0,.5);
+      padding:14px;
+      display:grid;
+      gap:12px;
+      overflow:auto;
+    }
+    .gp-modal-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      flex-wrap:wrap;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      padding-bottom:12px;
+    }
+    .gp-modal-title{font-size:18px;font-weight:900;color:var(--text);overflow-wrap:anywhere;}
+    .gp-modal-close{
+      border:none;cursor:pointer;width:42px;height:42px;border-radius:12px;
+      background:#18223b;color:#dbe5ff;border:1px solid #2c3560;font-size:22px;line-height:1;flex-shrink:0;
+    }
+    .gp-modal-content{display:grid;grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr);gap:14px;align-items:start;}
+    .gp-modal-image{width:100%;max-height:420px;object-fit:contain;border-radius:18px;background:#0b0f18;border:1px solid rgba(255,255,255,.08);}
+    .gp-modal-desc{color:#e8ecf5;line-height:1.6;white-space:pre-wrap;}
+    .gp-modal-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+    .gp-modal-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+
     @media (max-width: 900px){
       .app{grid-template-columns:1fr}
       .sidebar{
@@ -1107,11 +1413,13 @@
             <div class="who">GloGeGo</div>
             <div class="top-actions">
               <span id="userPill" class="pill"></span>
+              <span id="gpPill" class="gp-pill hidden"></span>
               <span id="plusPill" class="pill hidden"></span>
               <span id="threadStatusPill" class="pill hidden"></span>
               <button id="voiceToggleBtn" class="voice-toggle-btn hidden" type="button">Ses: Açık</button>
               <span id="livePill" class="pill hidden"></span>
               <button id="plusBtn" class="live-btn">GloGeGo Plus</button>
+              <button id="gpBtn" class="live-btn">GP Mağaza</button>
               <button id="liveBtn" class="live-btn hidden">Live</button>
               <button id="liveAcceptBtn" class="live-btn hidden">Kabul</button>
               <button id="liveEndBtn" class="live-btn hidden">Bitir</button>
@@ -1193,6 +1501,107 @@
             </div>
           </section>
 
+          <section id="gpPanel" class="gp-panel hidden" aria-hidden="true">
+            <div class="gp-card">
+              <div class="gp-head">
+                <div>
+                  <div class="gp-title">GloGeGo GP</div>
+                  <div id="gpStatusText" class="gp-status">GP mağazası ve yönetimi burada.</div>
+                </div>
+                <button id="gpCloseBtn" class="gp-close" type="button">Kapat</button>
+              </div>
+
+              <div class="gp-banner">
+                <div>
+                  <strong>GP bakiyen: <span id="gpBalanceText">0 GP</span></strong>
+                  <div id="gpBonusText" class="muted">Plus aktifse günlük 5 GP girişte otomatik eklenir.</div>
+                </div>
+                <div class="gp-toolbar">
+                  <button id="gpClaimBtn" class="btn secondary" type="button">Günlük 5 GP Al</button>
+                </div>
+              </div>
+
+              <div class="gp-grid">
+                <div class="gp-box">
+                  <div class="gp-box-title">Ürünler</div>
+                  <div id="gpProductsList" class="gp-products"></div>
+                </div>
+
+                <div class="gp-box">
+                  <div class="gp-box-title">GP Kullan</div>
+                  <input id="gpPromoInput" class="gp-input" type="text" placeholder="Promosyon kodu" autocomplete="one-time-code" />
+                  <button id="gpRedeemBtn" class="btn" type="button">Kodu Kullan</button>
+                  <div id="gpUserMsg" class="msg"></div>
+                  <div class="gp-status" style="color:var(--muted);font-size:13px;line-height:1.45;">Kodlar GP verir, ürün kartlarında fiyat ve indirim görünür. Ürüne göz at ile tam açıklama açılır.</div>
+                </div>
+              </div>
+
+              <div id="gpAdminSection" class="gp-admin hidden">
+                <div class="gp-admin-title">Admin GP Yönetimi</div>
+                <div class="gp-admin-note">Ürün ekle, düzenle, sil; kullanıcı GP ayarla; promo kod oluştur.</div>
+
+                <div class="gp-admin-create">
+                  <div class="gp-box-title" style="grid-column:1 / -1;">Ürün ekle / düzenle</div>
+                  <div class="gp-admin-create-grid">
+                    <input id="gpProductTitleInput" class="gp-input" type="text" placeholder="Ürün başlığı" />
+                    <input id="gpProductPriceInput" class="gp-input" type="number" min="0" step="1" placeholder="GP fiyatı" />
+                    <input id="gpProductDiscountInput" class="gp-input" type="number" min="0" step="1" placeholder="İndirimli GP" />
+                    <label style="display:flex;align-items:center;gap:10px;padding:0 4px;color:var(--muted);font-size:14px;">
+                      <input id="gpProductDiscountedInput" type="checkbox" /> İndirimli
+                    </label>
+                    <textarea id="gpProductDescInput" class="gp-textarea" placeholder="Ürün açıklaması"></textarea>
+                    <input id="gpProductImageInput" class="gp-input" type="file" accept="image/*" />
+                  </div>
+                  <div class="gp-toolbar">
+                    <button id="gpSaveProductBtn" class="btn" type="button">Ürünü Kaydet</button>
+                    <button id="gpClearProductBtn" class="btn secondary" type="button">Temizle</button>
+                    <span id="gpImageHint" class="gp-status"></span>
+                  </div>
+                  <div id="gpAdminProductMsg" class="msg"></div>
+                </div>
+
+                <div>
+                  <div class="gp-box-title">Kullanıcı GP ayarla</div>
+                  <div class="gp-admin-create-grid" style="grid-template-columns:minmax(0,1fr) minmax(120px,.5fr) minmax(120px,.5fr);margin-top:8px;">
+                    <input id="gpAdjustUserInput" class="gp-input" type="text" placeholder="Kullanıcı adı" />
+                    <input id="gpAdjustAmountInput" class="gp-input" type="number" step="1" placeholder="Miktar" />
+                    <button id="gpAdjustSetBtn" class="btn" type="button">GP Ayarla</button>
+                  </div>
+                  <div class="gp-toolbar" style="margin-top:8px;">
+                    <button id="gpAdjustAddBtn" class="btn secondary" type="button">GP Ekle</button>
+                    <button id="gpAdjustRemoveBtn" class="btn secondary" type="button">GP Düş</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="gp-box-title">Promo kod oluştur</div>
+                  <div class="gp-admin-create-grid" style="grid-template-columns:minmax(0,1fr) minmax(120px,.5fr) minmax(120px,.5fr);margin-top:8px;">
+                    <input id="gpCreateCodeInput" class="gp-input" type="text" placeholder="Kod" />
+                    <input id="gpCreatePointsInput" class="gp-input" type="number" min="1" step="1" value="10" placeholder="GP" />
+                    <button id="gpCreateCodeBtn" class="btn" type="button">Kod Oluştur</button>
+                  </div>
+                  <div class="gp-toolbar" style="margin-top:8px;">
+                    <button id="gpRefreshAdminBtn" class="btn secondary" type="button">Yenile</button>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="gp-box-title">Kullanıcılar</div>
+                  <div id="gpAdminUsersList" class="gp-admin-list"></div>
+                </div>
+
+                <div>
+                  <div class="gp-box-title">Promo kodlar</div>
+                  <div id="gpAdminCodesList" class="gp-admin-list"></div>
+                </div>
+
+                <div style="grid-column:1 / -1;">
+                  <div class="gp-box-title">Ürünler</div>
+                  <div id="gpAdminProductsList" class="gp-admin-list"></div>
+                </div>
+              </div>
+            </div>
+          </section>
 
           <div id="messages" class="messages">
             <div class="empty">Bir mesaj seç ya da yaz.</div>
@@ -1225,6 +1634,28 @@
     </div>
   </div>
 
+
+  <div id="gpModal" class="gp-modal hidden" aria-hidden="true">
+    <div id="gpModalBackdrop" class="gp-modal-backdrop"></div>
+    <div class="gp-modal-panel" role="dialog" aria-modal="true" aria-label="Ürün detayları">
+      <div class="gp-modal-top">
+        <div id="gpModalTitle" class="gp-modal-title">Ürün</div>
+        <button id="gpModalClose" class="gp-modal-close" type="button">×</button>
+      </div>
+      <div class="gp-modal-content">
+        <img id="gpModalImg" class="gp-modal-image" alt="Ürün görseli" />
+        <div>
+          <div id="gpModalDesc" class="gp-modal-desc"></div>
+          <div id="gpModalMeta" class="gp-modal-meta"></div>
+          <div class="gp-modal-actions" style="margin-top:14px;">
+            <button id="gpModalBuyBtn" class="btn" type="button">GP ile Al</button>
+            <button id="gpModalClose2" class="btn secondary" type="button">Kapat</button>
+          </div>
+          <div id="gpModalMsg" class="msg" style="text-align:left;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div id="imageModal" class="image-modal hidden" aria-hidden="true">
     <div id="imageModalBackdrop" class="image-modal-backdrop"></div>
     <div class="image-modal-panel" role="dialog" aria-modal="true" aria-label="Resim görüntüleyici">
@@ -1325,6 +1756,51 @@
     const plusAdminList = document.getElementById("plusAdminList");
     const plusCodeAdminList = document.getElementById("plusCodeAdminList");
     const plusPill = document.getElementById("plusPill");
+    const gpPill = document.getElementById("gpPill");
+    const gpBtn = document.getElementById("gpBtn");
+    const gpPanel = document.getElementById("gpPanel");
+    const gpCloseBtn = document.getElementById("gpCloseBtn");
+    const gpStatusText = document.getElementById("gpStatusText");
+    const gpBalanceText = document.getElementById("gpBalanceText");
+    const gpBonusText = document.getElementById("gpBonusText");
+    const gpClaimBtn = document.getElementById("gpClaimBtn");
+    const gpPromoInput = document.getElementById("gpPromoInput");
+    const gpRedeemBtn = document.getElementById("gpRedeemBtn");
+    const gpUserMsg = document.getElementById("gpUserMsg");
+    const gpProductsList = document.getElementById("gpProductsList");
+    const gpAdminSection = document.getElementById("gpAdminSection");
+    const gpProductTitleInput = document.getElementById("gpProductTitleInput");
+    const gpProductPriceInput = document.getElementById("gpProductPriceInput");
+    const gpProductDiscountInput = document.getElementById("gpProductDiscountInput");
+    const gpProductDiscountedInput = document.getElementById("gpProductDiscountedInput");
+    const gpProductDescInput = document.getElementById("gpProductDescInput");
+    const gpProductImageInput = document.getElementById("gpProductImageInput");
+    const gpSaveProductBtn = document.getElementById("gpSaveProductBtn");
+    const gpClearProductBtn = document.getElementById("gpClearProductBtn");
+    const gpImageHint = document.getElementById("gpImageHint");
+    const gpAdminProductMsg = document.getElementById("gpAdminProductMsg");
+    const gpAdjustUserInput = document.getElementById("gpAdjustUserInput");
+    const gpAdjustAmountInput = document.getElementById("gpAdjustAmountInput");
+    const gpAdjustSetBtn = document.getElementById("gpAdjustSetBtn");
+    const gpAdjustAddBtn = document.getElementById("gpAdjustAddBtn");
+    const gpAdjustRemoveBtn = document.getElementById("gpAdjustRemoveBtn");
+    const gpCreateCodeInput = document.getElementById("gpCreateCodeInput");
+    const gpCreatePointsInput = document.getElementById("gpCreatePointsInput");
+    const gpCreateCodeBtn = document.getElementById("gpCreateCodeBtn");
+    const gpRefreshAdminBtn = document.getElementById("gpRefreshAdminBtn");
+    const gpAdminUsersList = document.getElementById("gpAdminUsersList");
+    const gpAdminCodesList = document.getElementById("gpAdminCodesList");
+    const gpAdminProductsList = document.getElementById("gpAdminProductsList");
+    const gpModal = document.getElementById("gpModal");
+    const gpModalBackdrop = document.getElementById("gpModalBackdrop");
+    const gpModalTitle = document.getElementById("gpModalTitle");
+    const gpModalImg = document.getElementById("gpModalImg");
+    const gpModalDesc = document.getElementById("gpModalDesc");
+    const gpModalMeta = document.getElementById("gpModalMeta");
+    const gpModalClose = document.getElementById("gpModalClose");
+    const gpModalClose2 = document.getElementById("gpModalClose2");
+    const gpModalBuyBtn = document.getElementById("gpModalBuyBtn");
+    const gpModalMsg = document.getElementById("gpModalMsg");
 
     const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
@@ -1372,6 +1848,9 @@
     let unsubscribePlusSelf = null;
     let unsubscribePlusAdmin = null;
     let unsubscribePlusCodesAdmin = null;
+    let unsubscribeGpProducts = null;
+    let unsubscribeGpAdminUsers = null;
+    let unsubscribeGpAdminCodes = null;
     let unsubscribeCallerCandidates = null;
     let unsubscribeCalleeCandidates = null;
 
@@ -1386,6 +1865,19 @@
     let currentPlus = null;
     let plusPanelOpen = false;
     let livePanelBaseHidden = true;
+
+    let currentGp = 0;
+    let gpBalanceDoc = null;
+    let gpPanelOpen = false;
+    let gpProducts = [];
+    let gpAdminUsers = [];
+    let gpAdminCodes = [];
+    let currentGpProduct = null;
+    let editingGpProductId = null;
+    let gpProductImageDataUrl = "";
+    let gpProductImageName = "";
+    let gpProductImageMime = "image/jpeg";
+    let gpSelfClaimedToday = false;
 
     let messagesHydrated = false;
     let seenMessageIds = new Set();
@@ -2532,12 +3024,670 @@
       }
     }
 
+
+    function gpDocId(username = "") {
+      return safeDocId(username || "guest");
+    }
+
+    function todayKey() {
+      return new Date().toLocaleDateString("en-CA", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || undefined });
+    }
+
+    function normalizeGpNumber(value, fallback = 0) {
+      const n = Number.parseInt(String(value ?? "").trim(), 10);
+      return Number.isFinite(n) ? n : fallback;
+    }
+
+    function formatGp(value = 0) {
+      const n = Number.isFinite(Number(value)) ? Number(value) : 0;
+      return `${Math.max(0, Math.round(n))} GP`;
+    }
+
+    function clearGpMessages() {
+      if (gpUserMsg) gpUserMsg.textContent = "";
+      if (gpAdminProductMsg) gpAdminProductMsg.textContent = "";
+      if (gpModalMsg) gpModalMsg.textContent = "";
+    }
+
+    function setGpUserMsg(text, ok = false) {
+      if (!gpUserMsg) return;
+      gpUserMsg.textContent = text || "";
+      gpUserMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
+
+    function setGpAdminProductMsg(text, ok = false) {
+      if (!gpAdminProductMsg) return;
+      gpAdminProductMsg.textContent = text || "";
+      gpAdminProductMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
+
+    function setGpModalMsg(text, ok = false) {
+      if (!gpModalMsg) return;
+      gpModalMsg.textContent = text || "";
+      gpModalMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
+
+    function updateGpPill() {
+      if (!gpPill) return;
+      if (!currentUser) {
+        gpPill.classList.add("hidden");
+        gpPill.textContent = "";
+        return;
+      }
+      gpPill.textContent = `GP: ${Math.max(0, Math.round(currentGp || 0))}`;
+      gpPill.classList.toggle("zero", !(currentGp > 0));
+      gpPill.classList.remove("hidden");
+    }
+
+    function updateGpStatusText() {
+      if (!gpStatusText) return;
+      if (isAdmin) {
+        gpStatusText.textContent = "Admin panelinden ürün, GP ve promo kodlarını yönetebilirsin.";
+      } else if (currentUser) {
+        gpStatusText.textContent = "Ürüne göz at ile açıklamayı aç, GP ile al ile satın al.";
+      } else {
+        gpStatusText.textContent = "";
+      }
+    }
+
+    function updateGpBonusText() {
+      if (!gpBonusText) return;
+      if (isAdmin) {
+        gpBonusText.textContent = "Admin görünümünde bonus otomatikliği gösterilmez.";
+        return;
+      }
+      if (currentPlus && isPlusActive(currentPlus)) {
+        gpBonusText.textContent = gpSelfClaimedToday ? "Bugünün 5 GP bonusu verildi." : "Plus aktifse günlük 5 GP otomatik eklenir.";
+      } else {
+        gpBonusText.textContent = "Plus aktif değilse günlük bonus yok.";
+      }
+    }
+
+    async function ensureGpBalanceDoc() {
+      if (!currentUser) return null;
+      const ref = doc(db, "gpBalances", gpDocId(currentUser));
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          username: currentUser,
+          usernameKey: normalizeKey(currentUser),
+          gp: 0,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          updatedAt: serverTimestamp(),
+          updatedAtClient: Date.now()
+        }, { merge: true });
+      }
+      return ref;
+    }
+
+    function listenGpStatus() {
+      if (!currentUser) return;
+      const ref = doc(db, "gpBalances", gpDocId(currentUser));
+      if (gpBalanceDoc?.unsubscribe) {
+        try { gpBalanceDoc.unsubscribe(); } catch {}
+      }
+      gpBalanceDoc = { unsubscribe: onSnapshot(ref, (snap) => {
+        if (!snap.exists()) {
+          currentGp = 0;
+          updateGpPill();
+          return;
+        }
+        const data = snap.data() || {};
+        currentGp = normalizeGpNumber(data.gp, 0);
+        updateGpPill();
+      }, () => {
+        currentGp = 0;
+        updateGpPill();
+      }) };
+    }
+
+    function listenGpProducts() {
+      if (unsubscribeGpProducts) unsubscribeGpProducts();
+      const q = query(collection(db, "gpProducts"), orderBy("createdAtClient", "desc"));
+      unsubscribeGpProducts = onSnapshot(q, (snap) => {
+        gpProducts = [];
+        snap.forEach((d) => gpProducts.push({ id: d.id, ...d.data() }));
+        renderGpProducts();
+        renderGpAdminProducts();
+      }, () => {
+        gpProducts = [];
+        renderGpProducts();
+        renderGpAdminProducts();
+      });
+    }
+
+    function listenGpAdminUsers() {
+      if (unsubscribeGpAdminUsers) unsubscribeGpAdminUsers();
+      if (!isAdmin) {
+        gpAdminUsers = [];
+        renderGpAdminUsers();
+        return;
+      }
+      unsubscribeGpAdminUsers = onSnapshot(collection(db, "gpBalances"), (snap) => {
+        gpAdminUsers = [];
+        snap.forEach((d) => gpAdminUsers.push({ id: d.id, ...d.data() }));
+        renderGpAdminUsers();
+      }, () => {
+        gpAdminUsers = [];
+        renderGpAdminUsers();
+      });
+    }
+
+    function listenGpAdminCodes() {
+      if (unsubscribeGpAdminCodes) unsubscribeGpAdminCodes();
+      if (!isAdmin) {
+        gpAdminCodes = [];
+        renderGpAdminCodes();
+        return;
+      }
+      unsubscribeGpAdminCodes = onSnapshot(collection(db, "gpPromoCodes"), (snap) => {
+        gpAdminCodes = [];
+        snap.forEach((d) => gpAdminCodes.push({ id: d.id, ...d.data() }));
+        renderGpAdminCodes();
+      }, () => {
+        gpAdminCodes = [];
+        renderGpAdminCodes();
+      });
+    }
+
+    function renderGpProducts() {
+      if (!gpProductsList) return;
+      const items = gpProducts.map((item) => {
+        const basePrice = normalizeGpNumber(item.priceGp, 0);
+        const discounted = !!item.discounted;
+        const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
+        const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+        const shortDesc = String(item.description || "").trim().slice(0, 180) || "Açıklamayı ürün detayında aç.";
+        const hasImage = !!item.imageDataUrl;
+        return `
+          <article class="gp-product-card">
+            <div class="gp-product-image-wrap">
+              ${hasImage ? `<img class="gp-product-image" src="${escapeHtml(item.imageDataUrl)}" alt="${escapeHtml(item.title || 'Ürün görseli')}" />` : `<div class="empty" style="padding:18px;">Görsel yok</div>`}
+            </div>
+            <div class="gp-product-body">
+              <div class="gp-product-title">${escapeHtml(item.title || 'Başlıksız ürün')}</div>
+              <div class="gp-product-desc">${escapeHtml(shortDesc)}</div>
+              <div class="gp-price-row">
+                <span class="gp-price">${escapeHtml(formatGp(finalPrice))}</span>
+                ${discounted && discountPrice !== basePrice ? `<span class="gp-old-price">${escapeHtml(formatGp(basePrice))}</span>` : ''}
+                ${discounted ? `<span class="gp-badge discount">İndirimli</span>` : `<span class="gp-badge">Normal</span>`}
+              </div>
+              <div class="gp-product-actions">
+                <button class="img-action-btn" type="button" data-gp-open="${escapeHtml(item.id)}">Ürüne Göz At</button>
+                <button class="img-action-btn" type="button" data-gp-buy="${escapeHtml(item.id)}">GP ile Al</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      gpProductsList.innerHTML = items || '<div class="empty" style="padding:18px;">Henüz ürün yok.</div>';
+      gpProductsList.querySelectorAll('[data-gp-open]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const item = gpProducts.find((x) => x.id === btn.dataset.gpOpen);
+          if (item) openGpProductModal(item);
+        });
+      });
+      gpProductsList.querySelectorAll('[data-gp-buy]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const item = gpProducts.find((x) => x.id === btn.dataset.gpBuy);
+          if (item) buyGpProduct(item);
+        });
+      });
+    }
+
+    function renderGpAdminProducts() {
+      if (!gpAdminProductsList || !isAdmin) return;
+      const rows = gpProducts.map((item) => {
+        const basePrice = normalizeGpNumber(item.priceGp, 0);
+        const discounted = !!item.discounted;
+        const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
+        const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+        return `
+          <div class="gp-row">
+            <div>
+              <strong>${escapeHtml(item.title || 'Başlıksız ürün')}</strong>
+              <div class="muted">${escapeHtml(formatGp(finalPrice))}${discounted && discountPrice !== basePrice ? ` · eski: ${escapeHtml(formatGp(basePrice))}` : ''}</div>
+            </div>
+            <div style="text-align:right;display:grid;gap:8px;">
+              <div class="gp-toolbar" style="justify-content:flex-end;">
+                <button class="img-action-btn" type="button" data-gp-edit="${escapeHtml(item.id)}">Düzenle</button>
+                <button class="img-action-btn" type="button" data-gp-delete="${escapeHtml(item.id)}">Sil</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      gpAdminProductsList.innerHTML = rows || '<div class="empty" style="padding:18px;">Henüz ürün yok.</div>';
+      gpAdminProductsList.querySelectorAll('[data-gp-edit]').forEach((btn) => btn.addEventListener('click', () => {
+        const item = gpProducts.find((x) => x.id === btn.dataset.gpEdit);
+        if (item) loadGpProductForEdit(item);
+      }));
+      gpAdminProductsList.querySelectorAll('[data-gp-delete]').forEach((btn) => btn.addEventListener('click', () => {
+        void deleteGpProduct(btn.dataset.gpDelete);
+      }));
+    }
+
+    function renderGpAdminUsers() {
+      if (!gpAdminUsersList || !isAdmin) return;
+      const rows = gpAdminUsers
+        .slice()
+        .sort((a, b) => normalizeGpNumber(b.gp) - normalizeGpNumber(a.gp))
+        .map((data) => `
+          <div class="gp-row">
+            <div>
+              <strong>${escapeHtml(data.username || data.usernameKey || 'Bilinmeyen')}</strong>
+              <div class="muted">Son güncelleme: ${escapeHtml(data.updatedAtClient ? new Date(Number(data.updatedAtClient)).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }) : 'Bilinmiyor')}</div>
+            </div>
+            <div style="text-align:right">
+              <div><strong>${escapeHtml(formatGp(data.gp || 0))}</strong></div>
+            </div>
+          </div>
+        `).join('');
+      gpAdminUsersList.innerHTML = rows || '<div class="empty" style="padding:18px;">Kullanıcı GP kaydı yok.</div>';
+    }
+
+    function renderGpAdminCodes() {
+      if (!gpAdminCodesList || !isAdmin) return;
+      const rows = gpAdminCodes
+        .slice()
+        .sort((a, b) => Number(b.createdAtClient || 0) - Number(a.createdAtClient || 0))
+        .map((data) => {
+          const created = data.createdAtClient ? new Date(Number(data.createdAtClient)).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+          const used = !!data.used;
+          return `
+            <div class="gp-row">
+              <div>
+                <strong>${escapeHtml(data.code || data.id)}</strong>
+                <div class="muted">${escapeHtml(formatGp(data.points || 0))} · ${used ? 'Kullanıldı' : 'Hazır'}${data.usedBy ? ` · ${escapeHtml(data.usedBy)}` : ''}</div>
+              </div>
+              <div style="text-align:right">
+                <div><strong>${used ? 'Tek kullanımlık' : 'Aktif'}</strong></div>
+                <div class="muted">${escapeHtml(created || 'Bilinmiyor')}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      gpAdminCodesList.innerHTML = rows || '<div class="empty" style="padding:18px;">Promo kod yok.</div>';
+    }
+
+    function openGpProductModal(item) {
+      if (!item || !gpModal) return;
+      currentGpProduct = item;
+      gpModalTitle.textContent = item.title || 'Ürün';
+      gpModalDesc.textContent = item.description || 'Açıklama yok.';
+      gpModalImg.src = item.imageDataUrl || '';
+      const basePrice = normalizeGpNumber(item.priceGp, 0);
+      const discounted = !!item.discounted;
+      const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
+      const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+      gpModalMeta.innerHTML = `
+        <span class="gp-badge ${discounted ? 'discount' : ''}">${discounted ? 'İndirimli' : 'Normal'}</span>
+        <span class="gp-badge">Fiyat: ${escapeHtml(formatGp(finalPrice))}</span>
+        ${discounted && discountPrice !== basePrice ? `<span class="gp-badge">Eski: ${escapeHtml(formatGp(basePrice))}</span>` : ''}
+      `;
+      setGpModalMsg('');
+      gpModal.classList.remove('hidden');
+      gpModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeGpProductModal() {
+      if (!gpModal) return;
+      gpModal.classList.add('hidden');
+      gpModal.setAttribute('aria-hidden', 'true');
+      gpModalImg.src = '';
+      currentGpProduct = null;
+      document.body.style.overflow = '';
+      setGpModalMsg('');
+    }
+
+    async function saveGpProduct() {
+      if (!isAdmin) return;
+      const title = String(gpProductTitleInput?.value || '').trim();
+      const description = String(gpProductDescInput?.value || '').trim();
+      const priceGp = normalizeGpNumber(gpProductPriceInput?.value, -1);
+      const discountPriceGp = normalizeGpNumber(gpProductDiscountInput?.value, priceGp);
+      const discounted = !!gpProductDiscountedInput?.checked;
+
+      if (!title) return setGpAdminProductMsg('Başlık yaz.');
+      if (priceGp < 0) return setGpAdminProductMsg('GP fiyatı gir.');
+      if (discounted && discountPriceGp < 0) return setGpAdminProductMsg('İndirimli GP gir.');
+
+      gpSaveProductBtn.disabled = true;
+      gpSaveProductBtn.textContent = editingGpProductId ? 'Güncelleniyor...' : 'Kaydediliyor...';
+
+      try {
+        const payload = {
+          title,
+          description,
+          priceGp,
+          discounted,
+          discountPriceGp: discounted ? discountPriceGp : priceGp,
+          imageDataUrl: gpProductImageDataUrl || '',
+          imageName: gpProductImageName || '',
+          imageMime: gpProductImageMime || 'image/jpeg',
+          updatedAt: serverTimestamp(),
+          updatedAtClient: Date.now(),
+          updatedBy: currentUser,
+        };
+        if (editingGpProductId) {
+          await setDoc(doc(db, 'gpProducts', editingGpProductId), payload, { merge: true });
+          setGpAdminProductMsg('Ürün güncellendi.', true);
+        } else {
+          await addDoc(collection(db, 'gpProducts'), {
+            ...payload,
+            createdAt: serverTimestamp(),
+            createdAtClient: Date.now(),
+          });
+          setGpAdminProductMsg('Ürün eklendi.', true);
+        }
+        clearGpProductForm();
+      } catch (err) {
+        console.error(err);
+        setGpAdminProductMsg(err?.message || 'Ürün kaydedilemedi.');
+      } finally {
+        gpSaveProductBtn.disabled = false;
+        gpSaveProductBtn.textContent = editingGpProductId ? 'Ürünü Güncelle' : 'Ürünü Kaydet';
+      }
+    }
+
+    function clearGpProductForm() {
+      editingGpProductId = null;
+      currentGpProduct = null;
+      if (gpProductTitleInput) gpProductTitleInput.value = '';
+      if (gpProductPriceInput) gpProductPriceInput.value = '';
+      if (gpProductDiscountInput) gpProductDiscountInput.value = '';
+      if (gpProductDiscountedInput) gpProductDiscountedInput.checked = false;
+      if (gpProductDescInput) gpProductDescInput.value = '';
+      if (gpProductImageInput) gpProductImageInput.value = '';
+      gpProductImageDataUrl = '';
+      gpProductImageName = '';
+      gpProductImageMime = 'image/jpeg';
+      if (gpImageHint) gpImageHint.textContent = '';
+      if (gpSaveProductBtn) gpSaveProductBtn.textContent = 'Ürünü Kaydet';
+    }
+
+    async function loadGpProductForEdit(item) {
+      editingGpProductId = item.id;
+      currentGpProduct = item;
+      if (gpProductTitleInput) gpProductTitleInput.value = item.title || '';
+      if (gpProductPriceInput) gpProductPriceInput.value = String(normalizeGpNumber(item.priceGp, 0));
+      if (gpProductDiscountInput) gpProductDiscountInput.value = String(normalizeGpNumber(item.discountPriceGp, normalizeGpNumber(item.priceGp, 0)));
+      if (gpProductDiscountedInput) gpProductDiscountedInput.checked = !!item.discounted;
+      if (gpProductDescInput) gpProductDescInput.value = item.description || '';
+      gpProductImageDataUrl = item.imageDataUrl || '';
+      gpProductImageName = item.imageName || '';
+      gpProductImageMime = item.imageMime || 'image/jpeg';
+      if (gpImageHint) gpImageHint.textContent = 'Mevcut görsel korunacak. Yeni görsel seçersen değiştirilir.';
+      if (gpSaveProductBtn) gpSaveProductBtn.textContent = 'Ürünü Güncelle';
+      await openGpPanel();
+    }
+
+    async function deleteGpProduct(id) {
+      if (!isAdmin || !id) return;
+      if (!confirm('Ürün silinsin mi?')) return;
+      await deleteDoc(doc(db, 'gpProducts', id));
+      if (editingGpProductId === id) clearGpProductForm();
+    }
+
+    async function adjustUserGp(mode) {
+      if (!isAdmin) return;
+      const user = String(gpAdjustUserInput?.value || '').trim();
+      const amount = normalizeGpNumber(gpAdjustAmountInput?.value, NaN);
+      if (!user) return setGpAdminProductMsg('Kullanıcı adı yaz.');
+      if (!Number.isFinite(amount)) return setGpAdminProductMsg('Geçerli GP miktarı yaz.');
+
+      const ref = doc(db, 'gpBalances', gpDocId(user));
+      try {
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(ref);
+          const current = snap.exists() ? normalizeGpNumber(snap.data()?.gp, 0) : 0;
+          const next = mode === 'set' ? amount : mode === 'add' ? current + amount : current - amount;
+          tx.set(ref, {
+            username: user,
+            usernameKey: normalizeKey(user),
+            gp: Math.max(0, next),
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            adjustedBy: currentUser,
+            createdAt: snap.exists() ? (snap.data()?.createdAt || serverTimestamp()) : serverTimestamp(),
+            createdAtClient: snap.exists() ? Number(snap.data()?.createdAtClient || Date.now()) : Date.now(),
+          }, { merge: true });
+        });
+        setGpAdminProductMsg(`${user} için GP güncellendi.`, true);
+      } catch (err) {
+        console.error(err);
+        setGpAdminProductMsg(err?.message || 'GP güncellenemedi.');
+      }
+    }
+
+    async function createGpPromoCode() {
+      if (!isAdmin) return;
+      const code = String(gpCreateCodeInput?.value || '').trim();
+      const points = normalizeGpNumber(gpCreatePointsInput?.value, 0);
+      if (!code) return setGpAdminProductMsg('Kod yaz.');
+      if (points <= 0) return setGpAdminProductMsg('GP 1 veya daha büyük olmalı.');
+      try {
+        await setDoc(doc(db, 'gpPromoCodes', code), {
+          code,
+          points,
+          used: false,
+          createdBy: currentUser,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now(),
+          updatedAt: serverTimestamp(),
+          updatedAtClient: Date.now(),
+        }, { merge: true });
+        setGpAdminProductMsg('Promo kod oluşturuldu.', true);
+        if (gpCreateCodeInput) gpCreateCodeInput.value = '';
+        if (gpCreatePointsInput) gpCreatePointsInput.value = '10';
+      } catch (err) {
+        console.error(err);
+        setGpAdminProductMsg(err?.message || 'Kod oluşturulamadı.');
+      }
+    }
+
+    async function redeemGpPromoCode() {
+      if (!currentUser) return;
+      const code = String(gpPromoInput?.value || '').trim();
+      if (!code) return setGpUserMsg('Kod yaz.');
+      gpRedeemBtn.disabled = true;
+      gpRedeemBtn.textContent = 'Kontrol ediliyor...';
+      try {
+        await runTransaction(db, async (tx) => {
+          const codeRef = doc(db, 'gpPromoCodes', code);
+          const codeSnap = await tx.get(codeRef);
+          if (!codeSnap.exists()) throw new Error('Kod bulunamadı.');
+          const codeData = codeSnap.data() || {};
+          if (codeData.used) throw new Error('Kod kullanılmış.');
+          const points = normalizeGpNumber(codeData.points, 0);
+          if (points <= 0) throw new Error('Kod puanı geçersiz.');
+
+          const balanceRef = doc(db, 'gpBalances', gpDocId(currentUser));
+          const balanceSnap = await tx.get(balanceRef);
+          const current = balanceSnap.exists() ? normalizeGpNumber(balanceSnap.data()?.gp, 0) : 0;
+          tx.set(balanceRef, {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            gp: current + points,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            createdAt: balanceSnap.exists() ? (balanceSnap.data()?.createdAt || serverTimestamp()) : serverTimestamp(),
+            createdAtClient: balanceSnap.exists() ? Number(balanceSnap.data()?.createdAtClient || Date.now()) : Date.now(),
+          }, { merge: true });
+          tx.set(codeRef, {
+            ...codeData,
+            used: true,
+            usedBy: currentUser,
+            usedAt: serverTimestamp(),
+            usedAtClient: Date.now(),
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+          }, { merge: true });
+        });
+        setGpUserMsg('Kod kullanıldı ve GP eklendi.', true);
+        if (gpPromoInput) gpPromoInput.value = '';
+      } catch (err) {
+        console.error(err);
+        setGpUserMsg(err?.message || 'Kod kullanılamadı.');
+      } finally {
+        gpRedeemBtn.disabled = false;
+        gpRedeemBtn.textContent = 'Kodu Kullan';
+      }
+    }
+
+    async function claimDailyPlusGp() {
+      if (!currentUser || isAdmin) return;
+      if (!currentPlus || !isPlusActive(currentPlus)) {
+        gpSelfClaimedToday = false;
+        updateGpBonusText();
+        return;
+      }
+      try {
+        const key = todayKey();
+        await runTransaction(db, async (tx) => {
+          const claimRef = doc(db, 'gpDailyClaims', gpDocId(currentUser));
+          const claimSnap = await tx.get(claimRef);
+          const claimData = claimSnap.exists() ? claimSnap.data() : {};
+          if (claimData?.lastGrantKey === key) {
+            gpSelfClaimedToday = true;
+            return;
+          }
+          const balanceRef = doc(db, 'gpBalances', gpDocId(currentUser));
+          const balanceSnap = await tx.get(balanceRef);
+          const current = balanceSnap.exists() ? normalizeGpNumber(balanceSnap.data()?.gp, 0) : 0;
+          tx.set(balanceRef, {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            gp: current + 5,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            createdAt: balanceSnap.exists() ? (balanceSnap.data()?.createdAt || serverTimestamp()) : serverTimestamp(),
+            createdAtClient: balanceSnap.exists() ? Number(balanceSnap.data()?.createdAtClient || Date.now()) : Date.now(),
+          }, { merge: true });
+          tx.set(claimRef, {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            lastGrantKey: key,
+            grantedAt: serverTimestamp(),
+            grantedAtClient: Date.now(),
+            points: 5,
+            source: 'plus_daily',
+          }, { merge: true });
+          gpSelfClaimedToday = true;
+        });
+        updateGpBonusText();
+      } catch (err) {
+        console.warn('Günlük GP verilemedi:', err);
+      }
+    }
+
+    async function buyGpProduct(item) {
+      if (!currentUser || !item) return;
+      const basePrice = normalizeGpNumber(item.priceGp, 0);
+      const discounted = !!item.discounted;
+      const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
+      const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+      if (!Number.isFinite(finalPrice) || finalPrice < 0) return;
+      if (!confirm(`${item.title || 'Ürün'} için ${formatGp(finalPrice)} harcansın mı?`)) return;
+      try {
+        await runTransaction(db, async (tx) => {
+          const balanceRef = doc(db, 'gpBalances', gpDocId(currentUser));
+          const balanceSnap = await tx.get(balanceRef);
+          const current = balanceSnap.exists() ? normalizeGpNumber(balanceSnap.data()?.gp, 0) : 0;
+          if (current < finalPrice) throw new Error('Yetersiz GP.');
+          tx.set(balanceRef, {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            gp: current - finalPrice,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            createdAt: balanceSnap.exists() ? (balanceSnap.data()?.createdAt || serverTimestamp()) : serverTimestamp(),
+            createdAtClient: balanceSnap.exists() ? Number(balanceSnap.data()?.createdAtClient || Date.now()) : Date.now(),
+          }, { merge: true });
+          tx.set(doc(collection(db, 'gpOrders')), {
+            username: currentUser,
+            usernameKey: normalizeKey(currentUser),
+            productId: item.id,
+            productTitle: item.title || '',
+            priceGp: finalPrice,
+            createdAt: serverTimestamp(),
+            createdAtClient: Date.now(),
+          });
+        });
+        setGpUserMsg('Satın alma tamamlandı.', true);
+      } catch (err) {
+        console.error(err);
+        setGpUserMsg(err?.message || 'Satın alınamadı.');
+      }
+    }
+
+    async function openGpPanel() {
+      setGpPanelOpen(true);
+      clearGpMessages();
+      updateGpStatusText();
+      updateGpBonusText();
+      renderGpProducts();
+      renderGpAdminProducts();
+      renderGpAdminUsers();
+      renderGpAdminCodes();
+      if (gpPanel) gpPanel.scrollTop = 0;
+      await claimDailyPlusGp();
+    }
+
+    function setGpPanelOpen(open) {
+      gpPanelOpen = !!open;
+      if (gpPanel) gpPanel.classList.toggle('hidden', !gpPanelOpen);
+      const composerEl = document.querySelector('.composer');
+      if (gpPanelOpen) {
+        messagesEl.classList.add('hidden');
+        if (composerEl) composerEl.classList.add('hidden');
+      } else {
+        messagesEl.classList.remove('hidden');
+        if (composerEl) composerEl.classList.remove('hidden');
+      }
+    }
+
+    async function handleGpProductImage(file) {
+      if (!file) return;
+      if (!file.type || !file.type.startsWith('image/')) {
+        setGpAdminProductMsg('Sadece resim yükle.');
+        return;
+      }
+      gpImageHint.textContent = 'Görsel küçültülüyor...';
+      try {
+        const compressed = await compressImageToDataUrl(file);
+        gpProductImageDataUrl = compressed.dataUrl;
+        gpProductImageName = file.name || 'urun.jpg';
+        gpProductImageMime = compressed.mime || 'image/jpeg';
+        gpImageHint.textContent = `Görsel hazır: ${file.name || 'resim'}`;
+      } catch (err) {
+        console.error(err);
+        gpImageHint.textContent = err?.message || 'Görsel işlenemedi.';
+      }
+    }
+
+    async function deleteGpProductImageIfNeeded() {
+      // no-op placeholder for future storage cleanup
+    }
+
+    function openGpPanelByUser() {
+      openGpPanel();
+    }
+
+    function setGpAdminVisibility() {
+      if (gpAdminSection) gpAdminSection.classList.toggle('hidden', !isAdmin);
+    }
+
     function showApp() {
       loginScreen.style.display = "none";
       appScreen.style.display = "grid";
       sidebar.classList.toggle("hidden", !isAdmin);
       userPill.textContent = isAdmin ? "Admin" : currentUser;
       adminPlusSection.classList.toggle("hidden", !isAdmin);
+      setGpAdminVisibility();
+      updateGpPill();
 
       if (!isAdmin) {
         selectedThread = currentUser;
@@ -2548,21 +3698,37 @@
       listenMessages();
       listenPresence();
       listenPlusStatus();
-      if (isAdmin) listenThreads();
-      if (isAdmin) listenPlusAdmin();
-      if (isAdmin) listenPlusCodesAdmin();
+      listenGpStatus();
+      listenGpProducts();
+      if (isAdmin) {
+        listenThreads();
+        listenPlusAdmin();
+        listenPlusCodesAdmin();
+        listenGpAdminUsers();
+        listenGpAdminCodes();
+      }
+
+      void ensureGpBalanceDoc().then(() => {
+        listenGpStatus();
+        updateGpPill();
+        updateGpStatusText();
+      });
+      void claimDailyPlusGp();
 
       startPresenceTracking();
       cleanupExpiredMessages();
       if (cleanupTimer) clearInterval(cleanupTimer);
       cleanupTimer = setInterval(cleanupExpiredMessages, 10 * 60 * 1000);
       updateComposerState();
+      updateGpStatusText();
+      updateGpBonusText();
     }
 
     function showLogin() {
       loginScreen.style.display = "flex";
       appScreen.style.display = "none";
       setPlusPanelOpen(false);
+      setGpPanelOpen(false);
       resetAudioRecordingUI();
       stopAudioStreamTracks();
     }
@@ -2599,6 +3765,9 @@
       if (unsubscribePlusSelf) unsubscribePlusSelf();
       if (unsubscribePlusAdmin) unsubscribePlusAdmin();
       if (unsubscribePlusCodesAdmin) unsubscribePlusCodesAdmin();
+      if (unsubscribeGpProducts) unsubscribeGpProducts();
+      if (unsubscribeGpAdminUsers) unsubscribeGpAdminUsers();
+      if (unsubscribeGpAdminCodes) unsubscribeGpAdminCodes();
 
       currentUser = null;
       isAdmin = false;
@@ -3621,6 +4790,7 @@
         currentPlus = null;
         updatePlusStatusText();
         updatePlusPill();
+        updateGpBonusText();
         return;
       }
 
@@ -3628,10 +4798,13 @@
         currentPlus = snap.exists() ? { id: snap.id, ...snap.data() } : null;
         updatePlusStatusText();
         updatePlusPill();
+        updateGpBonusText();
+        void claimDailyPlusGp();
       }, () => {
         currentPlus = null;
         updatePlusStatusText();
         updatePlusPill();
+        updateGpBonusText();
       });
     }
 
@@ -3688,6 +4861,26 @@
     logoutBtn.addEventListener("click", logout);
 
     plusBtn.addEventListener("click", openPlusPanel);
+    gpBtn.addEventListener("click", openGpPanelByUser);
+    gpCloseBtn.addEventListener("click", () => setGpPanelOpen(false));
+    gpClaimBtn.addEventListener("click", () => void claimDailyPlusGp());
+    gpRedeemBtn.addEventListener("click", redeemGpPromoCode);
+    gpSaveProductBtn.addEventListener("click", saveGpProduct);
+    gpClearProductBtn.addEventListener("click", clearGpProductForm);
+    gpAdjustSetBtn.addEventListener("click", () => void adjustUserGp('set'));
+    gpAdjustAddBtn.addEventListener("click", () => void adjustUserGp('add'));
+    gpAdjustRemoveBtn.addEventListener("click", () => void adjustUserGp('remove'));
+    gpCreateCodeBtn.addEventListener("click", createGpPromoCode);
+    gpRefreshAdminBtn.addEventListener("click", () => {
+      renderGpAdminUsers();
+      renderGpAdminCodes();
+      renderGpAdminProducts();
+      renderGpProducts();
+    });
+    gpModalBackdrop.addEventListener("click", closeGpProductModal);
+    gpModalClose.addEventListener("click", closeGpProductModal);
+    gpModalClose2.addEventListener("click", closeGpProductModal);
+    gpModalBuyBtn.addEventListener("click", () => { if (currentGpProduct) void buyGpProduct(currentGpProduct); });
     plusCloseBtn.addEventListener("click", closePlusPanel);
     plusActivateBtn.addEventListener("click", activatePlus);
     if (plusCreateBtn) plusCreateBtn.addEventListener("click", createPlusCode);
@@ -3751,6 +4944,13 @@
       }
     });
 
+    if (gpProductImageInput) {
+      gpProductImageInput.addEventListener("change", () => {
+        const file = gpProductImageInput.files && gpProductImageInput.files[0];
+        if (file) void handleGpProductImage(file);
+      });
+    }
+
     imageInput.addEventListener("change", () => {
       const file = imageInput.files && imageInput.files[0];
       if (file) sendImage(file);
@@ -3786,8 +4986,14 @@
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !imageModal.classList.contains("hidden")) {
-        closeImageModal();
+      if (e.key === "Escape") {
+        if (!gpModal.classList.contains("hidden")) {
+          closeGpProductModal();
+          return;
+        }
+        if (!imageModal.classList.contains("hidden")) {
+          closeImageModal();
+        }
       }
     });
 
