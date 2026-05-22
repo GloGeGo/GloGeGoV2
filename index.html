@@ -874,7 +874,8 @@
     .gp-panel.hidden{display:none !important}
     .gp-card{
       width:min(1500px, calc(100vw - 36px));
-      min-height:calc(100vh - 36px);
+      height:calc(100vh - 36px);
+      max-height:calc(100vh - 36px);
       border:1px solid rgba(255,255,255,.08);
       background:#0f1420;
       border-radius:24px;
@@ -980,7 +981,7 @@
     }
     .gp-products{
       display:grid;
-      grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+      grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
       gap:12px;
       align-content:start;
       min-width:0;
@@ -1205,6 +1206,24 @@
       }
       .plus-admin-list{
         max-height:260px;
+      }
+      .gp-card{
+        width:100%;
+        height:calc(100vh - 24px);
+        max-height:calc(100vh - 24px);
+        padding:14px;
+      }
+      .gp-grid{
+        grid-template-columns:1fr;
+      }
+      .gp-admin{
+        grid-template-columns:1fr;
+      }
+      .gp-admin-create-grid{
+        grid-template-columns:1fr;
+      }
+      .gp-modal-content{
+        grid-template-columns:1fr;
       }
     }
   
@@ -2040,6 +2059,7 @@
     }
 
     function scrollToBottomFast() {
+      if (!messagesEl) return;
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
@@ -2841,6 +2861,7 @@
           audioStatus: "ready",
           updatedAt: serverTimestamp()
         });
+        setTimeout(scrollToBottomFast, 50);
       } catch (err) {
         try {
           await deleteAudioChunks(messageRef.id);
@@ -3013,6 +3034,7 @@
           videoStatus: "ready",
           updatedAt: serverTimestamp()
         });
+        setTimeout(scrollToBottomFast, 50);
       } catch (err) {
         console.error(err);
         alert(err?.message || "Video yüklenemedi.");
@@ -4525,6 +4547,7 @@
 
         messageInput.value = "";
         charCount.textContent = "0";
+        setTimeout(scrollToBottomFast, 10);
       } catch (err) {
         console.error(err);
         alert("Mesaj gönderilemedi.");
@@ -4579,6 +4602,7 @@
           createdAtClient: Date.now(),
           expiresAt: Timestamp.fromDate(new Date(Date.now() + IMAGE_EXPIRE_MS))
         });
+        setTimeout(scrollToBottomFast, 50);
       } catch (err) {
         console.error(err);
         alert(err?.message || "Fotoğraf yüklenemedi.");
@@ -4686,6 +4710,8 @@
           img.addEventListener("click", () => {
             openImageModal(img.dataset.imageUrl || "", img.dataset.imageName || "Resim");
           });
+          // Scroll bottom if an image loads and pushes content
+          img.addEventListener("load", scrollToBottomFast);
         });
 
         messagesEl.querySelectorAll("[data-audio-message-id]").forEach((card) => {
@@ -4748,7 +4774,8 @@
           }
         });
 
-        requestAnimationFrame(scrollToBottomFast);
+        setTimeout(scrollToBottomFast, 50);
+        setTimeout(scrollToBottomFast, 300);
         hydrateVideoMessages();
         hydrateAudioMessages();
       }, () => {
