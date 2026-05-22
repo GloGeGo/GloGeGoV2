@@ -844,8 +844,6 @@
       color:#d7ffe0;
     }
 
-
-
     .gp-pill{
       font-size:12px;
       color:#d7ffe0;
@@ -1209,9 +1207,16 @@
       }
       .gp-card{
         width:100%;
-        height:calc(100vh - 24px);
-        max-height:calc(100vh - 24px);
+        height: 92vh !important;
+        max-height: 92vh !important;
         padding:14px;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      .gp-products {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+        gap: 8px !important;
+        padding-bottom: 60px;
       }
       .gp-grid{
         grid-template-columns:1fr;
@@ -1397,6 +1402,23 @@
 
     .hidden-menu-space{display:none !important;}
 
+    /* Yeni Terminal Stilleri */
+    .terminal-box {
+      background: #000 !important;
+      border: 1px solid #0f0 !important;
+      font-family: 'Courier New', monospace;
+      padding: 10px;
+      margin-top: 15px;
+      grid-column: 1 / -1;
+    }
+    #gpTerminalOutput {
+      height: 120px;
+      overflow-y: auto;
+      color: #0f0;
+      font-size: 12px;
+      margin-bottom: 8px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -1568,6 +1590,7 @@
                     <label style="display:flex;align-items:center;gap:10px;padding:0 4px;color:var(--muted);font-size:14px;">
                       <input id="gpProductDiscountedInput" type="checkbox" /> İndirimli
                     </label>
+                    <input id="gpProductStockInput" class="gp-input" type="number" placeholder="Stok (Boşsa 5)" />
                     <textarea id="gpProductDescInput" class="gp-textarea" placeholder="Ürün açıklaması"></textarea>
                     <input id="gpProductImageInput" class="gp-input" type="file" accept="image/*" />
                   </div>
@@ -1617,6 +1640,12 @@
                 <div style="grid-column:1 / -1;">
                   <div class="gp-box-title">Ürünler</div>
                   <div id="gpAdminProductsList" class="gp-admin-list"></div>
+                </div>
+
+                <div class="gp-box terminal-box">
+                  <div class="gp-box-title" style="color: #0f0;">ADMIN TERMINAL</div>
+                  <div id="gpTerminalOutput">System ready... Type /Stock for management.</div>
+                  <input id="gpTerminalInput" class="gp-input" style="background: #000; color: #0f0; border-color: #0f0;" placeholder="/Stock Ürün_İsmi Düşülecek_Miktar Hız_MS (Örn: /Stock VIP 2 1000)" autocomplete="off" />
                 </div>
               </div>
             </div>
@@ -1792,6 +1821,7 @@
     const gpProductPriceInput = document.getElementById("gpProductPriceInput");
     const gpProductDiscountInput = document.getElementById("gpProductDiscountInput");
     const gpProductDiscountedInput = document.getElementById("gpProductDiscountedInput");
+    const gpProductStockInput = document.getElementById("gpProductStockInput");
     const gpProductDescInput = document.getElementById("gpProductDescInput");
     const gpProductImageInput = document.getElementById("gpProductImageInput");
     const gpSaveProductBtn = document.getElementById("gpSaveProductBtn");
@@ -1810,6 +1840,8 @@
     const gpAdminUsersList = document.getElementById("gpAdminUsersList");
     const gpAdminCodesList = document.getElementById("gpAdminCodesList");
     const gpAdminProductsList = document.getElementById("gpAdminProductsList");
+    const gpTerminalInput = document.getElementById("gpTerminalInput");
+    const gpTerminalOutput = document.getElementById("gpTerminalOutput");
     const gpModal = document.getElementById("gpModal");
     const gpModalBackdrop = document.getElementById("gpModalBackdrop");
     const gpModalTitle = document.getElementById("gpModalTitle");
@@ -3222,6 +3254,8 @@
         const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
         const shortDesc = String(item.description || "").trim().slice(0, 180) || "Açıklamayı ürün detayında aç.";
         const hasImage = !!item.imageDataUrl;
+        const currentStock = item.stock !== undefined ? item.stock : 5;
+        
         return `
           <article class="gp-product-card">
             <div class="gp-product-image-wrap">
@@ -3230,6 +3264,7 @@
             <div class="gp-product-body">
               <div class="gp-product-title">${escapeHtml(item.title || 'Başlıksız ürün')}</div>
               <div class="gp-product-desc">${escapeHtml(shortDesc)}</div>
+              <div class="gp-product-desc" style="font-weight:bold; color:var(--text); min-height:auto; margin-top:4px;">Stok: ${currentStock}</div>
               <div class="gp-price-row">
                 <span class="gp-price">${escapeHtml(formatGp(finalPrice))}</span>
                 ${discounted && discountPrice !== basePrice ? `<span class="gp-old-price">${escapeHtml(formatGp(basePrice))}</span>` : ''}
@@ -3265,11 +3300,13 @@
         const discounted = !!item.discounted;
         const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
         const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+        const currentStock = item.stock !== undefined ? item.stock : 5;
+
         return `
           <div class="gp-row">
             <div>
               <strong>${escapeHtml(item.title || 'Başlıksız ürün')}</strong>
-              <div class="muted">${escapeHtml(formatGp(finalPrice))}${discounted && discountPrice !== basePrice ? ` · eski: ${escapeHtml(formatGp(basePrice))}` : ''}</div>
+              <div class="muted">${escapeHtml(formatGp(finalPrice))}${discounted && discountPrice !== basePrice ? ` · eski: ${escapeHtml(formatGp(basePrice))}` : ''} | Stok: ${currentStock}</div>
             </div>
             <div style="text-align:right;display:grid;gap:8px;">
               <div class="gp-toolbar" style="justify-content:flex-end;">
@@ -3343,10 +3380,13 @@
       const discounted = !!item.discounted;
       const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
       const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+      const currentStock = item.stock !== undefined ? item.stock : 5;
+      
       gpModalMeta.innerHTML = `
         <span class="gp-badge ${discounted ? 'discount' : ''}">${discounted ? 'İndirimli' : 'Normal'}</span>
         <span class="gp-badge">Fiyat: ${escapeHtml(formatGp(finalPrice))}</span>
         ${discounted && discountPrice !== basePrice ? `<span class="gp-badge">Eski: ${escapeHtml(formatGp(basePrice))}</span>` : ''}
+        <span class="gp-badge">Stok: ${currentStock}</span>
       `;
       setGpModalMsg('');
       gpModal.classList.remove('hidden');
@@ -3371,6 +3411,8 @@
       const priceGp = normalizeGpNumber(gpProductPriceInput?.value, -1);
       const discountPriceGp = normalizeGpNumber(gpProductDiscountInput?.value, priceGp);
       const discounted = !!gpProductDiscountedInput?.checked;
+      const stockRaw = parseInt(gpProductStockInput?.value);
+      const stock = isNaN(stockRaw) ? 5 : stockRaw;
 
       if (!title) return setGpAdminProductMsg('Başlık yaz.');
       if (priceGp < 0) return setGpAdminProductMsg('GP fiyatı gir.');
@@ -3386,6 +3428,7 @@
           priceGp,
           discounted,
           discountPriceGp: discounted ? discountPriceGp : priceGp,
+          stock,
           imageDataUrl: gpProductImageDataUrl || '',
           imageName: gpProductImageName || '',
           imageMime: gpProductImageMime || 'image/jpeg',
@@ -3421,6 +3464,7 @@
       if (gpProductPriceInput) gpProductPriceInput.value = '';
       if (gpProductDiscountInput) gpProductDiscountInput.value = '';
       if (gpProductDiscountedInput) gpProductDiscountedInput.checked = false;
+      if (gpProductStockInput) gpProductStockInput.value = '';
       if (gpProductDescInput) gpProductDescInput.value = '';
       if (gpProductImageInput) gpProductImageInput.value = '';
       gpProductImageDataUrl = '';
@@ -3437,6 +3481,7 @@
       if (gpProductPriceInput) gpProductPriceInput.value = String(normalizeGpNumber(item.priceGp, 0));
       if (gpProductDiscountInput) gpProductDiscountInput.value = String(normalizeGpNumber(item.discountPriceGp, normalizeGpNumber(item.priceGp, 0)));
       if (gpProductDiscountedInput) gpProductDiscountedInput.checked = !!item.discounted;
+      if (gpProductStockInput) gpProductStockInput.value = item.stock !== undefined ? String(item.stock) : '5';
       if (gpProductDescInput) gpProductDescInput.value = item.description || '';
       gpProductImageDataUrl = item.imageDataUrl || '';
       gpProductImageName = item.imageName || '';
@@ -3611,7 +3656,15 @@
       const discounted = !!item.discounted;
       const discountPrice = normalizeGpNumber(item.discountPriceGp, basePrice);
       const finalPrice = discounted ? Math.max(0, discountPrice) : basePrice;
+      const currentStock = item.stock !== undefined ? item.stock : 5;
+
       if (!Number.isFinite(finalPrice) || finalPrice < 0) return;
+      
+      if (currentStock <= 0) {
+        alert("Bu ürünün stoku tükendi!");
+        return;
+      }
+
       if (!confirm(`${item.title || 'Ürün'} için ${formatGp(finalPrice)} harcansın mı?`)) return;
       try {
         await runTransaction(db, async (tx) => {
@@ -3619,6 +3672,12 @@
           const balanceSnap = await tx.get(balanceRef);
           const current = balanceSnap.exists() ? normalizeGpNumber(balanceSnap.data()?.gp, 0) : 0;
           if (current < finalPrice) throw new Error('Yetersiz GP.');
+
+          const productRef = doc(db, 'gpProducts', item.id);
+          const productSnap = await tx.get(productRef);
+          const latestStock = productSnap.exists() && productSnap.data().stock !== undefined ? productSnap.data().stock : 5;
+          if (latestStock <= 0) throw new Error('Bu ürünün stoku tükendi!');
+
           tx.set(balanceRef, {
             username: currentUser,
             usernameKey: normalizeKey(currentUser),
@@ -3628,6 +3687,7 @@
             createdAt: balanceSnap.exists() ? (balanceSnap.data()?.createdAt || serverTimestamp()) : serverTimestamp(),
             createdAtClient: balanceSnap.exists() ? Number(balanceSnap.data()?.createdAtClient || Date.now()) : Date.now(),
           }, { merge: true });
+
           tx.set(doc(collection(db, 'gpOrders')), {
             username: currentUser,
             usernameKey: normalizeKey(currentUser),
@@ -3637,8 +3697,15 @@
             createdAt: serverTimestamp(),
             createdAtClient: Date.now(),
           });
+
+          tx.set(productRef, {
+            stock: latestStock - 1
+          }, { merge: true });
         });
         setGpUserMsg('Satın alma tamamlandı.', true);
+        if(gpModal && !gpModal.classList.contains("hidden")){
+            closeGpProductModal();
+        }
       } catch (err) {
         console.error(err);
         setGpUserMsg(err?.message || 'Satın alınamadı.');
@@ -5023,6 +5090,76 @@
         }
       }
     });
+
+    if (gpTerminalInput) {
+      function logTerm(msg) {
+          if(!gpTerminalOutput) return;
+          gpTerminalOutput.innerHTML += `<div>> ${msg}</div>`;
+          gpTerminalOutput.scrollTop = gpTerminalOutput.scrollHeight;
+      }
+
+      gpTerminalInput.addEventListener("keydown", async (e) => {
+          if (e.key === "Enter") {
+              const cmd = gpTerminalInput.value.trim();
+              gpTerminalInput.value = "";
+              
+              if (cmd.toLowerCase().startsWith("/stock")) {
+                  // Kelimeleri ayır ve boş olanları temizle
+                  const parts = cmd.split(" ").filter(p => p !== "");
+                  if (parts.length < 4) {
+                      logTerm("Hata: /Stock [İsim] [Miktar] [Hız_MS] (Örn: /Stock VIP 2 1000)");
+                      return;
+                  }
+                  
+                  // En sondan hızı ve miktarı al (isimde boşluk olsa bile bozulmaz)
+                  const speed = parseInt(parts.pop());
+                  const amountToDrop = parseInt(parts.pop());
+                  
+                  // Kalan parçaları birleştirerek ürün adını bul
+                  const targetName = parts.slice(1).join(" ");
+                  
+                  if (isNaN(amountToDrop) || isNaN(speed)) {
+                      logTerm("Hata: Miktar ve Hız sayı olmalıdır.");
+                      return;
+                  }
+                  
+                  const product = gpProducts.find(p => p.title.toLowerCase().includes(targetName.toLowerCase()));
+                  
+                  if (!product) {
+                      logTerm(`Ürün bulunamadı: ${targetName}`);
+                      return;
+                  }
+                  
+                  logTerm(`${product.title} için stok düşürme başladı...`);
+                  
+                  let dropped = 0;
+                  let currentStock = product.stock !== undefined ? product.stock : 5;
+                  
+                  const interval = setInterval(async () => {
+                      if (dropped >= amountToDrop || currentStock <= 0) {
+                          clearInterval(interval);
+                          logTerm(`İşlem tamamlandı. Toplam ${dropped} stok düşürüldü. Kalan Stok: ${currentStock}`);
+                          return;
+                      }
+                      
+                      currentStock--;
+                      dropped++;
+                      
+                      try {
+                          await setDoc(doc(db, 'gpProducts', product.id), { stock: currentStock }, { merge: true });
+                          logTerm(`Stok güncellendi: ${currentStock}`);
+                      } catch (err) {
+                          logTerm("Hata: " + err.message);
+                          clearInterval(interval);
+                      }
+                  }, speed > 0 ? speed : 1000);
+                  
+              } else {
+                  logTerm("Bilinmeyen komut.");
+              }
+          }
+      });
+    }
 
     loadVoiceSetting();
     void ensureDefaultPlusCode();
