@@ -98,6 +98,23 @@
       outline:none;
     }
 
+    .field input[type="range"] {
+      padding: 0;
+      height: 6px;
+      background: #2a3141;
+      border-radius: 8px;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    
+    .field input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
     .field input:focus, .field textarea:focus, textarea:focus{
       border-color:#5165a7;
       box-shadow:0 0 0 3px rgba(110,168,254,.12);
@@ -110,6 +127,8 @@
       color:white;
       font-weight:700;
       transition:transform .15s ease, filter .15s ease;
+      border-radius:14px;
+      padding:14px 16px;
     }
 
     .btn:hover{
@@ -121,6 +140,12 @@
       background:#121725;
       border:1px solid var(--line);
       font-weight:600;
+    }
+
+    .btn.danger {
+      background:#3a1a1a;
+      border:1px solid #7b3434;
+      color:#ffd7d7;
     }
 
     .msg{
@@ -423,6 +448,11 @@
       padding-right:84px;
     }
 
+    .text strong {
+      font-weight: 900;
+      color: #ffffff;
+    }
+
     .media-wrap{
       margin-top:10px;
       display:grid;
@@ -565,6 +595,7 @@
       padding:30px;
     }
 
+    /* Modal Stilleri (Ortak) */
     .image-modal{
       position:fixed;
       inset:0;
@@ -592,6 +623,7 @@
       padding:14px;
       display:grid;
       gap:12px;
+      overflow-y:auto;
     }
     .image-modal-top{
       display:flex;
@@ -639,7 +671,32 @@
       justify-content:flex-end;
     }
 
+    /* Animasyonlar */
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message-animated {
+      animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    .typing-wrapper .bubble {
+      display: flex; gap: 6px; padding: 14px 20px; background: var(--bubble); align-items: center; border-radius: 18px; width: fit-content; border: 1px solid rgba(255,255,255,.06);
+    }
+    .dot {
+      width: 8px; height: 8px; background: #9aa6bd; border-radius: 50%;
+      animation: typingPulse 1.4s infinite both;
+    }
+    .dot:nth-child(1) { animation-delay: 0s; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
 
+
+    /* Diğer Paneller */
     .plus-panel{
       position:fixed;
       inset:0;
@@ -832,11 +889,6 @@
       color:var(--muted);
       font-size:13px;
       overflow-wrap:anywhere;
-    }
-    .plus-pill{
-      background:#2b2147;
-      border-color:#5f44a4;
-      color:#efe3ff;
     }
     .plus-active-tag{
       background:#16341f;
@@ -1238,20 +1290,6 @@
     }
   
     .top-actions{position:relative;}
-    .menu-btn{
-      border:none;
-      cursor:pointer;
-      border:1px solid #2c3560;
-      border-radius:12px;
-      padding:10px 12px;
-      font-size:18px;
-      font-weight:900;
-      color:#dbe5ff;
-      background:#18223b;
-      line-height:1;
-      min-width:42px;
-      min-height:42px;
-    }
 
     .mode-pill{
       font-size:12px;
@@ -1260,43 +1298,6 @@
       border:1px solid #2c3560;
       padding:6px 10px;
       border-radius:999px;
-    }
-
-    .mode-menu{
-      position:absolute;
-      right:0;
-      top:54px;
-      z-index:40;
-      width:min(260px, calc(100vw - 32px));
-      background:#101521;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:16px;
-      box-shadow:0 18px 50px rgba(0,0,0,.4);
-      padding:8px;
-      display:grid;
-      gap:8px;
-    }
-    .mode-menu.hidden{display:none !important}
-    .mode-menu button{
-      width:100%;
-      border:none;
-      cursor:pointer;
-      text-align:left;
-      padding:12px 12px;
-      border-radius:12px;
-      background:#18223b;
-      color:#dbe5ff;
-      font-weight:800;
-      border:1px solid #2c3560;
-    }
-    .mode-menu button.danger{
-      background:#3a1a1a;
-      border-color:#7b3434;
-      color:#ffd7d7;
-    }
-    .mode-menu button:disabled{
-      opacity:.55;
-      cursor:not-allowed;
     }
 
     .video-upload-card{
@@ -1405,8 +1406,6 @@
       max-width:1260px;
     }
 
-    .hidden-menu-space{display:none !important;}
-
     /* Terminal Stilleri */
     .terminal-box {
       background: #000 !important;
@@ -1424,9 +1423,29 @@
       margin-bottom: 8px;
       white-space: pre-wrap;
     }
+    
+    /* Gift Notification Banner */
+    #giftNotificationBanner {
+      position: fixed; 
+      top: 20px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      background: #16341f; 
+      border: 1px solid #2b6a3e; 
+      color: #d7ffe0; 
+      padding: 12px 24px; 
+      border-radius: 12px; 
+      z-index: 99999; 
+      font-weight: bold; 
+      display: none; 
+      box-shadow: var(--shadow); 
+      transition: opacity 0.3s;
+    }
   </style>
 </head>
 <body>
+  <div id="giftNotificationBanner"></div>
+  
   <div class="wrap">
     <div class="card">
       <div id="loginScreen" class="login">
@@ -1463,7 +1482,9 @@
               <span id="plusPill" class="pill hidden"></span>
               <span id="proPill" class="pill hidden"></span>
               <span id="threadStatusPill" class="pill hidden"></span>
+              <button id="proChatBtn" class="live-btn hidden" style="background:#4c1d95; border-color:#7c3aed; color:#e11d48;">PRO Sohbet</button>
               <button id="voiceToggleBtn" class="voice-toggle-btn hidden" type="button">Ses: Açık</button>
+              <span id="modePill" class="mode-pill hidden"></span>
               <span id="livePill" class="pill hidden"></span>
               <button id="plusBtn" class="live-btn">GloGeGo Tickets</button>
               <button id="gpBtn" class="live-btn">GP Mağaza</button>
@@ -1472,7 +1493,7 @@
               <button id="liveEndBtn" class="live-btn hidden">Bitir</button>
               <button id="statusToggleBtn" class="status-btn hidden">Durum</button>
               <button id="scrollBottomBtn" class="scroll-bottom-btn">En Alta İn</button>
-              <button id="logoutBtn" class="btn secondary" style="width:auto;padding:10px 14px;">Çıkış</button>
+              <button id="settingsBtn" class="btn secondary" style="width:auto;padding:10px 14px;">Ayarlar</button>
             </div>
           </div>
 
@@ -1492,6 +1513,26 @@
               <div class="video-card">
                 <div class="video-label">Benim kameram</div>
                 <video id="localVideo" autoplay playsinline muted></video>
+              </div>
+            </div>
+          </section>
+          
+          <section id="proChatPanel" class="plus-panel hidden" style="z-index: 1100;">
+            <div class="plus-card" style="display:flex; flex-direction:column; padding:0; background:#0f1115;">
+              <div class="chat-head" style="border-radius: 24px 24px 0 0;">
+                <div class="who" style="color: #c4b5fd;">PRO Kullanıcı Sohbeti</div>
+                <div class="top-actions">
+                  <button id="proChatCloseBtn" class="btn secondary">GloGeGo'ya Geri Dön</button>
+                </div>
+              </div>
+              <div id="proChatMessages" class="messages" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
+                <!-- PRO Chat Messages -->
+              </div>
+              <div class="composer" style="border-radius: 0 0 24px 24px;">
+                <div class="composer-box" style="display:flex; gap:10px;">
+                  <textarea id="proChatMessageInput" style="flex:1; min-height:50px; max-height:100px; padding:14px;" placeholder="PRO sohbete mesaj yaz... Sadece yazı gönderilebilir, 1 saate silinir."></textarea>
+                  <button id="proChatSendBtn" class="send-btn" style="background: linear-gradient(135deg, #8b5cf6, #d946ef);">Gönder</button>
+                </div>
               </div>
             </div>
           </section>
@@ -1545,6 +1586,8 @@
                   <div class="plus-feature">Günlük 2 GP</div>
                   <div class="plus-feature">Ürünlere %5 indirim.</div>
                   <div class="plus-feature">Plus özellikleri...</div>
+                  <div class="plus-feature">Düşünme ve Analiz hakları 24 saat yerine 6 saatte bir yenilenir.</div>
+                  <div class="plus-feature">Düşünme modu hakkı 10 kullanıma çıkar.</div>
                 </div>
 
               </div>
@@ -1733,6 +1776,58 @@
   </div>
 
 
+  <!-- AYARLAR MODALI -->
+  <div id="settingsModal" class="image-modal hidden" aria-hidden="true">
+    <div class="image-modal-backdrop" id="settingsModalBackdrop"></div>
+    <div class="image-modal-panel" role="dialog" aria-modal="true" style="width: min(96vw, 450px); max-height: 90vh; overflow-y: auto;">
+      <div class="image-modal-top">
+        <div class="image-modal-title">Ayarlar</div>
+        <button id="settingsCloseBtn" class="image-modal-close" type="button">×</button>
+      </div>
+      <div style="display:grid;gap:16px;padding-top:10px;">
+        
+        <!-- Ses Seviyesi -->
+        <div class="field">
+          <label for="setVolume">GloGeGo Okuma Sesi Seviyesi</label>
+          <input type="range" id="setVolume" min="0" max="1" step="0.1" value="1" />
+          <div class="muted" style="font-size:12px;margin-top:4px;">Ses kapalıyken etki etmez. Tercihler cihaza kaydedilir.</div>
+        </div>
+        
+        <!-- Düşünme Modu -->
+        <div class="plus-box" style="background:#131826;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="plus-box-title">Düşünme Modu</div>
+            <input type="checkbox" id="setThinking" style="width:20px;height:20px;" />
+          </div>
+          <div class="muted" style="font-size:13px;line-height:1.4;">GloGeGo konunuzda derin düşünmeler yapar. Karmaşık sorularınız için harikadır.<br>Kalan Hak: <strong id="thinkingRightsTxt" style="color:var(--text);">5</strong><span id="resetTimerTxt1" style="font-size:12px; color:var(--accent);"></span></div>
+        </div>
+
+        <!-- Analiz Modu -->
+        <div class="plus-box" style="background:#131826;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div class="plus-box-title">Analiz Modu</div>
+            <input type="checkbox" id="setAnalysis" style="width:20px;height:20px;" />
+          </div>
+          <div class="muted" style="font-size:13px;line-height:1.4;">Gönderdiğiniz verileri detaylıca analiz eder. Ekranda 'Analiz ediliyor...' yazar.<br>Kalan Hak: <strong id="analysisRightsTxt" style="color:var(--text);">10</strong><span id="resetTimerTxt2" style="font-size:12px; color:var(--accent);"></span></div>
+        </div>
+
+        <!-- GP Hediye Et -->
+        <div class="plus-box" style="background:#131826; border-color: rgba(74, 222, 128, 0.4);">
+          <div class="plus-box-title" style="color: #4ade80;">GP Hediye Et</div>
+          <div class="muted" style="font-size:13px;line-height:1.4;margin-bottom:8px;">Kullanıcı ismini ve miktarını girerek hesabınızdan GP gönderebilirsiniz.</div>
+          <input id="giftUsername" class="field input" style="width:100%; margin-bottom:8px; padding:10px;" placeholder="Kullanıcı Adı" />
+          <input id="giftAmount" class="field input" type="number" style="width:100%; margin-bottom:8px; padding:10px;" placeholder="Miktar" />
+          <button id="giftBtn" class="btn" style="width:100%; padding:10px;">Gönder</button>
+          <div id="giftMsg" class="msg"></div>
+        </div>
+
+        <!-- Çıkış -->
+        <button id="logoutBtn" class="btn danger" style="margin-top:16px;">Hesaptan Çıkış Yap</button>
+      </div>
+    </div>
+  </div>
+
+
   <div id="gpModal" class="gp-modal hidden" aria-hidden="true">
     <div id="gpModalBackdrop" class="gp-modal-backdrop"></div>
     <div class="gp-modal-panel" role="dialog" aria-modal="true" aria-label="Ürün detayları">
@@ -1826,9 +1921,6 @@
     const messagesEl = document.getElementById("messages");
     const userPill = document.getElementById("userPill");
     const threadStatusPill = document.getElementById("threadStatusPill");
-    const modePill = null;
-    const menuBtn = null;
-    const modeMenu = null;
     const voiceToggleBtn = document.getElementById("voiceToggleBtn");
     const livePill = document.getElementById("livePill");
     const livePanel = document.getElementById("livePanel");
@@ -1868,6 +1960,13 @@
     const proAdminList = document.getElementById("proAdminList");
     const proCodeAdminList = document.getElementById("proCodeAdminList");
     const proPill = document.getElementById("proPill");
+    
+    // PRO Chat Elements
+    const proChatBtn = document.getElementById("proChatBtn");
+    const proChatPanel = document.getElementById("proChatPanel");
+    const proChatCloseBtn = document.getElementById("proChatCloseBtn");
+    const proChatMessageInput = document.getElementById("proChatMessageInput");
+    const proChatSendBtn = document.getElementById("proChatSendBtn");
 
     const gpPill = document.getElementById("gpPill");
     const gpBtn = document.getElementById("gpBtn");
@@ -1923,6 +2022,14 @@
     const loginBtn = document.getElementById("loginBtn");
     const loginMsg = document.getElementById("loginMsg");
     const logoutBtn = document.getElementById("logoutBtn");
+    const settingsBtn = document.getElementById("settingsBtn");
+    const settingsModal = document.getElementById("settingsModal");
+    const settingsCloseBtn = document.getElementById("settingsCloseBtn");
+    const settingsModalBackdrop = document.getElementById("settingsModalBackdrop");
+    const setVolume = document.getElementById("setVolume");
+    const setThinking = document.getElementById("setThinking");
+    const setAnalysis = document.getElementById("setAnalysis");
+    const modePill = document.getElementById("modePill");
 
     const messageInput = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -1974,6 +2081,8 @@
     let unsubscribeGpAdminCodes = null;
     let unsubscribeCallerCandidates = null;
     let unsubscribeCalleeCandidates = null;
+    let unsubscribeGifts = null;
+    let unsubscribeProChat = null;
 
     let cleanupTimer = null;
     let presenceTimer = null;
@@ -2006,6 +2115,7 @@
 
     let messagesHydrated = false;
     let seenMessageIds = new Set();
+    let typingTimer = null;
 
     let liveState = "idle";
     let liveSessionId = "";
@@ -2018,7 +2128,6 @@
     let voiceReady = false;
     let voiceWarmupTimer = null;
     let voiceEnabled = true;
-    const voiceSettingKey = "glogego_voice_enabled";
     let composeMode = "normal";
     let pendingModeRequest = null;
     let modeMenuOpen = false;
@@ -2030,6 +2139,7 @@
     let audioRecording = false;
     let audioRecordingStart = 0;
     let audioRecordingTimer = null;
+    let settingsInterval = null;
 
     function escapeHtml(str = "") {
       return String(str)
@@ -2038,6 +2148,13 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
+    }
+
+    function formatMarkdown(text) {
+      if (!text) return "";
+      let formatted = escapeHtml(text);
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      return formatted;
     }
 
     function normalizeKey(value = "") {
@@ -2171,6 +2288,13 @@
       proCreateMsg.textContent = text || "";
       proCreateMsg.style.color = ok ? "#d7ffe0" : "#ffb4b4";
     }
+    
+    function setGiftMsg(text, ok = false) {
+      const el = document.getElementById("giftMsg");
+      if (!el) return;
+      el.textContent = text || "";
+      el.style.color = ok ? "#d7ffe0" : "#ffb4b4";
+    }
 
     function normalizePlusCode(value = "") {
       return String(value || "").trim();
@@ -2178,14 +2302,14 @@
 
     function loadVoiceSetting() {
       try {
-        const raw = sessionStorage.getItem(voiceSettingKey);
+        const raw = sessionStorage.getItem("glogego_voice_enabled");
         if (raw !== null) voiceEnabled = raw !== "0";
       } catch {}
     }
 
     function saveVoiceSetting() {
       try {
-        sessionStorage.setItem(voiceSettingKey, voiceEnabled ? "1" : "0");
+        sessionStorage.setItem("glogego_voice_enabled", voiceEnabled ? "1" : "0");
       } catch {}
     }
 
@@ -2342,6 +2466,30 @@
       currentModalImageName = "";
       document.body.style.overflow = "";
     }
+    
+    function openSettingsModal() {
+      checkAndResetRights();
+      updateSettingsUI();
+      settingsModal.classList.remove("hidden");
+      settingsModal.setAttribute("aria-hidden", "false");
+      
+      if(settingsInterval) clearInterval(settingsInterval);
+      settingsInterval = setInterval(updateSettingsUITimer, 60000);
+      updateSettingsUITimer();
+    }
+
+    function closeSettingsModal() {
+      if(settingsInterval) clearInterval(settingsInterval);
+      settingsModal.classList.add("hidden");
+      settingsModal.setAttribute("aria-hidden", "true");
+      setGiftMsg("");
+      document.getElementById("giftUsername").value = "";
+      document.getElementById("giftAmount").value = "";
+    }
+    
+    settingsBtn.addEventListener("click", openSettingsModal);
+    settingsCloseBtn.addEventListener("click", closeSettingsModal);
+    settingsModalBackdrop.addEventListener("click", closeSettingsModal);
 
     async function downloadDataUrl(dataUrl, filename) {
       try {
@@ -2407,7 +2555,7 @@
       return { dataUrl, width, height, mime: "image/jpeg" };
     }
 
-    function renderMessage(docData) {
+    function renderMessage(docData, isNew = false) {
       const mine = docData.sender === currentUser;
       const kind = docData.kind || (docData.videoStatus ? "video" : ((docData.imageDataUrl || docData.imageName) ? "image" : "text"));
       const textValue = docData.text || "";
@@ -2417,12 +2565,13 @@
       const safeUrl = escapeHtml(imageDataUrl);
       const messageId = escapeHtml(docData.id || "");
       const created = formatTime(docData.createdAt);
-      const modeText = docData.mode === "search" ? "Arıyor..." : docData.mode === "thinking" ? "Düşünüyor..." : "";
+      const modeText = docData.mode === "search" ? "Arıyor..." : docData.mode === "thinking" ? "Düşünüyor..." : docData.mode === "analysis" ? "Analiz Ediliyor..." : "";
       const cancelled = !!docData.cancelled;
+      const animClass = isNew ? "message-animated" : "";
 
       if (kind === "mode_request") {
         return `
-          <div class="bubble ${mine ? "me" : ""} request-bubble" data-message-id="${messageId}">
+          <div class="bubble ${mine ? "me" : ""} request-bubble ${animClass}" data-message-id="${messageId}">
             <div class="meta">
               <span>${escapeHtml(docData.sender || "")}</span>
               <span>${created}</span>
@@ -2439,7 +2588,7 @@
       if (kind === "audio") {
         const status = docData.audioStatus || "uploading";
         return `
-          <div class="bubble ${mine ? "me" : ""}" data-audio-message-id="${messageId}" data-audio-name="${escapeHtml(docData.audioName || "sesli-mesaj.webm")}" data-audio-mime="${escapeHtml(docData.audioMime || "audio/webm")}" data-audio-status="${escapeHtml(status)}">
+          <div class="bubble ${mine ? "me" : ""} ${animClass}" data-audio-message-id="${messageId}" data-audio-name="${escapeHtml(docData.audioName || "sesli-mesaj.webm")}" data-audio-mime="${escapeHtml(docData.audioMime || "audio/webm")}" data-audio-status="${escapeHtml(status)}">
             <div class="meta">
               <span>${escapeHtml(docData.sender || "")}</span>
               <span>${created}</span>
@@ -2460,7 +2609,7 @@
       if (kind === "video") {
         const status = docData.videoStatus || "uploading";
         return `
-          <div class="bubble ${mine ? "me" : ""}" data-video-message-id="${messageId}" data-video-name="${escapeHtml(docData.videoName || "video.mp4")}" data-video-mime="${escapeHtml(docData.videoMime || "video/mp4")}" data-video-status="${escapeHtml(status)}">
+          <div class="bubble ${mine ? "me" : ""} ${animClass}" data-video-message-id="${messageId}" data-video-name="${escapeHtml(docData.videoName || "video.mp4")}" data-video-mime="${escapeHtml(docData.videoMime || "video/mp4")}" data-video-status="${escapeHtml(status)}">
             <div class="meta">
               <span>${escapeHtml(docData.sender || "")}</span>
               <span>${created}</span>
@@ -2480,13 +2629,13 @@
       }
 
       return `
-        <div class="bubble ${mine ? "me" : ""}" data-message-id="${messageId}">
+        <div class="bubble ${mine ? "me" : ""} ${animClass}" data-message-id="${messageId}">
           <div class="meta">
             <span>${escapeHtml(docData.sender || "")}</span>
             <span>${created}</span>
           </div>
 
-          ${textValue ? `<div class="text">${escapeHtml(textValue)}</div>` : ""}
+          ${textValue ? `<div class="text">${formatMarkdown(textValue)}</div>` : ""}
 
           ${imageDataUrl ? `
             <div class="media-wrap">
@@ -2554,7 +2703,10 @@
         utter.voice = utteranceVoice || getVoice();
         utter.rate = 0.95;
         utter.pitch = 0.65;
-        utter.volume = 1;
+        
+        const storedVol = localStorage.getItem("glogego_settings_volume");
+        utter.volume = storedVol !== null ? parseFloat(storedVol) : 1;
+        
         speechSynthesis.speak(utter);
       } catch (err) {
         console.warn("Seslendirme çalışmadı:", err);
@@ -2567,50 +2719,23 @@
 
     function getModeLabel(mode) {
       if (mode === "search") return "Web'de arama";
-      if (mode === "thinking") return "Düşünme modu";
+      if (mode === "thinking") return "Düşünme Modu";
+      if (mode === "analysis") return "Analiz Modu";
       return "Normal";
     }
 
     function getModeStatus(mode) {
       if (mode === "search") return "Arıyor...";
       if (mode === "thinking") return "Düşünüyor...";
+      if (mode === "analysis") return "Analiz ediliyor...";
       return "";
-    }
-
-    function closeModeMenu() {
-      if (modeMenu) modeMenu.classList.add("hidden");
-      modeMenuOpen = false;
-      if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
-    }
-
-    function toggleModeMenu(force) {
-      if (!modeMenu) return;
-      const next = typeof force === "boolean" ? force : modeMenu.classList.contains("hidden");
-      modeMenu.classList.toggle("hidden", !next);
-      modeMenuOpen = next;
-      if (menuBtn) menuBtn.setAttribute("aria-expanded", next ? "true" : "false");
-    }
-
-    function setComposeMode(nextMode) {
-      composeMode = nextMode;
-      if (modePill) {
-        if (composeMode === "normal") {
-          modePill.classList.add("hidden");
-          modePill.textContent = "";
-        } else {
-          modePill.textContent = getModeLabel(composeMode);
-          modePill.classList.remove("hidden");
-        }
-      }
-      closeModeMenu();
-      updateComposerState();
     }
 
     function clearPendingModeRequest() {
       pendingModeRequest = null;
-      if (modePill && composeMode !== "normal") {
-        modePill.textContent = getModeLabel(composeMode);
-        modePill.classList.remove("hidden");
+      if (modePill) {
+        modePill.classList.add("hidden");
+        modePill.textContent = "";
       }
       updateComposerState();
     }
@@ -2621,18 +2746,12 @@
         if (pendingModeRequest) {
           modePill.textContent = getModeStatus(pendingModeRequest.mode) || getModeLabel(pendingModeRequest.mode);
           modePill.classList.remove("hidden");
-        } else if (composeMode === "normal") {
+        } else {
           modePill.classList.add("hidden");
           modePill.textContent = "";
         }
       }
       updateComposerState();
-    }
-
-    function normalizeModeFromMessage(item) {
-      if (!item) return null;
-      if (item.kind === "mode_request") return item.mode || null;
-      return null;
     }
 
     function syncModeRequestState(items = []) {
@@ -2890,8 +3009,10 @@
           expiresAt: Timestamp.fromDate(new Date(Date.now() + 6 * 60 * 60 * 1000))
         });
         pendingModeRequest = { id: ref.id, mode, text: normalizedText };
-        modePill.textContent = getModeStatus(mode) || getModeLabel(mode);
-        modePill.classList.remove("hidden");
+        if(modePill){
+            modePill.textContent = getModeStatus(mode) || getModeLabel(mode);
+            modePill.classList.remove("hidden");
+        }
         messageInput.value = "";
         charCount.textContent = "0";
       } catch (err) {
@@ -2899,32 +3020,6 @@
         alert("İstek gönderilemedi.");
       } finally {
         updateComposerState();
-      }
-    }
-
-    async function cancelPendingModeRequest() {
-      if (!pendingModeRequest?.id) {
-        alert("İptal edilecek bekleyen istek yok.");
-        return;
-      }
-      try {
-        await updateDoc(doc(db, "messages", pendingModeRequest.id), {
-          cancelled: true,
-          cancelledAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        pendingModeRequest = null;
-        if (composeMode === "normal") {
-          modePill.classList.add("hidden");
-          modePill.textContent = "";
-        } else {
-          modePill.textContent = getModeLabel(composeMode);
-          modePill.classList.remove("hidden");
-        }
-        updateComposerState();
-      } catch (err) {
-        console.error(err);
-        alert("İstek iptal edilemedi.");
       }
     }
 
@@ -3078,10 +3173,10 @@
           if (audioRecording) void stopAudioRecording(true);
         }, AUDIO_MAX_MS);
       } catch (err) {
-        console.error(err);
+        console.error("Mikrofon izni alınamadı veya açılamadı: ", err);
         resetAudioRecordingUI();
         stopAudioStreamTracks();
-        alert(err?.message || "Mikrofon açılamadı.");
+        alert("Mikrofon açılamadı. Lütfen tarayıcı izinlerinizi kontrol edin.");
       }
     }
 
@@ -3902,15 +3997,156 @@
       }
     }
 
-    async function deleteGpProductImageIfNeeded() {
-    }
-
     function openGpPanelByUser() {
       openGpPanel();
     }
 
     function setGpAdminVisibility() {
       if (gpAdminSection) gpAdminSection.classList.toggle('hidden', !isAdmin);
+    }
+    
+    // HEDİYE GP FONKSİYONLARI
+    async function sendGpGift() {
+      if (!currentUser) return;
+      const targetUser = document.getElementById("giftUsername").value.trim();
+      const amount = parseInt(document.getElementById("giftAmount").value);
+
+      if (!targetUser) return setGiftMsg("Lütfen bir kullanıcı adı yazın.");
+      if (targetUser.toLowerCase() === currentUser.toLowerCase()) return setGiftMsg("Kendinize hediye gönderemezsiniz.");
+      if (isNaN(amount) || amount <= 0) return setGiftMsg("Geçerli bir miktar girin.");
+      if (currentGp < amount) return setGiftMsg("Yeterli GP'niz bulunmuyor.");
+
+      const btn = document.getElementById("giftBtn");
+      btn.disabled = true;
+      btn.textContent = "Gönderiliyor...";
+
+      try {
+        await runTransaction(db, async (tx) => {
+          const senderRef = doc(db, 'gpBalances', gpDocId(currentUser));
+          const recipientRef = doc(db, 'gpBalances', gpDocId(targetUser));
+
+          const senderSnap = await tx.get(senderRef);
+          const recipientSnap = await tx.get(recipientRef);
+
+          const senderGp = senderSnap.exists() ? normalizeGpNumber(senderSnap.data().gp, 0) : 0;
+          if (senderGp < amount) throw new Error("Yetersiz GP.");
+
+          const recipientGp = recipientSnap.exists() ? normalizeGpNumber(recipientSnap.data().gp, 0) : 0;
+
+          tx.set(senderRef, {
+            gp: senderGp - amount,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now()
+          }, { merge: true });
+
+          tx.set(recipientRef, {
+            username: targetUser,
+            usernameKey: normalizeKey(targetUser),
+            gp: recipientGp + amount,
+            updatedAt: serverTimestamp(),
+            updatedAtClient: Date.now(),
+            createdAt: recipientSnap.exists() ? recipientSnap.data().createdAt : serverTimestamp(),
+            createdAtClient: recipientSnap.exists() ? recipientSnap.data().createdAtClient : Date.now()
+          }, { merge: true });
+
+          const giftRef = doc(collection(db, "gpGifts"));
+          tx.set(giftRef, {
+            from: currentUser,
+            to: normalizeKey(targetUser),
+            amount: amount,
+            read: false,
+            createdAt: serverTimestamp(),
+            createdAtClient: Date.now()
+          });
+        });
+        setGiftMsg(`${targetUser} kullanıcısına ${amount} GP gönderildi!`, true);
+        document.getElementById("giftUsername").value = "";
+        document.getElementById("giftAmount").value = "";
+      } catch (err) {
+        setGiftMsg(err.message || "Hediye gönderilemedi.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Gönder";
+      }
+    }
+    
+    function listenGifts() {
+      if (unsubscribeGifts) unsubscribeGifts();
+      if (!currentUser || isAdmin) return;
+
+      const q = query(collection(db, "gpGifts"), where("to", "==", normalizeKey(currentUser)), where("read", "==", false));
+      unsubscribeGifts = onSnapshot(q, (snap) => {
+        snap.docChanges().forEach(change => {
+          if (change.type === "added") {
+            const data = change.doc.data();
+            showGiftBanner(data.from, data.amount);
+            updateDoc(doc(db, "gpGifts", change.doc.id), { read: true }).catch(()=>{});
+          }
+        });
+      });
+    }
+
+    function showGiftBanner(from, amount) {
+      const banner = document.getElementById("giftNotificationBanner");
+      if(!banner) return;
+      banner.textContent = `${escapeHtml(from)} size ${amount} GP gönderdi!`;
+      banner.style.display = "block";
+      setTimeout(() => {
+        banner.style.display = "none";
+      }, 20000); 
+    }
+    
+    // PRO CHAT FONKSİYONLARI
+    async function sendProChatMessage() {
+      if (!isAdmin && !isProActive(currentPro)) return;
+      const text = proChatMessageInput.value.trim();
+      if (!text) return;
+
+      proChatSendBtn.disabled = true;
+
+      try {
+        await addDoc(collection(db, "proChatMessages"), {
+          sender: currentUser,
+          text: text,
+          createdAt: serverTimestamp(),
+          createdAtClient: Date.now()
+        });
+        proChatMessageInput.value = "";
+        setTimeout(() => {
+          const box = document.getElementById("proChatMessages");
+          if(box) box.scrollTop = box.scrollHeight;
+        }, 50);
+      } catch (e) {
+        alert("Mesaj gönderilemedi.");
+      } finally {
+        proChatSendBtn.disabled = false;
+      }
+    }
+    
+    function listenProChat() {
+      if (unsubscribeProChat) unsubscribeProChat();
+      const oneHourAgo = Date.now() - 3600000;
+      const q = query(collection(db, "proChatMessages"), where("createdAtClient", ">", oneHourAgo), orderBy("createdAtClient", "asc"));
+      unsubscribeProChat = onSnapshot(q, (snap) => {
+        const box = document.getElementById("proChatMessages");
+        if(!box) return;
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+
+        box.innerHTML = items.map(item => {
+          const mine = item.sender === currentUser;
+          const time = new Date(item.createdAtClient).toLocaleTimeString("tr-TR", {hour:'2-digit', minute:'2-digit'});
+          return `
+            <div class="bubble ${mine ? 'me' : ''}" style="max-width: 80%; align-self: ${mine ? 'flex-end' : 'flex-start'}; border-color: rgba(139, 92, 246, 0.4);">
+              <div class="meta" style="color: #a78bfa;"><span>${escapeHtml(item.sender)}</span><span>${time}</span></div>
+              <div class="text">${escapeHtml(item.text)}</div>
+            </div>
+          `;
+        }).join("");
+        setTimeout(() => {
+            box.scrollTop = box.scrollHeight;
+        }, 50);
+      });
     }
 
     function showApp() {
@@ -3924,7 +4160,6 @@
 
       if (!isAdmin) {
         selectedThread = currentUser;
-        setComposeMode("normal");
       }
 
       listenStatus();
@@ -3934,6 +4169,7 @@
       listenProStatus();
       listenGpStatus();
       listenGpProducts();
+      listenGifts();
       
       if (isAdmin) {
         listenThreads();
@@ -3951,6 +4187,8 @@
         updateGpStatusText();
       });
       void claimDailyBonuses();
+      
+      updateSettingsUI();
 
       startPresenceTracking();
       cleanupExpiredMessages();
@@ -4008,6 +4246,8 @@
       if (unsubscribeGpProducts) unsubscribeGpProducts();
       if (unsubscribeGpAdminUsers) unsubscribeGpAdminUsers();
       if (unsubscribeGpAdminCodes) unsubscribeGpAdminCodes();
+      if (unsubscribeGifts) unsubscribeGifts();
+      if (unsubscribeProChat) unsubscribeProChat();
 
       currentUser = null;
       isAdmin = false;
@@ -4023,12 +4263,15 @@
       closeModeMenu();
       composeMode = "normal";
       pendingModeRequest = null;
-      modePill.classList.add("hidden");
-      modePill.textContent = "";
-
+      if (modePill) {
+        modePill.classList.add("hidden");
+        modePill.textContent = "";
+      }
+      
       messageInput.value = "";
       charCount.textContent = "0";
       clearSession();
+      closeSettingsModal();
       showLogin();
     }
 
@@ -4082,6 +4325,12 @@
         plusPill.textContent = "Abonelik Yok";
         plusPill.className = "pill";
         plusPill.classList.remove("hidden");
+      }
+      
+      if (isAdmin || isProActive(currentPro)) {
+          if(proChatBtn) proChatBtn.classList.remove("hidden");
+      } else {
+          if(proChatBtn) proChatBtn.classList.add("hidden");
       }
     }
 
@@ -4529,6 +4778,17 @@
         console.warn("Presence update skipped:", err);
       }
     }
+    
+    async function markTyping(isTyping) {
+      if (!currentUser) return;
+      try {
+        await setDoc(doc(db, "presence", safeDocId(currentUser)), {
+          isTyping: isTyping,
+          typingTo: isAdmin ? selectedThread : ADMIN_USER,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (e) {}
+    }
 
     function startPresenceTracking() {
       stopPresenceTracking();
@@ -4919,6 +5179,83 @@
       }
     }
 
+    function checkAndResetRights() {
+        const now = Date.now();
+        let resetTimeStr = localStorage.getItem("glogego_rights_reset_time");
+        let resetTime = parseInt(resetTimeStr || "0");
+        const isPro = isProActive(currentPro);
+        const cycleMs = (isPro ? 6 : 24) * 60 * 60 * 1000;
+        
+        if (resetTime === 0 || now >= resetTime) {
+            localStorage.setItem("glogego_used_thinking", "0");
+            localStorage.setItem("glogego_used_analysis", "0");
+            resetTime = now + cycleMs;
+            localStorage.setItem("glogego_rights_reset_time", resetTime);
+        } else {
+            const maxAllowed = now + cycleMs;
+            if (resetTime > maxAllowed) {
+                resetTime = maxAllowed;
+                localStorage.setItem("glogego_rights_reset_time", resetTime);
+            }
+        }
+        return resetTime;
+    }
+
+    function updateSettingsUITimer() {
+        if (isAdmin) return;
+        const resetTime = checkAndResetRights();
+        const diff = resetTime - Date.now();
+        let timeStr = "";
+        if (diff > 0) {
+            const h = Math.floor(diff / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            timeStr = ` (Yenilenme: ${h}s ${m}d)`;
+        } else {
+            updateSettingsUI();
+        }
+        const el1 = document.getElementById("resetTimerTxt1");
+        const el2 = document.getElementById("resetTimerTxt2");
+        if (el1) el1.textContent = timeStr;
+        if (el2) el2.textContent = timeStr;
+    }
+
+    function updateSettingsUI() {
+      if (isAdmin) {
+        document.getElementById("thinkingRightsTxt").parentElement.style.display = "none";
+        document.getElementById("analysisRightsTxt").parentElement.style.display = "none";
+      } else {
+        checkAndResetRights();
+        
+        const maxThinking = isProActive(currentPro) ? 10 : 5;
+        const usedThinking = parseInt(localStorage.getItem("glogego_used_thinking") || "0");
+        const usedAnalysis = parseInt(localStorage.getItem("glogego_used_analysis") || "0");
+        
+        const thRem = Math.max(0, maxThinking - usedThinking);
+        const anRem = Math.max(0, 10 - usedAnalysis);
+        
+        const thEl = document.getElementById("thinkingRightsTxt");
+        const anEl = document.getElementById("analysisRightsTxt");
+        
+        if (thEl) {
+            thEl.parentElement.style.display = "block";
+            thEl.textContent = thRem;
+        }
+        if (anEl) {
+            anEl.parentElement.style.display = "block";
+            anEl.textContent = anRem;
+        }
+
+        if (thRem === 0 && setThinking.checked) {
+            setThinking.checked = false;
+            localStorage.setItem("glogego_settings_thinking", "false");
+        }
+        if (anRem === 0 && setAnalysis.checked) {
+            setAnalysis.checked = false;
+            localStorage.setItem("glogego_settings_analysis", "false");
+        }
+      }
+    }
+
     async function sendMessage() {
       const text = messageInput.value.trim();
       const threadId = isAdmin ? selectedThread : currentUser;
@@ -4937,6 +5274,37 @@
       if (text.length > MAX_TEXT) {
         alert("Mesaj çok uzun.");
         return;
+      }
+      
+      if (!isAdmin) {
+          checkAndResetRights();
+          const isThinking = setThinking?.checked;
+          const isAnalysis = setAnalysis?.checked;
+
+          if (isThinking) {
+              const maxThinking = isProActive(currentPro) ? 10 : 5;
+              let usedThinking = parseInt(localStorage.getItem("glogego_used_thinking") || "0");
+              if (usedThinking >= maxThinking) {
+                  alert("Düşünme modu hakkınız bitti! Lütfen ayarlardan kapatın.");
+                  setThinking.checked = false;
+                  return;
+              }
+              localStorage.setItem("glogego_used_thinking", usedThinking + 1);
+              updateSettingsUI();
+              return sendModeRequest("thinking", text);
+          }
+
+          if (isAnalysis) {
+              let usedAnalysis = parseInt(localStorage.getItem("glogego_used_analysis") || "0");
+              if (usedAnalysis >= 10) {
+                  alert("Analiz modu hakkınız bitti! Lütfen ayarlardan kapatın.");
+                  setAnalysis.checked = false;
+                  return;
+              }
+              localStorage.setItem("glogego_used_analysis", usedAnalysis + 1);
+              updateSettingsUI();
+              return sendModeRequest("analysis", text);
+          }
       }
 
       sendBtn.disabled = true;
@@ -4958,7 +5326,8 @@
           createdAtClient: Date.now(),
           expiresAt: Timestamp.fromDate(new Date(Date.now() + DAY_MS))
         });
-
+        
+        markTyping(false);
         messageInput.value = "";
         charCount.textContent = "0";
         setTimeout(scrollToBottomFast, 10);
@@ -5043,8 +5412,36 @@
           }
           await deleteDoc(doc(db, "messages", d.id));
         }
+        
+        const oneHourAgo = Date.now() - 3600000;
+        const proQ = query(collection(db, "proChatMessages"), where("createdAtClient", "<=", oneHourAgo));
+        const proSnap = await getDocs(proQ);
+        for(const d of proSnap.docs) {
+           await deleteDoc(doc(db, "proChatMessages", d.id));
+        }
       } catch (err) {
         console.warn("Cleanup skipped:", err);
+      }
+    }
+
+    function renderTypingIndicator() {
+      const existing = document.getElementById("dynamicTyping");
+      if (existing) existing.remove();
+
+      if (!selectedThread && isAdmin) return;
+
+      let otherUser = isAdmin ? selectedThread : ADMIN_USER;
+      const pData = presenceMap.get(normalizeKey(otherUser));
+
+      if (pData && pData.isTyping && pData.typingTo === currentUser) {
+         messagesEl.insertAdjacentHTML("beforeend", `
+          <div id="dynamicTyping" class="typing-wrapper message-animated" style="align-self: flex-start; margin-top: 10px;">
+            <div class="bubble">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+         `);
+         scrollToBottomFast();
       }
     }
 
@@ -5075,12 +5472,13 @@
         if (!messagesHydrated) {
           items.forEach(item => seenMessageIds.add(item.id));
           messagesHydrated = true;
-        } else if (!isAdmin) {
+        } else {
           for (const item of items) {
             const isNew = !seenMessageIds.has(item.id);
             if (isNew) {
+              item.isNew = true;
               seenMessageIds.add(item.id);
-              if (item.sender === ADMIN_USER && item.kind !== "mode_request" && item.text && String(item.text).trim().length <= 500) {
+              if (!isAdmin && item.sender === ADMIN_USER && item.kind !== "mode_request" && item.text) {
                 speakRobot(item.text);
               }
             }
@@ -5091,7 +5489,7 @@
           syncModeRequestState(items);
         }
 
-        messagesEl.innerHTML = items.map(renderMessage).join("");
+        messagesEl.innerHTML = items.map(item => renderMessage(item, item.isNew)).join("");
 
         messagesEl.querySelectorAll(".copy-btn").forEach((btn) => {
           btn.addEventListener("click", async () => {
@@ -5187,6 +5585,7 @@
           }
         });
 
+        renderTypingIndicator();
         setTimeout(scrollToBottomFast, 50);
         setTimeout(scrollToBottomFast, 300);
         hydrateVideoMessages();
@@ -5231,6 +5630,7 @@
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
         return;
       }
 
@@ -5239,12 +5639,14 @@
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
         void claimDailyBonuses();
       }, () => {
         currentPlus = null;
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
       });
     }
     
@@ -5255,6 +5657,7 @@
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
         return;
       }
 
@@ -5263,12 +5666,14 @@
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
         void claimDailyBonuses();
       }, () => {
         currentPro = null;
         updatePlusStatusText();
         updatePlusPill();
         updateGpBonusText();
+        updateSettingsUI();
       });
     }
 
@@ -5315,10 +5720,12 @@
         presenceMap = map;
         renderThreadList();
         updateThreadStatusPill();
+        renderTypingIndicator();
       }, () => {
         presenceMap = new Map();
         renderThreadList();
         updateThreadStatusPill();
+        renderTypingIndicator();
       });
     }
 
@@ -5334,12 +5741,61 @@
       });
     }
 
+    setVolume.addEventListener("input", () => {
+      localStorage.setItem("glogego_settings_volume", setVolume.value);
+    });
+    setThinking.addEventListener("change", () => {
+      if (setThinking.checked) {
+          setAnalysis.checked = false;
+          localStorage.setItem("glogego_settings_analysis", "false");
+      }
+      localStorage.setItem("glogego_settings_thinking", setThinking.checked);
+      updateSettingsUI();
+    });
+    setAnalysis.addEventListener("change", () => {
+      if (setAnalysis.checked) {
+          setThinking.checked = false;
+          localStorage.setItem("glogego_settings_thinking", "false");
+      }
+      localStorage.setItem("glogego_settings_analysis", setAnalysis.checked);
+      updateSettingsUI();
+    });
+    
+    const giftBtn = document.getElementById("giftBtn");
+    if (giftBtn) {
+        giftBtn.addEventListener("click", sendGpGift);
+    }
+
     loginBtn.addEventListener("click", login);
     passwordInput.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
     usernameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
     logoutBtn.addEventListener("click", logout);
+    
+    if(proChatBtn) {
+        proChatBtn.addEventListener("click", () => {
+            proChatPanel.classList.remove("hidden");
+            listenProChat();
+        });
+    }
+    if(proChatCloseBtn) {
+        proChatCloseBtn.addEventListener("click", () => {
+            proChatPanel.classList.add("hidden");
+            if(unsubscribeProChat) unsubscribeProChat();
+        });
+    }
+    if(proChatSendBtn) {
+        proChatSendBtn.addEventListener("click", sendProChatMessage);
+    }
+    if(proChatMessageInput) {
+        proChatMessageInput.addEventListener("keydown", (e) => {
+            if(e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                sendProChatMessage();
+            }
+        });
+    }
 
-    plusBtn.addEventListener("click", openPlusPanel);
+plusBtn.addEventListener("click", openPlusPanel);
     gpBtn.addEventListener("click", openGpPanelByUser);
     gpCloseBtn.addEventListener("click", () => setGpPanelOpen(false));
     gpClaimBtn.addEventListener("click", () => void claimDailyBonuses());
@@ -5462,9 +5918,35 @@
 
     messageInput.addEventListener("input", () => {
       charCount.textContent = String(messageInput.value.length);
+      
+      if (!currentUser) return;
+      if (!typingTimer) {
+         markTyping(true);
+      } else {
+         clearTimeout(typingTimer);
+      }
+      typingTimer = setTimeout(() => {
+         markTyping(false);
+         typingTimer = null;
+      }, 2000);
     });
 
     messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Insert" || e.key === "ScrollLock") {
+        e.preventDefault();
+        const start = messageInput.selectionStart;
+        const end = messageInput.selectionEnd;
+        const val = messageInput.value;
+        if (start !== end) {
+          messageInput.value = val.substring(0, start) + "**" + val.substring(start, end) + "**" + val.substring(end);
+          messageInput.selectionStart = messageInput.selectionEnd = end + 4;
+        } else {
+          messageInput.value = val.substring(0, start) + "**" + val.substring(end);
+          messageInput.selectionStart = messageInput.selectionEnd = start + 2;
+        }
+        return;
+      }
+      
       if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
         sendMessage();
       }
@@ -5492,7 +5974,11 @@
           return;
         }
         if (!imageModal.classList.contains("hidden")) {
-          closeImageModal();
+          if (!settingsModal.classList.contains("hidden")) {
+            closeSettingsModal();
+          } else {
+            closeImageModal();
+          }
         }
       }
     });
@@ -5500,7 +5986,7 @@
     if (gpTerminalInput) {
       function logTerm(msg) {
           if(!gpTerminalOutput) return;
-          gpTerminalOutput.innerHTML += `<div>> ${msg}</div>`;
+          gpTerminalOutput.innerHTML += `<div>> ${escapeHtml(msg)}</div>`;
           gpTerminalOutput.scrollTop = gpTerminalOutput.scrollHeight;
       }
 
